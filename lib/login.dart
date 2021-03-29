@@ -35,9 +35,8 @@ class _LoginFormState extends State<LoginForm> {
                   width: displayHeight(context) * 0.23, // 150.0
                   decoration: BoxDecoration(
                       border: Border.all(
-                          color: Colors.redAccent,
-                          width: displayWidth(context) * 0.007, // 5.0
-                          style: BorderStyle.solid),
+                        width: 0.0,
+                      ),
                       borderRadius: BorderRadius.circular(
                           displayWidth(context) * 0.25), //115
                       color: Colors.blueGrey),

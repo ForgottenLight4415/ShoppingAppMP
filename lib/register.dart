@@ -1,3 +1,4 @@
+import 'registration_success.dart';
 import 'package:flutter/material.dart';
 
 class RegisterNew extends StatefulWidget {
@@ -56,28 +57,52 @@ class _RegisterNewState extends State<RegisterNew> {
                   decoration: InputDecoration(
                     labelText: "Password",
                   ),
+                  obscureText: true,
                 ),
-                SizedBox(height: 15.0,),
-                TextButton(onPressed: () {
-                  ScaffoldMessenger.of(context)
-                      .showSnackBar(SnackBar(content: Text("Registering you...")));
-                }, child: Text(
-                  "Register",
-                  style: TextStyle(
-                      fontSize: 20.0,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white),
+                TextFormField(
+                  decoration: InputDecoration(
+                    labelText: "Confirm Password",
+                  ),
+                  obscureText: true,
                 ),
+                SizedBox(
+                  height: 15.0,
+                ),
+                TextButton(
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("Registering you...")));
+                    Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => RegistrationSuccess()),
+                        (route) => false);
+                  },
+                  child: Text(
+                    "Register",
+                    style: TextStyle(
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white),
+                  ),
                   style: TextButton.styleFrom(
                       backgroundColor: Colors.red,
                       elevation: 3.0,
                       minimumSize: Size(125, 50),
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30.0))),),
-                SizedBox(height: 10.0,),
-                TextButton(onPressed: () {
-                  Navigator.pop(context);
-                }, child: Text("Cancel", style: TextStyle(fontSize: 20.0),))
+                          borderRadius: BorderRadius.circular(30.0))),
+                ),
+                SizedBox(
+                  height: 10.0,
+                ),
+                TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text(
+                      "Cancel",
+                      style: TextStyle(fontSize: 20.0),
+                    ))
               ],
             ),
           ),
