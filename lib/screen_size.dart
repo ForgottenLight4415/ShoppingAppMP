@@ -5,9 +5,9 @@ Size displaySize(BuildContext context) {
 }
 
 double displayHeight(BuildContext context) {
-  return displayHeight(context);
+  return displaySize(context).height;
 }
 
 double displayWidth(BuildContext context) {
-  return displayWidth(context);
+  return displaySize(context).width;
 }

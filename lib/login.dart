@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mini_project_ii/register.dart';
+import 'register.dart';
 import 'home.dart';
 import 'about.dart';
-import 'register.dart';
+import 'screen_size.dart';
 
 class LoginForm extends StatefulWidget {
   @override
@@ -21,7 +21,7 @@ class _LoginFormState extends State<LoginForm> {
     return Form(
       key: _formKey,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(10.0, 100.0, 10.0, 5.0),
+        padding: const EdgeInsets.fromLTRB(10.0, 70.0, 10.0, 0.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -31,29 +31,30 @@ class _LoginFormState extends State<LoginForm> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 Container(
-                  height: 150.0,
-                  width: 150.0,
+                  height: displayHeight(context) * 0.23, // 150.0
+                  width: displayHeight(context) * 0.23, // 150.0
                   decoration: BoxDecoration(
                       border: Border.all(
                           color: Colors.redAccent,
-                          width: 5.0,
+                          width: displayWidth(context) * 0.007, // 5.0
                           style: BorderStyle.solid),
-                      borderRadius: BorderRadius.circular(115.0),
+                      borderRadius: BorderRadius.circular(
+                          displayWidth(context) * 0.25), //115
                       color: Colors.blueGrey),
                   child: Icon(
                     Icons.person,
-                    size: 100.0,
+                    size: displayWidth(context) * 0.30,
                     color: Colors.grey,
                   ),
                 ),
                 SizedBox(
-                  height: 50.0,
+                  height: displayHeight(context) * 0.06,
                 ),
                 Column(
                   children: <Widget>[
                     Container(
                       child: Padding(
-                        padding: const EdgeInsets.all(3.0),
+                        padding: const EdgeInsets.fromLTRB(3.0, 0.0, 3.0, 3.0),
                         child: TextFormField(
                           controller: _uname,
                           decoration: InputDecoration(
@@ -85,15 +86,16 @@ class _LoginFormState extends State<LoginForm> {
                     ),
                     Container(
                       child: Padding(
-                        padding: const EdgeInsets.all(3.0),
+                        padding: const EdgeInsets.fromLTRB(3.0, 1.5, 3.0, 20.0),
                         child: TextFormField(
                           controller: _pass,
                           decoration: InputDecoration(
                               prefixIcon: Icon(Icons.lock_rounded),
                               labelText: "Password",
                               hintText: "Enter your password",
-                              errorText:
-                              _validatePass ? "Password cannot be empty" : null,
+                              errorText: _validatePass
+                                  ? "Password cannot be empty"
+                                  : null,
                               errorStyle: TextStyle(
                                 color: Colors.white,
                               ),
@@ -106,20 +108,17 @@ class _LoginFormState extends State<LoginForm> {
                                 borderRadius: BorderRadius.circular(50.0),
                               ),
                               focusedBorder: UnderlineInputBorder(
-                                //borderSide: BorderSide(),
+                                  //borderSide: BorderSide(),
                                   borderRadius: BorderRadius.circular(50.0)),
                               enabledBorder: UnderlineInputBorder(
-                                //borderSide: BorderSide(),
+                                  //borderSide: BorderSide(),
                                   borderRadius: BorderRadius.circular(50.0)),
                               border: UnderlineInputBorder(
-                                //borderSide: BorderSide(),
+                                  //borderSide: BorderSide(),
                                   borderRadius: BorderRadius.circular(50.0))),
                           obscureText: true,
                         ),
                       ),
-                    ),
-                    SizedBox(
-                      height: 25.0,
                     ),
                     TextButton(
                       onPressed: () {
@@ -136,8 +135,9 @@ class _LoginFormState extends State<LoginForm> {
                           //  .showSnackBar(SnackBar(content: Text("Validating")));
                           Navigator.pushAndRemoveUntil(
                               context,
-                              MaterialPageRoute(builder: (context) => HomePage()),
-                                  (r) => false);
+                              MaterialPageRoute(
+                                  builder: (context) => HomePage()),
+                              (r) => false);
                         }
                       },
                       child: Text(
@@ -149,25 +149,31 @@ class _LoginFormState extends State<LoginForm> {
                       ),
                       style: TextButton.styleFrom(
                           backgroundColor: Colors.white,
-                          elevation: 10.0,
-                          minimumSize: Size(180, 50),
+                          elevation: 5.0,
+                          minimumSize: Size(displayWidth(context) * 0.52,
+                              displayHeight(context) * 0.074),
                           shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30.0))),
+                              borderRadius: BorderRadius.circular(
+                                  displayWidth(context) * 0.25))),
                     ),
-                    SizedBox(
-                      height: 10.0,
-                    ),
-                    Container(
-                      height: 50.0,
-                      width: 180.0,
-                      child: FittedBox(
-                        child: FloatingActionButton.extended(
-                          heroTag: "CreateAccountBtn",
-                          onPressed: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => RegisterNew()));
-                          },
-                          label: Text("Create Account"),
-                          icon: Icon(Icons.add),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 1.0),
+                      child: Container(
+                        height: displayHeight(context) * 0.1,
+                        width: displayWidth(context) * 0.52,
+                        child: FittedBox(
+                          child: FloatingActionButton.extended(
+                            heroTag: "CreateAccountBtn",
+                            elevation: 5.0,
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => RegisterNew()));
+                            },
+                            label: Text("Create Account"),
+                            icon: Icon(Icons.add),
+                          ),
                         ),
                       ),
                     ),
@@ -175,19 +181,29 @@ class _LoginFormState extends State<LoginForm> {
                 ),
               ],
             ),
-            SizedBox(height: 125.0,),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: <Widget>[
-                FloatingActionButton(
-                    heroTag: "AboutBtn",
-                    child: const Icon(Icons.help_outline_sharp),
-                    onPressed: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => AboutApp()));
-                    })
-              ],
+            SizedBox(
+              height: (displayHeight(context) -
+                      MediaQuery.of(context).padding.top -
+                      kToolbarHeight) *
+                  0.15,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(right: 3.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: <Widget>[
+                  FloatingActionButton(
+                      heroTag: "AboutBtn",
+                      child: const Icon(Icons.help_outline_sharp),
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => AboutApp()));
+                      })
+                ],
+              ),
             ),
           ],
         ),
