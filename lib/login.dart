@@ -1,8 +1,39 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'register.dart';
 import 'home.dart';
 import 'about.dart';
 import 'screen_size.dart';
+
+Future<CredentialManager> fetchCredentials() async {
+  final response =
+      await http.get(Uri.http('10.0.2.2', '/ShoppingApp/login.php'));
+
+  if (response.statusCode == 200) {
+    // If the server did return a 200 OK response,
+    // then parse the JSON.
+    final jsonResponse = jsonDecode(response.body);
+    return CredentialManager.fromJson(jsonResponse[0]);
+  } else {
+    // If the server did not return a 200 OK response,
+    // then throw an exception.
+    throw Exception('Failed to load credentials');
+  }
+}
+
+class CredentialManager {
+  final String userCredentials;
+  final String passCredentials;
+
+  CredentialManager(
+      {@required this.userCredentials, @required this.passCredentials});
+
+  factory CredentialManager.fromJson(Map<String, dynamic> json) {
+    return CredentialManager(
+        userCredentials: json['u_name'], passCredentials: json['password']);
+  }
+}
 
 class LoginForm extends StatefulWidget {
   @override
@@ -120,7 +151,7 @@ class _LoginFormState extends State<LoginForm> {
                       ),
                     ),
                     TextButton(
-                      onPressed: () {
+                      onPressed: () async {
                         setState(() {
                           _uname.text.isEmpty
                               ? _validateUname = true
@@ -130,13 +161,22 @@ class _LoginFormState extends State<LoginForm> {
                               : _validatePass = false;
                         });
                         if (!_validateUname && !_validatePass) {
-                          //ScaffoldMessenger.of(context)
-                          //  .showSnackBar(SnackBar(content: Text("Validating")));
-                          Navigator.pushAndRemoveUntil(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => HomePage()),
-                              (r) => false);
+                          final loginCredentials =
+                              await fetchCredentials();
+                          if (loginCredentials.userCredentials ==
+                                  _uname.text.trim() &&
+                              loginCredentials.passCredentials ==
+                                  _pass.text.trim()) {
+                            Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => HomePage()),
+                                (r) => false);
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                content:
+                                    Text("Invalid username or password.")));
+                          }
                         }
                       },
                       child: Text(
