@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'main.dart';
+import 'login.dart';
 import 'cart.dart';
 import 'about.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -77,10 +78,12 @@ class _HomePageState extends State<HomePage> {
               ListTile(
                 title: Text("Logout"),
                 leading: Icon(Icons.logout),
-                onTap: () {
+                onTap: () async {
+                  SharedPreferences pref = await SharedPreferences.getInstance();
+                  pref?.setBool("isLoggedIn", false);
                   Navigator.pushAndRemoveUntil(
                       context,
-                      MaterialPageRoute(builder: (context) => MyApp()),
+                      MaterialPageRoute(builder: (context) => LoginForm()),
                       (route) => false);
                 },
               ),

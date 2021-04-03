@@ -1,23 +1,15 @@
 import 'package:flutter/material.dart';
 import 'login.dart';
+import 'home.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primaryColor: Colors.red,
-      ),
-      home: Scaffold(
-        resizeToAvoidBottomInset: false,
-        backgroundColor: Colors.red,
-        body: LoginForm(),
-      ),
-    );
-  }
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences pref = await SharedPreferences.getInstance();
+  var status = pref.getBool('isLoggedIn') ?? false;
+  runApp(MaterialApp(
+    title: "Shopping App",
+    home: status == true ? HomePage() : LoginForm(),
+    theme: ThemeData(primaryColor: Colors.red),
+  ));
 }
