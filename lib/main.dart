@@ -8,6 +8,7 @@ Future<void> main() async {
   SharedPreferences pref = await SharedPreferences.getInstance();
   var status = pref.getBool('isLoggedIn') ?? false;
   runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
     title: "Shopping App",
     home: status == true ? HomePage() : LoginForm(),
     theme: ThemeData(primaryColor: Colors.red),
