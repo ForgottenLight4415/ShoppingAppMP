@@ -9,7 +9,7 @@ import 'screen_size.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<http.Response> validateCredentials(String uName, String uPass) {
-  return http.post(Uri.http('10.0.2.2', 'ShoppingApp/login.php'),
+  return http.post(Uri.http('192.168.0.6:8080', 'ShoppingApp/login.php'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
