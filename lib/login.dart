@@ -55,6 +55,12 @@ class _LoginFormState extends State<LoginForm> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
+                        SizedBox(
+                          height: (displayHeight(context) -
+                              MediaQuery.of(context).padding.top -
+                              kToolbarHeight) *
+                              0.1,
+                        ),
                         Text(
                           "Sign in to your account",
                           style: TextStyle(
@@ -174,15 +180,19 @@ class _LoginFormState extends State<LoginForm> {
                                                 await validateCredentials(
                                                     _uname.text.trim(),
                                                     _pass.text);
+                                            var serverResponse = loginCredentials.body.split('<BR>');
+                                            print(serverResponse);
                                             if (loginCredentials.statusCode ==
                                                 200) {
-                                              if (loginCredentials.body ==
+                                              if (serverResponse[0] ==
                                                   "true") {
                                                 SharedPreferences pref =
                                                     await SharedPreferences
                                                         .getInstance();
                                                 pref?.setBool(
                                                     "isLoggedIn", true);
+                                                pref?.setString("Name", serverResponse[1]);
+                                                pref?.setString("Email", serverResponse[2]);
                                                 Navigator.pushAndRemoveUntil(
                                                     context,
                                                     MaterialPageRoute(
@@ -253,7 +263,7 @@ class _LoginFormState extends State<LoginForm> {
                       height: (displayHeight(context) -
                               MediaQuery.of(context).padding.top -
                               kToolbarHeight) *
-                          0.15,
+                          0.29,
                     ),
                     Padding(
                       padding: const EdgeInsets.only(right: 3.0),
