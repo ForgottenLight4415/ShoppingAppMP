@@ -73,11 +73,15 @@ class _HomePageState extends State<HomePage> {
                             children: [
                               Text(
                                 _uname.toUpperCase(),
+                                overflow: TextOverflow.fade,
+                                softWrap: false,
                                 style: TextStyle(
                                     fontSize: 18.0, color: Colors.white),
                               ),
                               Text(
                                 _uid,
+                                overflow: TextOverflow.fade,
+                                softWrap: false,
                                 style: TextStyle(
                                     fontSize: 13.0, color: Colors.white),
                               ),
