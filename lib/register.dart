@@ -186,9 +186,11 @@ class _RegisterNewState extends State<RegisterNew> {
                           Navigator.pushAndRemoveUntil(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => RegistrationSuccess()),
-                                  (route) => false);
-                          SharedPreferences pref = await SharedPreferences.getInstance();
+                                  builder: (context) => RegistrationSuccess(
+                                      _uName.text, _uPass.text)),
+                              (route) => false);
+                          SharedPreferences pref =
+                              await SharedPreferences.getInstance();
                           pref?.setBool('isLoggedIn', true);
                         } else if (registerResponse.body == '2') {
                           setState(() {

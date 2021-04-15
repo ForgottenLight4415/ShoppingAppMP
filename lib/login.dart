@@ -8,12 +8,66 @@ import 'about.dart';
 import 'screen_size.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-Future<http.Response> validateCredentials(String uName, String uPass) {
+Future<http.Response> getCredentialsFromServer(String uName, String uPass) {
   return http.post(Uri.http('192.168.0.6:8080', 'ShoppingApp/login.php'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
       body: jsonEncode(<String, String>{'username': uName, 'password': uPass}));
+}
+
+void login(username, password, context) async {
+  try {
+    final loginCredentials =
+        await getCredentialsFromServer(
+        username.trim(),
+        password);
+    var serverResponse =
+    loginCredentials.body
+        .split(';');
+    if (loginCredentials
+        .statusCode ==
+        200) {
+      if (serverResponse[0] ==
+          "true") {
+        SharedPreferences pref =
+            await SharedPreferences
+            .getInstance();
+        pref?.setBool(
+            "isLoggedIn", true);
+        pref?.setString("Name",
+            serverResponse[1]);
+        pref?.setString("Email",
+            serverResponse[2]);
+        pref?.setString("UserID",
+            serverResponse[3]);
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+                builder:
+                    (context) =>
+                    HomePage()),
+                (r) => false);
+      } else {
+        ScaffoldMessenger.of(
+            context)
+            .showSnackBar(SnackBar(
+            content: Text(
+                "Invalid username or password.")));
+      }
+    } else {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(
+          content: Text(
+              "Something went wrong.")));
+    }
+  } catch (e) {
+    print(e);
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(
+        content: Text(
+            "Failed to connect to server.")));
+  }
 }
 
 class LoginForm extends StatefulWidget {
@@ -28,6 +82,8 @@ class _LoginFormState extends State<LoginForm> {
   bool _validatePass = false;
   final _formKey = GlobalKey<FormState>();
 
+  final AssetImage loginBGI = AssetImage("images/login_bg.jpg");
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,7 +91,7 @@ class _LoginFormState extends State<LoginForm> {
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage("images/login_bg.jpg"),
+            image: loginBGI,
             fit: BoxFit.cover,
           ),
         ),
@@ -178,53 +234,7 @@ class _LoginFormState extends State<LoginForm> {
                                             });
                                             if (!_validateUname &&
                                                 !_validatePass) {
-                                              try {
-                                                final loginCredentials =
-                                                await validateCredentials(
-                                                    _uname.text.trim(),
-                                                    _pass.text);
-                                                var serverResponse =
-                                                loginCredentials.body
-                                                    .split('<BR>');
-                                                if (loginCredentials.statusCode ==
-                                                    200) {
-                                                  if (serverResponse[0] ==
-                                                      "true") {
-                                                    SharedPreferences pref =
-                                                    await SharedPreferences
-                                                        .getInstance();
-                                                    pref?.setBool(
-                                                        "isLoggedIn", true);
-                                                    pref?.setString(
-                                                        "Name",
-                                                        serverResponse[1]);
-                                                    pref?.setString(
-                                                        "Email",
-                                                        serverResponse[2]);
-                                                    Navigator.pushAndRemoveUntil(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                            builder: (context) =>
-                                                                HomePage()),
-                                                            (r) => false);
-                                                  } else {
-                                                    ScaffoldMessenger.of(context)
-                                                        .showSnackBar(SnackBar(
-                                                        content: Text(
-                                                            "Invalid username or password.")));
-                                                  }
-                                                } else {
-                                                  ScaffoldMessenger.of(context)
-                                                      .showSnackBar(SnackBar(
-                                                      content: Text(
-                                                          "Something went wrong.")));
-                                                }
-                                              } catch (SocketException) {
-                                                ScaffoldMessenger.of(context)
-                                                    .showSnackBar(SnackBar(
-                                                    content: Text(
-                                                        "Failed to connect to server.")));
-                                              }
+                                              login(_uname.text, _pass.text, context);
                                             }
                                           },
                                           label: Text(
@@ -257,7 +267,8 @@ class _LoginFormState extends State<LoginForm> {
                                           label: Text(
                                             "Create Account",
                                             style: TextStyle(
-                                                color: Colors.blueGrey.shade700),
+                                                color:
+                                                    Colors.blueGrey.shade700),
                                           ),
                                           icon: Icon(
                                             Icons.add,

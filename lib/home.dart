@@ -1,8 +1,10 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'login.dart';
 import 'cart.dart';
 import 'about.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 class HomePage extends StatefulWidget {
   @override
@@ -20,6 +22,13 @@ class _HomePageState extends State<HomePage> {
     return [_uname, _uid];
   }
 
+  Future<http.Response> _getPostsFromServer() async {
+    return http.get(Uri.http('192.168.0.6:8080', 'ShoppingApp/get_posts.php'),
+    headers: <String, String> {
+      'Content-Type': 'application/json; charset=UTF-8',
+    },);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -29,106 +38,127 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: getSharedPrefs(),
-      builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
-        if (snapshot.hasData) {
-          return Scaffold(
-            appBar: AppBar(
-              title: Text("Dashboard"),
-              actions: <Widget>[
-                IconButton(icon: Icon(Icons.search), onPressed: () {}),
-                IconButton(
-                    icon: Icon(Icons.shopping_cart),
-                    onPressed: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(
-                              builder: (context) => ShoppingCart()));
-                    })
-              ],
-            ),
-            drawer: Drawer(
-              child: ListView(
-                padding: EdgeInsets.zero,
-                children: <Widget>[
-                  DrawerHeader(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        Container(
-                          height: 75.0,
-                          width: 75.0,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(50.0),
-                              color: Colors.white),
-                          child: Icon(Icons.person),
-                        ),
-                        SizedBox(
-                          width: 10.0,
-                        ),
-                        Expanded(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                _uname.toUpperCase(),
-                                overflow: TextOverflow.fade,
-                                softWrap: false,
-                                style: TextStyle(
-                                    fontSize: 18.0, color: Colors.white),
-                              ),
-                              Text(
-                                _uid,
-                                overflow: TextOverflow.fade,
-                                softWrap: false,
-                                style: TextStyle(
-                                    fontSize: 13.0, color: Colors.white),
-                              ),
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
-                    decoration: BoxDecoration(color: Colors.red),
-                  ),
-                  ListTile(
-                    title: Text("About app"),
-                    leading: Icon(Icons.help_outline_sharp),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => AboutApp()),
-                      );
-                    },
-                  ),
-                  ListTile(
-                    title: Text("Logout"),
-                    leading: Icon(Icons.logout),
-                    onTap: () async {
-                      SharedPreferences pref = await SharedPreferences
-                          .getInstance();
-                      pref?.setBool("isLoggedIn", false);
-                      pref?.setString("Name", "");
-                      pref?.setString("Email", "");
-                      Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(builder: (context) => LoginForm()),
-                              (route) => false);
-                    },
-                  ),
+        future: getSharedPrefs(),
+        builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
+          if (snapshot.hasData) {
+            return Scaffold(
+              appBar: AppBar(
+                title: Text("Dashboard"),
+                actions: <Widget>[
+                  IconButton(icon: Icon(Icons.search), onPressed: () {}),
+                  IconButton(
+                      icon: Icon(Icons.shopping_cart),
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ShoppingCart()));
+                      })
                 ],
               ),
-            ),
-            backgroundColor: Colors.white,
-            body: Text("Homepage"),
-          );
-        } else {
-          return Scaffold(
-            body: Text("Loading..."),
-          );
-        }
-      }
-    );
+              drawer: Drawer(
+                child: ListView(
+                  padding: EdgeInsets.zero,
+                  children: <Widget>[
+                    DrawerHeader(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          Container(
+                            height: 75.0,
+                            width: 75.0,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(50.0),
+                                color: Colors.white),
+                            child: Icon(Icons.person),
+                          ),
+                          SizedBox(
+                            width: 10.0,
+                          ),
+                          Expanded(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  _uname.toUpperCase(),
+                                  overflow: TextOverflow.fade,
+                                  softWrap: false,
+                                  style: TextStyle(
+                                      fontSize: 18.0, color: Colors.white),
+                                ),
+                                Text(
+                                  _uid,
+                                  overflow: TextOverflow.fade,
+                                  softWrap: false,
+                                  style: TextStyle(
+                                      fontSize: 13.0, color: Colors.white),
+                                ),
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                      decoration: BoxDecoration(color: Colors.red),
+                    ),
+                    ListTile(
+                      title: Text("About app"),
+                      leading: Icon(Icons.help_outline_sharp),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => AboutApp()),
+                        );
+                      },
+                    ),
+                    ListTile(
+                      title: Text("Logout"),
+                      leading: Icon(Icons.logout),
+                      onTap: () async {
+                        SharedPreferences pref =
+                            await SharedPreferences.getInstance();
+                        pref?.setBool("isLoggedIn", false);
+                        pref?.setString("Name", "");
+                        pref?.setString("Email", "");
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => LoginForm()),
+                            (route) => false);
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              backgroundColor: Colors.white,
+              body: StreamBuilder<dynamic>(
+                stream: _getPosts(),
+                builder: (context, snapshot) {
+                  print(snapshot.connectionState);
+                  if (snapshot.connectionState == ConnectionState.active) {
+                    print(true);
+                    return Text("Hello");
+                  } else {
+                    return Center(child: Text("Loading... Please Wait"));
+                  }
+                },
+              ),
+            );
+          } else {
+            return Scaffold(
+              body: Center(child: Text("Loading...Please wait...")),
+            );
+          }
+        });
+  }
+
+  Stream<List> _getPosts() async* {
+    var response = await _getPostsFromServer();
+
+    if (response.statusCode == 200) {
+      var jsonRes = jsonDecode(response.body);
+      print(jsonRes);
+    }
   }
 }

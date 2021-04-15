@@ -1,15 +1,25 @@
 import 'package:flutter/material.dart';
 import 'screen_size.dart';
-import 'home.dart';
+import 'login.dart';
 import 'dart:async';
 
 class RegistrationSuccess extends StatefulWidget {
 
+  final String _username;
+  final String _password;
+
+  RegistrationSuccess(this._username, this._password);
+
   @override
-  _RegistrationSuccessState createState() => _RegistrationSuccessState();
+  _RegistrationSuccessState createState() => _RegistrationSuccessState(_username, _password);
 }
 
 class _RegistrationSuccessState extends State<RegistrationSuccess> {
+
+  final String _username;
+  final String _password;
+
+  _RegistrationSuccessState(this._username, this._password);
 
   @override
   void initState() {
@@ -22,11 +32,8 @@ class _RegistrationSuccessState extends State<RegistrationSuccess> {
     return new Timer(duration, route);
   }
 
-  route() {
-    Navigator.pushReplacement(context, MaterialPageRoute(
-        builder: (context) => HomePage()
-    )
-    );
+  route() async {
+    login(_username, _password, context);
   }
 
   @override
