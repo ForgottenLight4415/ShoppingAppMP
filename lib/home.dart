@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'login.dart';
@@ -14,6 +15,9 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   String _uname;
   String _uid;
+  StreamController _streamController;
+  Stream _stream;
+  String _appBarTitle = "Home";
 
   Future<List> getSharedPrefs() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
@@ -23,16 +27,31 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<http.Response> _getPostsFromServer() async {
-    return http.get(Uri.http('192.168.0.6:8080', 'ShoppingApp/get_posts.php'),
-    headers: <String, String> {
-      'Content-Type': 'application/json; charset=UTF-8',
-    },);
+    return http.get(
+      Uri.http('192.168.0.6:8080', 'ShoppingApp/get_posts.php'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+  }
+
+  _displayPosts() async {
+    http.Response response = await _getPostsFromServer();
+    if (response.body == "None") {
+      _streamController.add(null);
+    } else {
+      _streamController.add(jsonDecode(response.body));
+    }
   }
 
   @override
   void initState() {
     super.initState();
     getSharedPrefs();
+
+    _streamController = StreamController();
+    _stream = _streamController.stream;
+    _displayPosts();
   }
 
   @override
@@ -43,7 +62,7 @@ class _HomePageState extends State<HomePage> {
           if (snapshot.hasData) {
             return Scaffold(
               appBar: AppBar(
-                title: Text("Dashboard"),
+                title: Text(_appBarTitle),
                 actions: <Widget>[
                   IconButton(icon: Icon(Icons.search), onPressed: () {}),
                   IconButton(
@@ -133,15 +152,20 @@ class _HomePageState extends State<HomePage> {
               ),
               backgroundColor: Colors.white,
               body: StreamBuilder<dynamic>(
-                stream: _getPosts(),
+                stream: _stream,
                 builder: (context, snapshot) {
-                  print(snapshot.connectionState);
-                  if (snapshot.connectionState == ConnectionState.active) {
-                    print(true);
-                    return Text("Hello");
-                  } else {
-                    return Center(child: Text("Loading... Please Wait"));
+                  if (snapshot.data == null) {
+                    return Center(
+                      child: Text("Nothing here yet."),
+                    );
                   }
+                  return Center(
+                    child: Text("Coming soon..."),
+                    /*
+                   * Replace Center Widget with product widgets
+                   * snapshot.data returns decoded JSON with all the required data
+                   */
+                  );
                 },
               ),
             );
@@ -151,14 +175,5 @@ class _HomePageState extends State<HomePage> {
             );
           }
         });
-  }
-
-  Stream<List> _getPosts() async* {
-    var response = await _getPostsFromServer();
-
-    if (response.statusCode == 200) {
-      var jsonRes = jsonDecode(response.body);
-      print(jsonRes);
-    }
   }
 }
