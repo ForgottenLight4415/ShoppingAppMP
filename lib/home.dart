@@ -140,6 +140,7 @@ class _HomePageState extends State<HomePage> {
                         pref?.setBool("isLoggedIn", false);
                         pref?.setString("Name", "");
                         pref?.setString("Email", "");
+                        pref?.setString("UserID", "");
                         Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(
