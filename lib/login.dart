@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'register.dart';
 import 'home.dart';
 import 'about.dart';
-import 'screen_size.dart';
+import 'helpers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<http.Response> getCredentialsFromServer(String uName, String uPass) {

@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'screen_size.dart';
+import 'helpers.dart';
 
 class ShoppingCart extends StatefulWidget {
   @override
@@ -49,15 +49,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
     }
   }
 
-  NetworkImage _setImage(imgURL) {
-    if (imgURL == null) {
-      return NetworkImage(
-          'http://192.168.0.6:8080/ShoppingApp/Assets/NoIMG/no-img.png');
-    } else {
-      return NetworkImage(imgURL);
-    }
-  }
-
   _buildCart(data) {
     List<Widget> cart = [];
     data.forEach((d) {
@@ -88,7 +79,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
                       height: displayHeight(context) * 0.16,
                       decoration: BoxDecoration(
                         image: DecorationImage(
-                          image: _setImage(d['PictureURL']),
+                          image: setImage(d['PictureURL']),
                         ),
                       ),
                     ),
