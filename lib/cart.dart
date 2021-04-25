@@ -20,7 +20,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
   }
 
   Future<http.Response> getCartFromServer(String userID) {
-    return http.post(Uri.http('192.168.0.6:8080', 'ShoppingApp/get_cart.php'),
+    return http.post(Uri.http('192.168.1.55:8080', 'ShoppingApp/get_cart.php'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -30,7 +30,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
   }
 
   Future<http.Response> removeFromCart(String cartID) {
-    return http.post(Uri.http('192.168.0.6:8080', 'ShoppingApp/remove_cart.php'),
+    return http.post(Uri.http('192.168.1.55:8080', 'ShoppingApp/remove_cart.php'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -46,6 +46,15 @@ class _ShoppingCartState extends State<ShoppingCart> {
       _streamController.add(null);
     } else {
       _streamController.add(jsonDecode(response.body));
+    }
+  }
+
+  NetworkImage _setImage(imgURL) {
+    if (imgURL == null) {
+      return NetworkImage(
+          'http://192.168.0.6:8080/ShoppingApp/Assets/NoIMG/no-img.png');
+    } else {
+      return NetworkImage(imgURL);
     }
   }
 
@@ -79,7 +88,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
                       height: displayHeight(context) * 0.16,
                       decoration: BoxDecoration(
                         image: DecorationImage(
-                          image: setImage(d['PictureURL']),
+                          image: _setImage(d['PictureURL']),
                         ),
                       ),
                     ),

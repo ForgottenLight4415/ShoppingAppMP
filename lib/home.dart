@@ -6,6 +6,7 @@ import 'cart.dart';
 import 'about.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'helpers.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -28,11 +29,110 @@ class _HomePageState extends State<HomePage> {
 
   Future<http.Response> _getPostsFromServer() async {
     return http.get(
-      Uri.http('192.168.0.6:8080', 'ShoppingApp/get_posts.php'),
+      Uri.http('192.168.1.55:8080', 'ShoppingApp/get_posts.php'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
     );
+  }
+  Widget _buildCard(String name,String price, String imgPath,context){
+    return Padding(
+        padding: EdgeInsets.only(top:5.0,bottom:5.0,left:5.0,right:5.0),
+        child:InkWell(
+            onTap:(){},
+            child: Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15.0),
+                    boxShadow: [
+                      BoxShadow(
+                          color: Colors.grey.withOpacity(0.2),
+                          spreadRadius:3.0,
+                          blurRadius:5.0
+
+                      )
+
+                    ],
+                    color: Colors.white
+
+                ),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding:EdgeInsets.all(5.0),
+                    ),
+                    Hero(
+                        tag: 'dash',
+                        child:Container(
+                            height:90.0,
+                            width:75.0,
+                            decoration: BoxDecoration(
+                                image: DecorationImage(
+                                    image: setImage(imgPath),
+                                    fit:BoxFit.contain
+                                )
+                            )
+                        )
+                    ),
+                    SizedBox(height:7.0),
+                    Text(
+                        price,
+                        style:TextStyle(
+                            color:Color(0xFFCC8053),
+                            fontFamily: 'OpenSans',
+                            fontSize: 15.0
+                        )),
+                    Text(name,
+                        style: TextStyle(
+                            color:Color(0xFFCC8053),
+                            fontFamily: 'OpenSans',
+                            fontSize: 16.0
+                        )
+                    ),
+                    Padding(
+                        padding:EdgeInsets.all(20.0),
+                        child:Container(
+                            color:Color(0xFFEBEBEB),
+                            height:0.4
+                        )
+                    ),
+                    Padding(
+                        padding: EdgeInsets.only(left:15.0,right:15.0,bottom:8.0),
+                        child:Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly ,
+                            children:[
+
+                        Icon(Icons.shopping_basket,
+                        color:Color(0xFFD17E50),
+                        size:15.0
+                    ),
+                    Text('Add to cart',
+                        style:TextStyle(
+                            fontFamily:'Trajan Pro',
+                            color: Color(0xFFD17E50),
+                            fontSize: 16.0
+                        ))
+
+
+              ],
+           ),
+
+            ),
+    ]))) );
+
+  }
+  List<Widget> _buildHome(data){
+    List<Widget> posts=[];
+    data.forEach((d){
+      print(d);
+      posts.add(
+        _buildCard(d['name'],d['MSRP'],d['image'], context)
+
+      );
+
+    }
+
+    );
+    return posts;
   }
 
   _displayPosts() async {
@@ -160,14 +260,17 @@ class _HomePageState extends State<HomePage> {
                       child: Text("Nothing here yet."),
                     );
                   }
-                  return Center(
-                    child: Text("Coming soon..."),
-                    /*
-                   * Replace Center Widget with product widgets
-                   * snapshot.data returns decoded JSON with all the required data
-                   */
-                  );
-                },
+
+                  else {
+                    List<Widget> posts = _buildHome(snapshot.data);
+                    return ListView.builder(
+                        itemCount: posts.length,
+                        itemBuilder: (context, index) {
+                          return posts[index];
+                        });
+                  }
+
+                }
               ),
             );
           } else {

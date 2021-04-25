@@ -15,7 +15,7 @@ double displayWidth(BuildContext context) {
 NetworkImage setImage(imgURL) {
   if (imgURL == null) {
     return NetworkImage(
-        'http://192.168.0.6:8080/ShoppingApp/Assets/NoIMG/no-img.png');
+        'http://192.168.1.55:8080/ShoppingApp/Assets/NoIMG/no-img.png');
   } else {
     return NetworkImage(imgURL);
   }
