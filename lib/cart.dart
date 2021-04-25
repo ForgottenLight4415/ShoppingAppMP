@@ -139,12 +139,38 @@ class _ShoppingCartState extends State<ShoppingCart> {
                                     }
                                   },
                                   child: Text("Remove"),
+                                  style: ButtonStyle(
+                                    backgroundColor: MaterialStateProperty
+                                        .resolveWith<Color>(
+                                      (Set<MaterialState> states) {
+                                        if (states
+                                            .contains(MaterialState.pressed))
+                                          return Colors.orange;
+                                        return Colors
+                                            .red; // Use the component's default.
+                                      },
+                                    ),
+                                  ),
                                 ),
                               ),
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: ElevatedButton(
-                                    onPressed: () {}, child: Text("Buy")),
+                                  onPressed: () {},
+                                  child: Text("Buy"),
+                                  style: ButtonStyle(
+                                    backgroundColor: MaterialStateProperty
+                                        .resolveWith<Color>(
+                                      (Set<MaterialState> states) {
+                                        if (states
+                                            .contains(MaterialState.pressed))
+                                          return Colors.orange;
+                                        return Colors
+                                            .red; // Use the component's default.
+                                      },
+                                    ),
+                                  ),
+                                ),
                               )
                             ],
                           )
