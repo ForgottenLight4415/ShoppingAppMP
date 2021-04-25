@@ -29,7 +29,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<http.Response> _getPostsFromServer() async {
     return http.get(
-      Uri.http('192.168.1.55:8080', 'ShoppingApp/get_posts.php'),
+      Uri.http('192.168.0.6:8080', 'ShoppingApp/get_posts.php'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -75,21 +75,26 @@ class _HomePageState extends State<HomePage> {
                     ),
                     SizedBox(height:7.0),
                     Text(
-                        price,
+                        '\u20B9' + price,
                         style:TextStyle(
                             color:Color(0xFFCC8053),
                             fontFamily: 'OpenSans',
                             fontSize: 15.0
                         )),
-                    Text(name,
-                        style: TextStyle(
-                            color:Color(0xFFCC8053),
-                            fontFamily: 'OpenSans',
-                            fontSize: 16.0
-                        )
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                      child: Text(name,
+                          overflow: TextOverflow.fade,
+                          softWrap: false,
+                          style: TextStyle(
+                              color:Color(0xFFCC8053),
+                              fontFamily: 'OpenSans',
+                              fontSize: 16.0
+                          )
+                      ),
                     ),
                     Padding(
-                        padding:EdgeInsets.all(20.0),
+                        padding:EdgeInsets.all(5.0),
                         child:Container(
                             color:Color(0xFFEBEBEB),
                             height:0.4
@@ -260,11 +265,11 @@ class _HomePageState extends State<HomePage> {
                       child: Text("Nothing here yet."),
                     );
                   }
-
                   else {
                     List<Widget> posts = _buildHome(snapshot.data);
-                    return ListView.builder(
+                    return GridView.builder(
                         itemCount: posts.length,
+                        gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
                         itemBuilder: (context, index) {
                           return posts[index];
                         });

@@ -21,11 +21,11 @@ class AboutApp extends StatelessWidget {
                 height: 5.0,
               ),
               Text(
-                "Developed by Vishal Pednekar",
+                "Developed by Vishal Pednekar and Tanvi Salian",
                 style: TextStyle(fontSize: 15.0),
               ),
               SizedBox(height: 50.0,),
-              Text("Version: 1.9 Beta",)
+              Text("Version: 2.0 Beta",)
             ]),
       ),
     );
