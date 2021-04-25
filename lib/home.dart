@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'login.dart';
 import 'cart.dart';
@@ -59,7 +60,7 @@ class _HomePageState extends State<HomePage> {
           'CartID': cartID,
         }));
   }
-  
+
   Widget _buildCard(String name, String price, String imgPath, String productID,
       added, cartID, context) {
     return Padding(
@@ -158,6 +159,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   _getPosts() async {
+    print(_uid);
     http.Response response = await _getPostsFromServer(_uid);
     if (response.body == "None") {
       _streamController.add(null);
@@ -169,11 +171,9 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    getSharedPrefs();
-
     _streamController = StreamController();
     _stream = _streamController.stream;
-    _getPosts();
+    getSharedPrefs().then((value) => _getPosts());
   }
 
   @override
