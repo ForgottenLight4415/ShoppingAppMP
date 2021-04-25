@@ -15,5 +15,4 @@ Future<void> main() async {
       theme: ThemeData(primaryColor: Colors.red),
     )
   );
-
 }
