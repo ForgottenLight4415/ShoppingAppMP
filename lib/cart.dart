@@ -49,15 +49,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
     }
   }
 
-  NetworkImage _setImage(imgURL) {
-    if (imgURL == null) {
-      return NetworkImage(
-          'http://$serverURL/ShoppingApp/Assets/NoIMG/no-img.png');
-    } else {
-      return NetworkImage(imgURL);
-    }
-  }
-
   _buildCart(data) {
     List<Widget> cart = [];
     data.forEach((d) {
@@ -88,7 +79,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
                       height: displayHeight(context) * 0.16,
                       decoration: BoxDecoration(
                         image: DecorationImage(
-                          image: _setImage(d['PictureURL']),
+                          image: setImage(d['PictureURL']),
                         ),
                       ),
                     ),
