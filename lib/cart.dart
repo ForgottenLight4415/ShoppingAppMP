@@ -132,21 +132,21 @@ class _ShoppingCartState extends State<ShoppingCart> {
                                 child: ElevatedButton(
                                   onPressed: () async {
                                     http.Response response =
-                                        await removeFromCart(d['CartID']);
+                                    await removeFromCart(d['CartID']);
                                     if (response.body == "Done") {
                                       _getCart();
                                     } else {
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(SnackBar(
-                                              content: Text(
-                                                  "Something went wrong.")));
+                                          content: Text(
+                                              "Something went wrong.")));
                                     }
                                   },
                                   child: Text("Remove"),
                                   style: ButtonStyle(
                                     backgroundColor: MaterialStateProperty
                                         .resolveWith<Color>(
-                                      (Set<MaterialState> states) {
+                                          (Set<MaterialState> states) {
                                         if (states
                                             .contains(MaterialState.pressed))
                                           return Colors.orange;
@@ -165,7 +165,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
                                   style: ButtonStyle(
                                     backgroundColor: MaterialStateProperty
                                         .resolveWith<Color>(
-                                      (Set<MaterialState> states) {
+                                          (Set<MaterialState> states) {
                                         if (states
                                             .contains(MaterialState.pressed))
                                           return Colors.orange;
@@ -213,19 +213,19 @@ class _ShoppingCartState extends State<ShoppingCart> {
           if (snapshot.data == null) {
             return Center(
                 child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text("Nothing to show here!"),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text("Start by adding a few items from store."),
-                )
-              ],
-            ));
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text("Nothing to show here!"),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text("Start by adding a few items from store."),
+                    )
+                  ],
+                ));
           } else {
             List<Widget> posts = _buildCart(snapshot.data);
             return ListView.builder(

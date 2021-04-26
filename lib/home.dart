@@ -55,7 +55,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   _getPosts() async {
-    print(_uid);
     http.Response response = await _getPostsFromServer(_uid);
     if (response.body == "None") {
       _streamController.add(null);
@@ -91,9 +90,7 @@ class _HomePageState extends State<HomePage> {
                               MaterialPageRoute(
                                   builder: (context) => ShoppingCart()),
                             )
-                            .then((value) => setState(() {
-                                  _getPosts();
-                                }));
+                            .then((value) => setState(() {}));
                       })
                 ],
               ),
@@ -176,8 +173,8 @@ class _HomePageState extends State<HomePage> {
               backgroundColor: Colors.white,
               body: StreamBuilder<dynamic>(
                   stream: _stream,
-                  builder: (context, snapshot) {
-                    if (snapshot.data == null) {
+                  builder: (context, productSnapshot) {
+                    if (productSnapshot.data == null) {
                       return RefreshIndicator(
                         onRefresh: () async {
                           _getPosts();
@@ -187,7 +184,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                       );
                     } else {
-                      List<Widget> posts = _buildHome(snapshot.data);
+                      List<Widget> posts = _buildHome(productSnapshot.data);
                       return RefreshIndicator(
                         onRefresh: () async {
                           _getPosts();
@@ -289,7 +286,6 @@ class _ProductCardState extends State<ProductCard> {
                       if (widget.addedToCart != "True") {
                         http.Response response = await addToCart(
                             widget.userID, widget.productID, 1);
-                        print(response.body);
                         if (response.body == "Done") {
                           setState(() {
                             widget.addedToCart = "True";
@@ -301,7 +297,6 @@ class _ProductCardState extends State<ProductCard> {
                       } else {
                         http.Response response =
                             await removeFromCart(widget.cartID);
-                        print(widget.cartID);
                         if (response.body == "Done") {
                           setState(() {
                             widget.addedToCart = "False";
