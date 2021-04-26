@@ -5,6 +5,29 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'helpers.dart';
 
+Future<http.Response> addToCart(
+    String userID, String productID, int quantity) async {
+  return http.post(Uri.http(serverURL, 'ShoppingApp/add_cart.php'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'userID': userID,
+        'productID': productID,
+        'quantity': quantity
+      }));
+}
+
+Future<http.Response> removeFromCart(String cartID) {
+  return http.post(Uri.http(serverURL, 'ShoppingApp/remove_cart.php'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'CartID': cartID,
+      }));
+}
+
 class ShoppingCart extends StatefulWidget {
   @override
   _ShoppingCartState createState() => _ShoppingCartState();
@@ -26,16 +49,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
         },
         body: jsonEncode(<String, String>{
           'uid': userID,
-        }));
-  }
-
-  Future<http.Response> removeFromCart(String cartID) {
-    return http.post(Uri.http(serverURL, 'ShoppingApp/remove_cart.php'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(<String, String>{
-          'CartID': cartID,
         }));
   }
 

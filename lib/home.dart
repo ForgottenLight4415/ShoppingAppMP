@@ -38,122 +38,18 @@ class _HomePageState extends State<HomePage> {
         body: jsonEncode(<String, String>{'userID': userID}));
   }
 
-  Future<http.Response> _addToCart(
-      String userID, String productID, int quantity) async {
-    return http.post(Uri.http(serverURL, 'ShoppingApp/add_cart.php'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(<String, dynamic>{
-          'userID': userID,
-          'productID': productID,
-          'quantity': quantity
-        }));
-  }
-
-  Future<http.Response> removeFromCart(String cartID) {
-    return http.post(Uri.http(serverURL, 'ShoppingApp/remove_cart.php'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(<String, String>{
-          'CartID': cartID,
-        }));
-  }
-
-  Widget _buildCard(String name, String price, String imgPath, String productID,
-      added, cartID, context) {
-    return Padding(
-        padding: EdgeInsets.all(5.0),
-        child: InkWell(
-            onTap: () {},
-            child: Container(
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15.0),
-                    boxShadow: [
-                      BoxShadow(
-                          color: Colors.grey.withOpacity(0.2),
-                          spreadRadius: 3.0,
-                          blurRadius: 5.0)
-                    ],
-                    color: Colors.white),
-                child: Column(children: [
-                  Padding(
-                    padding: EdgeInsets.all(5.0),
-                  ),
-                  Hero(
-                      tag: name,
-                      child: Container(
-                          height: displayHeight(context) * 0.1,
-                          width: displayWidth(context) * 0.5,
-                          decoration: BoxDecoration(
-                              image: DecorationImage(
-                                  image: setImage(imgPath),
-                                  fit: BoxFit.contain)))),
-                  SizedBox(height: 7.0),
-                  Text('\u20B9' + price,
-                      style: TextStyle(
-                          color: Color(0xFFCC8053),
-                          fontFamily: 'OpenSans',
-                          fontSize: 15.0)),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-                    child: Text(name,
-                        overflow: TextOverflow.fade,
-                        softWrap: false,
-                        style: TextStyle(
-                            color: Color(0xFFCC8053),
-                            fontFamily: 'OpenSans',
-                            fontSize: 16.0)),
-                  ),
-                  Container(color: Color(0xFFEBEBEB), height: 0.4),
-                  TextButton(
-                    onPressed: () async {
-                      if (added != "True") {
-                        http.Response response =
-                        await _addToCart(_uid, productID, 1);
-                        print(response.body);
-                        if (response.body == "Done") {
-                          _getPosts();
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Something went wrong.')));
-                        }
-                      } else {
-                        http.Response response =
-                        await removeFromCart(cartID);
-                        print(cartID);
-                        if (response.body == "Done") {
-                          _getPosts();
-                        } else {
-                          ScaffoldMessenger.of(context)
-                              .showSnackBar(SnackBar(
-                              content: Text(
-                                  "Something went wrong.")));
-                        }
-                      }
-                    },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Icon((added == "True") ? Icons.check : Icons.shopping_basket,
-                            color: Color(0xFFD17E50), size: 15.0),
-                        Text((added == "True") ? "Added" : "Add to cart",
-                            style: TextStyle(
-                                fontFamily: 'Open Sans',
-                                color: Color(0xFFD17E50),
-                                fontSize: 16.0))
-                      ],
-                    ),
-                  ),
-                ]))));
-  }
-
   List<Widget> _buildHome(data) {
     List<Widget> posts = [];
     data.forEach((d) async {
-      posts.add(_buildCard(
-          d['name'], d['MSRP'], d['image'], d['pid'], d['added'], d['cartID'], context));
+      posts.add(new ProductCard(
+        productID: d['pid'],
+        productName: d['name'],
+        productMSRP: d['MSRP'],
+        pictureURL: d['image'],
+        cartID: d['cartID'],
+        addedToCart: d['added'],
+        userID: _uid,
+      ));
     });
     return posts;
   }
@@ -314,5 +210,128 @@ class _HomePageState extends State<HomePage> {
             );
           }
         });
+  }
+}
+
+// ignore: must_be_immutable
+class ProductCard extends StatefulWidget {
+  final String productName;
+  final String productMSRP;
+  final String pictureURL;
+  final String productID;
+  final String cartID;
+  final String userID;
+  String addedToCart = "False";
+
+  ProductCard(
+      {this.productID,
+      this.productName,
+      this.productMSRP,
+      this.pictureURL,
+      this.cartID,
+      this.userID,
+      this.addedToCart});
+
+  @override
+  _ProductCardState createState() => _ProductCardState();
+}
+
+class _ProductCardState extends State<ProductCard> {
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+        padding: EdgeInsets.all(5.0),
+        child: InkWell(
+            onTap: () {},
+            child: Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15.0),
+                    boxShadow: [
+                      BoxShadow(
+                          color: Colors.grey.withOpacity(0.2),
+                          spreadRadius: 3.0,
+                          blurRadius: 5.0)
+                    ],
+                    color: Colors.white),
+                child: Column(children: [
+                  Padding(
+                    padding: EdgeInsets.all(5.0),
+                  ),
+                  Hero(
+                      tag: widget.productID,
+                      child: Container(
+                          height: displayHeight(context) * 0.1,
+                          width: displayWidth(context) * 0.5,
+                          decoration: BoxDecoration(
+                              image: DecorationImage(
+                                  image: setImage(widget.pictureURL),
+                                  fit: BoxFit.contain)))),
+                  SizedBox(height: 7.0),
+                  Text('\u20B9' + widget.productMSRP,
+                      style: TextStyle(
+                          color: Color(0xFFCC8053),
+                          fontFamily: 'OpenSans',
+                          fontSize: 15.0)),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                    child: Text(widget.productName,
+                        overflow: TextOverflow.fade,
+                        softWrap: false,
+                        style: TextStyle(
+                            color: Color(0xFFCC8053),
+                            fontFamily: 'OpenSans',
+                            fontSize: 16.0)),
+                  ),
+                  Container(color: Color(0xFFEBEBEB), height: 0.4),
+                  TextButton(
+                    onPressed: () async {
+                      if (widget.addedToCart != "True") {
+                        http.Response response = await addToCart(
+                            widget.userID, widget.productID, 1);
+                        print(response.body);
+                        if (response.body == "Done") {
+                          setState(() {
+                            widget.addedToCart = "True";
+                          });
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Something went wrong.')));
+                        }
+                      } else {
+                        http.Response response =
+                            await removeFromCart(widget.cartID);
+                        print(widget.cartID);
+                        if (response.body == "Done") {
+                          setState(() {
+                            widget.addedToCart = "False";
+                          });
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("Something went wrong.")));
+                        }
+                      }
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Icon(
+                            (widget.addedToCart == "True")
+                                ? Icons.check
+                                : Icons.shopping_basket,
+                            color: Color(0xFFD17E50),
+                            size: 15.0),
+                        Text(
+                            (widget.addedToCart == "True")
+                                ? "Added"
+                                : "Add to cart",
+                            style: TextStyle(
+                                fontFamily: 'Open Sans',
+                                color: Color(0xFFD17E50),
+                                fontSize: 16.0))
+                      ],
+                    ),
+                  ),
+                ]))));
   }
 }
