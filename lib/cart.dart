@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'helpers.dart';
 
 Future<http.Response> addToCart(
@@ -36,11 +35,6 @@ class ShoppingCart extends StatefulWidget {
 class _ShoppingCartState extends State<ShoppingCart> {
   StreamController _streamController;
   Stream _stream;
-
-  Future<String> getUID() async {
-    SharedPreferences pref = await SharedPreferences.getInstance();
-    return pref.getString("UserID");
-  }
 
   Future<http.Response> getCartFromServer(String userID) {
     return http.post(Uri.http(serverURL, 'ShoppingApp/get_cart.php'),
