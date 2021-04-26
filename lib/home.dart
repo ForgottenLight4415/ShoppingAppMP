@@ -90,7 +90,9 @@ class _HomePageState extends State<HomePage> {
                               MaterialPageRoute(
                                   builder: (context) => ShoppingCart()),
                             )
-                            .then((value) => setState(() {}));
+                            .then((value) => setState(() {
+                              _getPosts();
+                        }));
                       })
                 ],
               ),
