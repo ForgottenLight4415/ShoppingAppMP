@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 
 Future<http.Response> registerUser(String fName, String lName, String phone,
     String email, String address, String uName, String passw) {
-  return http.post(Uri.http('192.168.0.6:8080', 'ShoppingApp/register.php'),
+  return http.post(Uri.http('192.168.0.6:8080', 'ShoppingAppServer/register.php'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },

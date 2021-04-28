@@ -14,7 +14,7 @@ class _OrderPageState extends State<OrderPage> {
   Stream _stream;
 
   Future<http.Response> _getOrdersFromServer(String userID) {
-    return http.post(Uri.http(serverURL, 'ShoppingApp/get_orders.php'),
+    return http.post(Uri.http(serverURL, 'ShoppingAppServer/get_orders.php'),
     headers: <String,String> {
       'Content-Type': 'application/json; charset=UTF-8',
     },

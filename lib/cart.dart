@@ -1,12 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ui';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'helpers.dart';
 
 Future<http.Response> addToCart(
     String userID, String productID, int quantity) async {
-  return http.post(Uri.http(serverURL, 'ShoppingApp/add_cart.php'),
+  return http.post(Uri.http(serverURL, 'ShoppingAppServer/add_cart.php'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -18,7 +19,7 @@ Future<http.Response> addToCart(
 }
 
 Future<http.Response> removeFromCart(String cartID) {
-  return http.post(Uri.http(serverURL, 'ShoppingApp/remove_cart.php'),
+  return http.post(Uri.http(serverURL, 'ShoppingAppServer/remove_cart.php'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -186,6 +187,16 @@ class _ShoppingCartState extends State<ShoppingCart> {
     return cart;
   }
 
+  double _getCartValue(data) {
+    double value = 0;
+    data.forEach((d) {
+      int quantity = int.parse(d['Quantity']);
+      int maxPrice = int.parse(d['MSRP']);
+      value += (maxPrice * quantity);
+    });
+    return value;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -222,11 +233,59 @@ class _ShoppingCartState extends State<ShoppingCart> {
                 ));
           } else {
             List<Widget> posts = _buildCart(snapshot.data);
-            return ListView.builder(
-                itemCount: posts.length,
-                itemBuilder: (context, index) {
-                  return posts[index];
-                });
+            return Column(
+              children: [
+                Expanded(
+                  child: ListView.builder(
+                      itemCount: posts.length,
+                      itemBuilder: (context, index) {
+                        return posts[index];
+                      }),
+                ),
+                BottomAppBar(
+                  color: Colors.red,
+                  child: Padding(
+                    padding: const EdgeInsets.all(15.0),
+                    child: Container(
+                      width: displayWidth(context),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text('Total items: ' + (snapshot.data.length).toString(),
+                              style: TextStyle(
+                                fontSize: displayWidth(context) * 0.035,
+                                color: Colors.white
+                              ),),
+                              Text('Cart total: \u20B9' + _getCartValue(snapshot.data).toString(),
+                                softWrap: false,
+                                overflow: TextOverflow.fade,
+                                style: TextStyle(
+                                    fontSize: displayWidth(context) * 0.045,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.white
+                                ),),
+                            ],
+                          ),
+                          FloatingActionButton.extended(
+                              onPressed: () {},
+                            icon: Icon(Icons.check, color: Colors.grey,),
+                            label: Text('Checkout', style: TextStyle(
+                              color: Colors.grey.shade700,
+                              fontFamily: 'Open Sans'
+                            ),),
+                            backgroundColor: Colors.white,
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            );
           }
         },
       ),
