@@ -47,6 +47,7 @@ class _HomePageState extends State<HomePage> {
         productName: d['name'],
         productMSRP: d['MSRP'],
         unitPrice: d['unitPrice'],
+        productDescription: d['productDescription'],
         pictureURL: d['image'],
         cartID: d['cartID'],
         addedToCart: d['added'],
@@ -220,6 +221,7 @@ class ProductCard extends StatefulWidget {
   final String productName;
   final String productMSRP;
   final String unitPrice;
+  final String productDescription;
   final String pictureURL;
   final String productID;
   final String cartID;
@@ -231,6 +233,7 @@ class ProductCard extends StatefulWidget {
       this.productName,
       this.productMSRP,
       this.unitPrice,
+        this.productDescription,
       this.pictureURL,
       this.cartID,
       this.userID,
@@ -253,6 +256,7 @@ class _ProductCardState extends State<ProductCard> {
                         productName: widget.productName,
                         pictureURL: widget.pictureURL,
                         unitPrice: widget.unitPrice,
+                        productDescription: widget.productDescription,
                         userID: widget.userID,
                         productID: widget.productID,
                       )));

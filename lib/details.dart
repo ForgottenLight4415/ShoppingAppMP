@@ -10,6 +10,7 @@ class ProductDetail extends StatefulWidget {
       productMSRP,
       productName,
       unitPrice,
+      productDescription,
       productID,
       cartID,
       userID;
@@ -18,6 +19,7 @@ class ProductDetail extends StatefulWidget {
       {this.pictureURL,
       this.productMSRP,
       this.unitPrice,
+        this.productDescription,
       this.productName,
       this.addedToCart,
       this.productID,
@@ -96,18 +98,7 @@ class _ProductDetailState extends State<ProductDetail> {
                 fontWeight: FontWeight.bold,
               )),
         ),
-        SizedBox(height: 20.0),
-        Center(
-          child: Container(
-            width: MediaQuery.of(context).size.width - 50.0,
-            child: Text('Easy to implement,portable & rechargeable',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontFamily: 'OpenSans',
-                    fontSize: 16.0,
-                    color: Color(0xFFB4B8B9))),
-          ),
-        ),
+
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -120,7 +111,7 @@ class _ProductDetailState extends State<ProductDetail> {
               child: InkWell(
                 onTap: () {
                   setState(() {
-                    if (quantity > 0) {
+                    if (quantity > 1) {
                       quantity--;
                     }
                   });
@@ -234,7 +225,19 @@ class _ProductDetailState extends State<ProductDetail> {
                       color: Colors.white,
                     ),
                   )))),
-        )
+        ) ,
+        SizedBox(height: 20.0),
+        Center(
+          child: Container(
+            width: MediaQuery.of(context).size.width - 50.0,
+            child: Text(widget.productDescription,
+                textAlign: TextAlign.justify,
+                style: TextStyle(
+                    fontFamily: 'OpenSans',
+                    fontSize: 20.0,
+                    color: Colors.grey.shade700)),
+          ),
+        ),
       ]),
     );
   }
