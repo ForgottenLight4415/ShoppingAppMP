@@ -197,6 +197,14 @@ class _ShoppingCartState extends State<ShoppingCart> {
     return value;
   }
 
+  int _getCartSize(data) {
+    int cartSize = 0;
+    data.forEach((d) {
+      cartSize += int.parse(d['Quantity']);
+    });
+    return cartSize;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -255,7 +263,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
                             mainAxisAlignment: MainAxisAlignment.end,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              Text('Total items: ' + (snapshot.data.length).toString(),
+                              Text('Total items: ' + _getCartSize(snapshot.data).toString(),
                               style: TextStyle(
                                 fontSize: displayWidth(context) * 0.035,
                                 color: Colors.white
