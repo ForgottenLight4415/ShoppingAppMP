@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 String serverURL = '192.168.0.6:8080';
 
@@ -21,4 +22,9 @@ NetworkImage setImage(imgURL) {
   } else {
     return NetworkImage(imgURL);
   }
+}
+
+Future<String> getUID() async {
+  SharedPreferences pref = await SharedPreferences.getInstance();
+  return pref.getString("UserID");
 }

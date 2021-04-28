@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mini_project_ii/orders.dart';
 import 'login.dart';
 import 'cart.dart';
 import 'about.dart';
@@ -15,6 +17,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   String _uname;
+  String _uEmail;
   String _uid;
   StreamController _streamController;
   Stream _stream;
@@ -23,125 +26,37 @@ class _HomePageState extends State<HomePage> {
   Future<List> getSharedPrefs() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     _uname = pref.getString("Name");
-    _uid = pref.getString("Email");
-    return [_uname, _uid];
+    _uEmail = pref.getString("Email");
+    _uid = pref.getString("UserID");
+    return [_uname, _uEmail];
   }
 
-  Future<http.Response> _getPostsFromServer() async {
-    return http.get(
-      Uri.http('192.168.0.6:8080', 'ShoppingApp/get_posts.php'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-    );
+  Future<http.Response> _getPostsFromServer(String userID) async {
+    return http.post(Uri.http(serverURL, 'ShoppingApp/get_posts.php'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{'userID': userID}));
   }
-  Widget _buildCard(String name,String price, String imgPath,context){
-    return Padding(
-        padding: EdgeInsets.only(top:5.0,bottom:5.0,left:5.0,right:5.0),
-        child:InkWell(
-            onTap:(){},
-            child: Container(
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15.0),
-                    boxShadow: [
-                      BoxShadow(
-                          color: Colors.grey.withOpacity(0.2),
-                          spreadRadius:3.0,
-                          blurRadius:5.0
 
-                      )
-
-                    ],
-                    color: Colors.white
-
-                ),
-                child: Column(
-                  children: [
-                    Padding(
-                      padding:EdgeInsets.all(5.0),
-                    ),
-                    Hero(
-                        tag: 'dash',
-                        child:Container(
-                            height:90.0,
-                            width:75.0,
-                            decoration: BoxDecoration(
-                                image: DecorationImage(
-                                    image: setImage(imgPath),
-                                    fit:BoxFit.contain
-                                )
-                            )
-                        )
-                    ),
-                    SizedBox(height:7.0),
-                    Text(
-                        '\u20B9' + price,
-                        style:TextStyle(
-                            color:Color(0xFFCC8053),
-                            fontFamily: 'OpenSans',
-                            fontSize: 15.0
-                        )),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-                      child: Text(name,
-                          overflow: TextOverflow.fade,
-                          softWrap: false,
-                          style: TextStyle(
-                              color:Color(0xFFCC8053),
-                              fontFamily: 'OpenSans',
-                              fontSize: 16.0
-                          )
-                      ),
-                    ),
-                    Padding(
-                        padding:EdgeInsets.all(5.0),
-                        child:Container(
-                            color:Color(0xFFEBEBEB),
-                            height:0.4
-                        )
-                    ),
-                    Padding(
-                        padding: EdgeInsets.only(left:15.0,right:15.0,bottom:8.0),
-                        child:Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly ,
-                            children:[
-
-                        Icon(Icons.shopping_basket,
-                        color:Color(0xFFD17E50),
-                        size:15.0
-                    ),
-                    Text('Add to cart',
-                        style:TextStyle(
-                            fontFamily:'Trajan Pro',
-                            color: Color(0xFFD17E50),
-                            fontSize: 16.0
-                        ))
-
-
-              ],
-           ),
-
-            ),
-    ]))) );
-
-  }
-  List<Widget> _buildHome(data){
-    List<Widget> posts=[];
-    data.forEach((d){
-      print(d);
-      posts.add(
-        _buildCard(d['name'],d['MSRP'],d['image'], context)
-
-      );
-
-    }
-
-    );
+  List<Widget> _buildHome(data) {
+    List<Widget> posts = [];
+    data.forEach((d) async {
+      posts.add(new ProductCard(
+        productID: d['pid'],
+        productName: d['name'],
+        productMSRP: d['MSRP'],
+        pictureURL: d['image'],
+        cartID: d['cartID'],
+        addedToCart: d['added'],
+        userID: _uid,
+      ));
+    });
     return posts;
   }
 
-  _displayPosts() async {
-    http.Response response = await _getPostsFromServer();
+  _getPosts() async {
+    http.Response response = await _getPostsFromServer(_uid);
     if (response.body == "None") {
       _streamController.add(null);
     } else {
@@ -152,11 +67,9 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    getSharedPrefs();
-
     _streamController = StreamController();
     _stream = _streamController.stream;
-    _displayPosts();
+    getSharedPrefs().then((value) => _getPosts());
   }
 
   @override
@@ -173,10 +86,14 @@ class _HomePageState extends State<HomePage> {
                   IconButton(
                       icon: Icon(Icons.shopping_cart),
                       onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => ShoppingCart()));
+                        Navigator.of(context)
+                            .push(
+                              MaterialPageRoute(
+                                  builder: (context) => ShoppingCart()),
+                            )
+                            .then((value) => setState(() {
+                              _getPosts();
+                        }));
                       })
                 ],
               ),
@@ -213,7 +130,7 @@ class _HomePageState extends State<HomePage> {
                                       fontSize: 18.0, color: Colors.white),
                                 ),
                                 Text(
-                                  _uid,
+                                  _uEmail,
                                   overflow: TextOverflow.fade,
                                   softWrap: false,
                                   style: TextStyle(
@@ -253,30 +170,47 @@ class _HomePageState extends State<HomePage> {
                             (route) => false);
                       },
                     ),
+                    ListTile(
+                      title: Text("My Orders"),
+                      leading: Icon(Icons.list_alt),
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => OrderPage()));
+                      },
+                    )
                   ],
                 ),
               ),
               backgroundColor: Colors.white,
               body: StreamBuilder<dynamic>(
-                stream: _stream,
-                builder: (context, snapshot) {
-                  if (snapshot.data == null) {
-                    return Center(
-                      child: Text("Nothing here yet."),
-                    );
-                  }
-                  else {
-                    List<Widget> posts = _buildHome(snapshot.data);
-                    return GridView.builder(
-                        itemCount: posts.length,
-                        gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-                        itemBuilder: (context, index) {
-                          return posts[index];
-                        });
-                  }
-
-                }
-              ),
+                  stream: _stream,
+                  builder: (context, productSnapshot) {
+                    if (productSnapshot.data == null) {
+                      return RefreshIndicator(
+                        onRefresh: () async {
+                          _getPosts();
+                        },
+                        child: Center(
+                          child: Text("Nothing here yet."),
+                        ),
+                      );
+                    } else {
+                      List<Widget> posts = _buildHome(productSnapshot.data);
+                      return RefreshIndicator(
+                        onRefresh: () async {
+                          _getPosts();
+                        },
+                        child: GridView.builder(
+                            itemCount: posts.length,
+                            gridDelegate:
+                                new SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 2),
+                            itemBuilder: (context, index) {
+                              return posts[index];
+                            }),
+                      );
+                    }
+                  }),
             );
           } else {
             return Scaffold(
@@ -284,5 +218,126 @@ class _HomePageState extends State<HomePage> {
             );
           }
         });
+  }
+}
+
+// ignore: must_be_immutable
+class ProductCard extends StatefulWidget {
+  final String productName;
+  final String productMSRP;
+  final String pictureURL;
+  final String productID;
+  final String cartID;
+  final String userID;
+  String addedToCart = "False";
+
+  ProductCard(
+      {this.productID,
+      this.productName,
+      this.productMSRP,
+      this.pictureURL,
+      this.cartID,
+      this.userID,
+      this.addedToCart});
+
+  @override
+  _ProductCardState createState() => _ProductCardState();
+}
+
+class _ProductCardState extends State<ProductCard> {
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+        padding: EdgeInsets.all(5.0),
+        child: InkWell(
+            onTap: () {},
+            child: Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15.0),
+                    boxShadow: [
+                      BoxShadow(
+                          color: Colors.grey.withOpacity(0.2),
+                          spreadRadius: 3.0,
+                          blurRadius: 5.0)
+                    ],
+                    color: Colors.white),
+                child: Column(children: [
+                  Padding(
+                    padding: EdgeInsets.all(5.0),
+                  ),
+                  Hero(
+                      tag: widget.productID,
+                      child: Container(
+                          height: displayHeight(context) * 0.1,
+                          width: displayWidth(context) * 0.5,
+                          decoration: BoxDecoration(
+                              image: DecorationImage(
+                                  image: setImage(widget.pictureURL),
+                                  fit: BoxFit.contain)))),
+                  SizedBox(height: 7.0),
+                  Text('\u20B9' + widget.productMSRP,
+                      style: TextStyle(
+                          color: Color(0xFFCC8053),
+                          fontFamily: 'OpenSans',
+                          fontSize: 15.0)),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                    child: Text(widget.productName,
+                        overflow: TextOverflow.fade,
+                        softWrap: false,
+                        style: TextStyle(
+                            color: Color(0xFFCC8053),
+                            fontFamily: 'OpenSans',
+                            fontSize: 16.0)),
+                  ),
+                  Container(color: Color(0xFFEBEBEB), height: 0.4),
+                  TextButton(
+                    onPressed: () async {
+                      if (widget.addedToCart != "True") {
+                        http.Response response = await addToCart(
+                            widget.userID, widget.productID, 1);
+                        if (response.body == "Done") {
+                          setState(() {
+                            widget.addedToCart = "True";
+                          });
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Something went wrong.')));
+                        }
+                      } else {
+                        http.Response response =
+                            await removeFromCart(widget.cartID);
+                        if (response.body == "Done") {
+                          setState(() {
+                            widget.addedToCart = "False";
+                          });
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("Something went wrong.")));
+                        }
+                      }
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Icon(
+                            (widget.addedToCart == "True")
+                                ? Icons.check
+                                : Icons.shopping_basket,
+                            color: Color(0xFFD17E50),
+                            size: 15.0),
+                        Text(
+                            (widget.addedToCart == "True")
+                                ? "Added"
+                                : "Add to cart",
+                            style: TextStyle(
+                                fontFamily: 'Open Sans',
+                                color: Color(0xFFD17E50),
+                                fontSize: 16.0))
+                      ],
+                    ),
+                  ),
+                ]))));
   }
 }

@@ -2,8 +2,30 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'helpers.dart';
+
+Future<http.Response> addToCart(
+    String userID, String productID, int quantity) async {
+  return http.post(Uri.http(serverURL, 'ShoppingApp/add_cart.php'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'userID': userID,
+        'productID': productID,
+        'quantity': quantity
+      }));
+}
+
+Future<http.Response> removeFromCart(String cartID) {
+  return http.post(Uri.http(serverURL, 'ShoppingApp/remove_cart.php'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'CartID': cartID,
+      }));
+}
 
 class ShoppingCart extends StatefulWidget {
   @override
@@ -13,11 +35,6 @@ class ShoppingCart extends StatefulWidget {
 class _ShoppingCartState extends State<ShoppingCart> {
   StreamController _streamController;
   Stream _stream;
-
-  Future<String> getUID() async {
-    SharedPreferences pref = await SharedPreferences.getInstance();
-    return pref.getString("UserID");
-  }
 
   Future<http.Response> getCartFromServer(String userID) {
     return http.post(Uri.http(serverURL, 'ShoppingApp/get_cart.php'),
@@ -29,16 +46,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
         }));
   }
 
-  Future<http.Response> removeFromCart(String cartID) {
-    return http.post(Uri.http(serverURL, 'ShoppingApp/remove_cart.php'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(<String, String>{
-          'CartID': cartID,
-        }));
-  }
-
   _getCart() async {
     String userID = await getUID();
     http.Response response = await getCartFromServer(userID);
@@ -46,15 +53,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
       _streamController.add(null);
     } else {
       _streamController.add(jsonDecode(response.body));
-    }
-  }
-
-  NetworkImage _setImage(imgURL) {
-    if (imgURL == null) {
-      return NetworkImage(
-          'http://$serverURL/ShoppingApp/Assets/NoIMG/no-img.png');
-    } else {
-      return NetworkImage(imgURL);
     }
   }
 
@@ -88,7 +86,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
                       height: displayHeight(context) * 0.16,
                       decoration: BoxDecoration(
                         image: DecorationImage(
-                          image: _setImage(d['PictureURL']),
+                          image: setImage(d['PictureURL']),
                         ),
                       ),
                     ),
@@ -128,23 +126,49 @@ class _ShoppingCartState extends State<ShoppingCart> {
                                 child: ElevatedButton(
                                   onPressed: () async {
                                     http.Response response =
-                                        await removeFromCart(d['CartID']);
+                                    await removeFromCart(d['CartID']);
                                     if (response.body == "Done") {
                                       _getCart();
                                     } else {
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(SnackBar(
-                                              content: Text(
-                                                  "Something went wrong.")));
+                                          content: Text(
+                                              "Something went wrong.")));
                                     }
                                   },
                                   child: Text("Remove"),
+                                  style: ButtonStyle(
+                                    backgroundColor: MaterialStateProperty
+                                        .resolveWith<Color>(
+                                          (Set<MaterialState> states) {
+                                        if (states
+                                            .contains(MaterialState.pressed))
+                                          return Colors.orange;
+                                        return Colors
+                                            .red; // Use the component's default.
+                                      },
+                                    ),
+                                  ),
                                 ),
                               ),
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: ElevatedButton(
-                                    onPressed: () {}, child: Text("Buy")),
+                                  onPressed: () {},
+                                  child: Text("Buy"),
+                                  style: ButtonStyle(
+                                    backgroundColor: MaterialStateProperty
+                                        .resolveWith<Color>(
+                                          (Set<MaterialState> states) {
+                                        if (states
+                                            .contains(MaterialState.pressed))
+                                          return Colors.orange;
+                                        return Colors
+                                            .red; // Use the component's default.
+                                      },
+                                    ),
+                                  ),
+                                ),
                               )
                             ],
                           )
@@ -183,19 +207,19 @@ class _ShoppingCartState extends State<ShoppingCart> {
           if (snapshot.data == null) {
             return Center(
                 child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text("Nothing to show here!"),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text("Start by adding a few items from store."),
-                )
-              ],
-            ));
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text("Nothing to show here!"),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text("Start by adding a few items from store."),
+                    )
+                  ],
+                ));
           } else {
             List<Widget> posts = _buildCart(snapshot.data);
             return ListView.builder(
