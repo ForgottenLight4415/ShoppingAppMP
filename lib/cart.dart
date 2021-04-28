@@ -93,7 +93,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
                     ),
                     Container(
                       margin: EdgeInsets.all(10.0),
-                      height: displayHeight(context) * 0.16,
+                      height: displayHeight(context) * 0.18,
                       width: displayWidth(context) * 0.48,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
@@ -283,7 +283,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
                             icon: Icon(Icons.check, color: Colors.grey,),
                             label: Text('Checkout', style: TextStyle(
                               color: Colors.grey.shade700,
-                              fontFamily: 'Open Sans'
                             ),),
                             backgroundColor: Colors.white,
                           )
