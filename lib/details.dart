@@ -19,7 +19,7 @@ class ProductDetail extends StatefulWidget {
       {this.pictureURL,
       this.productMSRP,
       this.unitPrice,
-        this.productDescription,
+      this.productDescription,
       this.productName,
       this.addedToCart,
       this.productID,
@@ -48,9 +48,7 @@ class _ProductDetailState extends State<ProductDetail> {
           },
         ),
         title: Text('Category selected by user',
-            style: TextStyle(
-                fontSize: 20.0,
-                color: Color(0xFF545D68))),
+            style: TextStyle(fontSize: 20.0, color: Color(0xFF545D68))),
         actions: <Widget>[],
       ),
       body: ListView(children: [
@@ -69,11 +67,8 @@ class _ProductDetailState extends State<ProductDetail> {
               height: displayHeight(context) * 0.30,
               width: displayWidth(context),
               decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: setImage(widget.pictureURL),
-                  fit: BoxFit.contain
-                )
-              ),
+                  image: DecorationImage(
+                      image: setImage(widget.pictureURL), fit: BoxFit.contain)),
             )),
         SizedBox(height: 20.0),
         Center(
@@ -94,7 +89,6 @@ class _ProductDetailState extends State<ProductDetail> {
                 fontWeight: FontWeight.bold,
               )),
         ),
-
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -145,7 +139,7 @@ class _ProductDetailState extends State<ProductDetail> {
                 child: InkWell(
                   onTap: () {
                     setState(() {
-                      if(quantity<=4) {
+                      if (quantity <= 4) {
                         quantity++;
                       }
                     });
@@ -216,16 +210,17 @@ class _ProductDetailState extends State<ProductDetail> {
                       color: Colors.white,
                     ),
                   )))),
-        ) ,
+        ),
         SizedBox(height: 20.0),
         Center(
           child: Container(
             width: MediaQuery.of(context).size.width - 50.0,
-            child: Text(widget.productDescription,
+            child: Text(
+                (widget.productDescription == null)
+                    ? "No product description"
+                    : widget.productDescription,
                 textAlign: TextAlign.justify,
-                style: TextStyle(
-                    fontSize: 20.0,
-                    color: Colors.grey.shade700)),
+                style: TextStyle(fontSize: 20.0, color: Colors.grey.shade700)),
           ),
         ),
       ]),

@@ -148,6 +148,14 @@ class _HomePageState extends State<HomePage> {
                       decoration: BoxDecoration(color: Colors.red),
                     ),
                     ListTile(
+                      title: Text('My orders'),
+                      leading: Icon(Icons.list_alt),
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => OrderPage()));
+                      },
+                    ),
+                    ListTile(
                       title: Text("About app"),
                       leading: Icon(Icons.help_outline_sharp),
                       onTap: () {
@@ -156,14 +164,6 @@ class _HomePageState extends State<HomePage> {
                           context,
                           MaterialPageRoute(builder: (context) => AboutApp()),
                         );
-                      },
-                    ),
-                    ListTile(
-                      title: Text('My orders'),
-                      leading: Icon(Icons.list_alt),
-                      onTap: () {
-                        Navigator.pop(context);
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => OrderPage()));
                       },
                     ),
                     ListTile(
@@ -209,7 +209,8 @@ class _HomePageState extends State<HomePage> {
                             itemCount: posts.length,
                             gridDelegate:
                                 new SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 2),
+                                    crossAxisCount: 2,
+                                childAspectRatio: 0.95),
                             itemBuilder: (context, index) {
                               return posts[index];
                             }),
@@ -272,6 +273,7 @@ class _ProductCardState extends State<ProductCard> {
                       )));
             },
             child: Container(
+              height: displayHeight(context) * 0.5,
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15.0),
                     boxShadow: [
@@ -294,7 +296,7 @@ class _ProductCardState extends State<ProductCard> {
                               image: DecorationImage(
                                   image: setImage(widget.pictureURL),
                                   fit: BoxFit.contain)))),
-                  SizedBox(height: 7.0),
+                  SizedBox(height: 6.0),
                   Text('\u20B9' + widget.productMSRP,
                       style: TextStyle(
                           color: Color(0xFFCC8053),
@@ -337,23 +339,26 @@ class _ProductCardState extends State<ProductCard> {
                         }
                       }
                     },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Icon(
-                            (widget.addedToCart == "True")
-                                ? Icons.check
-                                : Icons.shopping_basket,
-                            color: Color(0xFFD17E50),
-                            size: 15.0),
-                        Text(
-                            (widget.addedToCart == "True")
-                                ? "Added"
-                                : "Add to cart",
-                            style: TextStyle(
-                                color: Color(0xFFD17E50),
-                                fontSize: 16.0))
-                      ],
+                    child: Container(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Icon(
+                              (widget.addedToCart == "True")
+                                  ? Icons.check
+                                  : Icons.shopping_basket,
+                              color: Color(0xFFD17E50),
+                              size: 15.0),
+                          Text(
+                              (widget.addedToCart == "True")
+                                  ? "Added"
+                                  : "Add to cart",
+                              style: TextStyle(
+                                  color: Color(0xFFD17E50),
+                                  fontSize: 16.0))
+                        ],
+                      ),
                     ),
                   ),
                 ]))));
