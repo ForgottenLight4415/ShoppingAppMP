@@ -65,8 +65,16 @@ class _ProductDetailState extends State<ProductDetail> {
         SizedBox(height: 15.0),
         Hero(
             tag: widget.pictureURL,
-            child: Image.asset(widget.pictureURL,
-                height: 190.0, width: 100.0, fit: BoxFit.contain)),
+            child: Container(
+              height: displayHeight(context) * 0.30,
+              width: displayWidth(context),
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: setImage(widget.pictureURL),
+                  fit: BoxFit.contain
+                )
+              ),
+            )),
         SizedBox(height: 20.0),
         Center(
           child: Text('M.R.P' + " " + '\u20B9' + widget.unitPrice,

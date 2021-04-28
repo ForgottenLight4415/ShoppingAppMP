@@ -230,7 +230,7 @@ class ProductCard extends StatefulWidget {
       {this.productID,
       this.productName,
       this.productMSRP,
-        this.unitPrice,
+      this.unitPrice,
       this.pictureURL,
       this.cartID,
       this.userID,
@@ -241,7 +241,6 @@ class ProductCard extends StatefulWidget {
 }
 
 class _ProductCardState extends State<ProductCard> {
-
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -249,15 +248,14 @@ class _ProductCardState extends State<ProductCard> {
         child: InkWell(
             onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context)=> ProductDetail(
-                    productMSRP: widget.productMSRP,
-                    productName: widget.productName,
-                    pictureURL: widget.pictureURL,
-                    unitPrice: widget.unitPrice,
-                    userID: widget.userID,
-                    productID: widget.productID,
-                  )
-              ));
+                  builder: (context) => ProductDetail(
+                        productMSRP: widget.productMSRP,
+                        productName: widget.productName,
+                        pictureURL: widget.pictureURL,
+                        unitPrice: widget.unitPrice,
+                        userID: widget.userID,
+                        productID: widget.productID,
+                      )));
             },
             child: Container(
                 decoration: BoxDecoration(
@@ -302,8 +300,8 @@ class _ProductCardState extends State<ProductCard> {
                   TextButton(
                     onPressed: () async {
                       if (widget.addedToCart != "True") {
-                        http.Response response = await addToCart(
-                            widget.userID, widget.productID, 1);
+                        http.Response response =
+                            await addToCart(widget.userID, widget.productID, 1);
                         print(response.body);
                         if (response.body == "Done") {
                           setState(() {
