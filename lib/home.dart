@@ -32,7 +32,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<http.Response> _getPostsFromServer(String userID) async {
-    return http.post(Uri.http(serverURL, 'ShoppingApp/get_posts.php'),
+    return http.post(Uri.http(serverURL, 'ShoppingAppServer/get_posts.php'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },

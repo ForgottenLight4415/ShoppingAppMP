@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ui';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'helpers.dart';
@@ -92,7 +93,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
                     ),
                     Container(
                       margin: EdgeInsets.all(10.0),
-                      height: displayHeight(context) * 0.16,
+                      height: displayHeight(context) * 0.18,
                       width: displayWidth(context) * 0.48,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
@@ -186,6 +187,24 @@ class _ShoppingCartState extends State<ShoppingCart> {
     return cart;
   }
 
+  double _getCartValue(data) {
+    double value = 0;
+    data.forEach((d) {
+      int quantity = int.parse(d['Quantity']);
+      int maxPrice = int.parse(d['MSRP']);
+      value += (maxPrice * quantity);
+    });
+    return value;
+  }
+
+  int _getCartSize(data) {
+    int cartSize = 0;
+    data.forEach((d) {
+      cartSize += int.parse(d['Quantity']);
+    });
+    return cartSize;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -222,11 +241,58 @@ class _ShoppingCartState extends State<ShoppingCart> {
                 ));
           } else {
             List<Widget> posts = _buildCart(snapshot.data);
-            return ListView.builder(
-                itemCount: posts.length,
-                itemBuilder: (context, index) {
-                  return posts[index];
-                });
+            return Column(
+              children: [
+                Expanded(
+                  child: ListView.builder(
+                      itemCount: posts.length,
+                      itemBuilder: (context, index) {
+                        return posts[index];
+                      }),
+                ),
+                BottomAppBar(
+                  color: Colors.red,
+                  child: Padding(
+                    padding: const EdgeInsets.all(15.0),
+                    child: Container(
+                      width: displayWidth(context),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text('Total items: ' + _getCartSize(snapshot.data).toString(),
+                              style: TextStyle(
+                                fontSize: displayWidth(context) * 0.035,
+                                color: Colors.white
+                              ),),
+                              Text('Cart total: \u20B9' + _getCartValue(snapshot.data).toString(),
+                                softWrap: false,
+                                overflow: TextOverflow.fade,
+                                style: TextStyle(
+                                    fontSize: displayWidth(context) * 0.045,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.white
+                                ),),
+                            ],
+                          ),
+                          FloatingActionButton.extended(
+                              onPressed: () {},
+                            icon: Icon(Icons.check, color: Colors.grey,),
+                            label: Text('Checkout', style: TextStyle(
+                              color: Colors.grey.shade700,
+                            ),),
+                            backgroundColor: Colors.white,
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            );
           }
         },
       ),
