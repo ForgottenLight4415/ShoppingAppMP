@@ -160,7 +160,9 @@ class _ProductDetailState extends State<ProductDetail> {
                 child: InkWell(
                   onTap: () {
                     setState(() {
-                      quantity++;
+                      if(quantity<=4) {
+                        quantity++;
+                      }
                     });
                   },
                   child: Center(
