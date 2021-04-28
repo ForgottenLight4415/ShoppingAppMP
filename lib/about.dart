@@ -25,7 +25,7 @@ class AboutApp extends StatelessWidget {
                 style: TextStyle(fontSize: 15.0),
               ),
               SizedBox(height: 50.0,),
-              Text("Version: 2.0 Beta",)
+              Text("Version: 2.5 Beta",)
             ]),
       ),
     );

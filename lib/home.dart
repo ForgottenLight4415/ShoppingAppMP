@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mini_project_ii/details.dart';
+import 'package:mini_project_ii/orders.dart';
 import 'login.dart';
 import 'cart.dart';
 import 'about.dart';
@@ -150,10 +151,19 @@ class _HomePageState extends State<HomePage> {
                       title: Text("About app"),
                       leading: Icon(Icons.help_outline_sharp),
                       onTap: () {
+                        Navigator.pop(context);
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => AboutApp()),
                         );
+                      },
+                    ),
+                    ListTile(
+                      title: Text('My orders'),
+                      leading: Icon(Icons.list_alt),
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => OrderPage()));
                       },
                     ),
                     ListTile(
