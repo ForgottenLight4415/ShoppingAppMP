@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mini_project_ii/orders.dart';
+import 'package:mini_project_ii/details.dart';
 import 'login.dart';
 import 'cart.dart';
 import 'about.dart';
@@ -46,6 +46,7 @@ class _HomePageState extends State<HomePage> {
         productID: d['pid'],
         productName: d['name'],
         productMSRP: d['MSRP'],
+        unitPrice: d['unitPrice'],
         pictureURL: d['image'],
         cartID: d['cartID'],
         addedToCart: d['added'],
@@ -56,6 +57,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   _getPosts() async {
+    print(_uid);
     http.Response response = await _getPostsFromServer(_uid);
     if (response.body == "None") {
       _streamController.add(null);
@@ -92,8 +94,8 @@ class _HomePageState extends State<HomePage> {
                                   builder: (context) => ShoppingCart()),
                             )
                             .then((value) => setState(() {
-                              _getPosts();
-                        }));
+                                  _getPosts();
+                                }));
                       })
                 ],
               ),
@@ -170,22 +172,14 @@ class _HomePageState extends State<HomePage> {
                             (route) => false);
                       },
                     ),
-                    ListTile(
-                      title: Text("My Orders"),
-                      leading: Icon(Icons.list_alt),
-                      onTap: () {
-                        Navigator.pop(context);
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => OrderPage()));
-                      },
-                    )
                   ],
                 ),
               ),
               backgroundColor: Colors.white,
               body: StreamBuilder<dynamic>(
                   stream: _stream,
-                  builder: (context, productSnapshot) {
-                    if (productSnapshot.data == null) {
+                  builder: (context, snapshot) {
+                    if (snapshot.data == null) {
                       return RefreshIndicator(
                         onRefresh: () async {
                           _getPosts();
@@ -195,7 +189,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                       );
                     } else {
-                      List<Widget> posts = _buildHome(productSnapshot.data);
+                      List<Widget> posts = _buildHome(snapshot.data);
                       return RefreshIndicator(
                         onRefresh: () async {
                           _getPosts();
@@ -225,6 +219,7 @@ class _HomePageState extends State<HomePage> {
 class ProductCard extends StatefulWidget {
   final String productName;
   final String productMSRP;
+  final String unitPrice;
   final String pictureURL;
   final String productID;
   final String cartID;
@@ -235,6 +230,7 @@ class ProductCard extends StatefulWidget {
       {this.productID,
       this.productName,
       this.productMSRP,
+        this.unitPrice,
       this.pictureURL,
       this.cartID,
       this.userID,
@@ -251,7 +247,18 @@ class _ProductCardState extends State<ProductCard> {
     return Padding(
         padding: EdgeInsets.all(5.0),
         child: InkWell(
-            onTap: () {},
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context)=> ProductDetail(
+                    productMSRP: widget.productMSRP,
+                    productName: widget.productName,
+                    pictureURL: widget.pictureURL,
+                    unitPrice: widget.unitPrice,
+                    userID: widget.userID,
+                    productID: widget.productID,
+                  )
+              ));
+            },
             child: Container(
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15.0),
@@ -297,6 +304,7 @@ class _ProductCardState extends State<ProductCard> {
                       if (widget.addedToCart != "True") {
                         http.Response response = await addToCart(
                             widget.userID, widget.productID, 1);
+                        print(response.body);
                         if (response.body == "Done") {
                           setState(() {
                             widget.addedToCart = "True";
@@ -308,6 +316,7 @@ class _ProductCardState extends State<ProductCard> {
                       } else {
                         http.Response response =
                             await removeFromCart(widget.cartID);
+                        print(widget.cartID);
                         if (response.body == "Done") {
                           setState(() {
                             widget.addedToCart = "False";
