@@ -298,7 +298,6 @@ class _ProductCardState extends State<ProductCard> {
                   Text('\u20B9' + widget.productMSRP,
                       style: TextStyle(
                           color: Color(0xFFCC8053),
-                          fontFamily: 'OpenSans',
                           fontSize: 15.0)),
                   Padding(
                     padding: const EdgeInsets.only(left: 8.0, right: 8.0),
@@ -307,7 +306,6 @@ class _ProductCardState extends State<ProductCard> {
                         softWrap: false,
                         style: TextStyle(
                             color: Color(0xFFCC8053),
-                            fontFamily: 'OpenSans',
                             fontSize: 16.0)),
                   ),
                   Container(color: Color(0xFFEBEBEB), height: 0.4),
@@ -353,7 +351,6 @@ class _ProductCardState extends State<ProductCard> {
                                 ? "Added"
                                 : "Add to cart",
                             style: TextStyle(
-                                fontFamily: 'Open Sans',
                                 color: Color(0xFFD17E50),
                                 fontSize: 16.0))
                       ],

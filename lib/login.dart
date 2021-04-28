@@ -110,7 +110,6 @@ class _LoginFormState extends State<LoginForm> {
                     Text(
                       "Sign in to your account",
                       style: TextStyle(
-                          fontFamily: "Open Sans",
                           fontSize: 48.0,
                           color: Colors.white),
                     ),

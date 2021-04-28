@@ -107,7 +107,6 @@ class _OrderPageState extends State<OrderPage> {
                         ),
                         Text(d['StatusDesc'],
                         style: TextStyle(
-                          fontFamily: 'Open Sans',
                           fontSize: 15.0,
                           color: _fontColorProvider(int.parse(d['Status']))
                         ),),
@@ -179,7 +178,6 @@ class _OrderPageState extends State<OrderPage> {
                 children: <Widget>[
                   Text('No orders yet.', style:
                     TextStyle(
-                      fontFamily: 'Open Sans',
                       fontSize: displayWidth(context) * 0.05,
                       color: Colors.grey.shade700,
                     ),),
@@ -190,7 +188,6 @@ class _OrderPageState extends State<OrderPage> {
                     Navigator.pop(context);
                   }, child: Text('Search the store', style: TextStyle(
                     fontSize: displayWidth(context) * 0.05,
-                    fontFamily: 'Open Sans',
                   ),),
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty

@@ -49,7 +49,6 @@ class _ProductDetailState extends State<ProductDetail> {
         ),
         title: Text('Category selected by user',
             style: TextStyle(
-                fontFamily: 'Trajan Pro',
                 fontSize: 20.0,
                 color: Color(0xFF545D68))),
         actions: <Widget>[],
@@ -59,7 +58,6 @@ class _ProductDetailState extends State<ProductDetail> {
         Center(
           child: Text(widget.productName,
               style: TextStyle(
-                  fontFamily: 'OpenSans',
                   fontSize: 20.0,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFFF17532))),
@@ -81,7 +79,6 @@ class _ProductDetailState extends State<ProductDetail> {
         Center(
           child: Text('M.R.P' + " " + '\u20B9' + widget.unitPrice,
               style: TextStyle(
-                fontFamily: 'OpenSans',
                 fontSize: 21.0,
                 fontWeight: FontWeight.bold,
                 color: Color(0xFFF17532),
@@ -92,7 +89,6 @@ class _ProductDetailState extends State<ProductDetail> {
         Center(
           child: Text('Deal of the Day:' + " " + '\u20B9' + widget.productMSRP,
               style: TextStyle(
-                fontFamily: 'OpenSans',
                 fontSize: 22.0,
                 color: Colors.green,
                 fontWeight: FontWeight.bold,
@@ -120,7 +116,6 @@ class _ProductDetailState extends State<ProductDetail> {
                   child: Text(
                     "-",
                     style: TextStyle(
-                      fontFamily: 'OpenSans',
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
@@ -135,7 +130,6 @@ class _ProductDetailState extends State<ProductDetail> {
                 child: Text(
                   quantity.toString(),
                   style: TextStyle(
-                    fontFamily: 'OpenSans',
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
@@ -160,7 +154,6 @@ class _ProductDetailState extends State<ProductDetail> {
                     child: Text(
                       "+",
                       style: TextStyle(
-                        fontFamily: 'OpenSans',
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
@@ -198,7 +191,6 @@ class _ProductDetailState extends State<ProductDetail> {
                       child: Text(
                     'Add to cart',
                     style: TextStyle(
-                      fontFamily: 'OpenSans',
                       fontSize: 14.0,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -219,7 +211,6 @@ class _ProductDetailState extends State<ProductDetail> {
                       child: Text(
                     'Buy Now',
                     style: TextStyle(
-                      fontFamily: 'OpenSans',
                       fontSize: 14.0,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -233,7 +224,6 @@ class _ProductDetailState extends State<ProductDetail> {
             child: Text(widget.productDescription,
                 textAlign: TextAlign.justify,
                 style: TextStyle(
-                    fontFamily: 'OpenSans',
                     fontSize: 20.0,
                     color: Colors.grey.shade700)),
           ),
