@@ -9,7 +9,7 @@ import 'helpers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<http.Response> getCredentialsFromServer(String uName, String uPass) {
-  return http.post(Uri.http(serverURL, 'ShoppingApp/login.php'),
+  return http.post(Uri.http(serverURL, 'ShoppingAppServer/login.php'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },

@@ -18,7 +18,7 @@ double displayWidth(BuildContext context) {
 NetworkImage setImage(imgURL) {
   if (imgURL == null) {
     return NetworkImage(
-        'http://$serverURL/ShoppingApp/Assets/NoIMG/no-img.png');
+        'http://$serverURL/ShoppingAppServer/Assets/NoIMG/no-img.png');
   } else {
     return NetworkImage(imgURL);
   }
