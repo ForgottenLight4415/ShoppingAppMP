@@ -24,7 +24,6 @@ class _OrderPageState extends State<OrderPage> {
   _getOrders() async {
     String userID = await getUID();
     http.Response response = await _getOrdersFromServer(userID);
-    print(response.body);
     if (response.body == "None") {
       _streamController.add(null);
     } else {

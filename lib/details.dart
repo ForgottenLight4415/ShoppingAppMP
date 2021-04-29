@@ -168,11 +168,8 @@ class _ProductDetailState extends State<ProductDetail> {
               ),
               child: InkWell(
                   onTap: () async {
-                    print("userID: " + widget.userID);
-                    print("productID: " + widget.productID);
                     http.Response response = await addToCart(
                         widget.userID, widget.productID, quantity);
-                    print(response.body);
                     if (response.body == "MAX") {
                       Fluttertoast.showToast(msg: "Maximum limit reached",
                       toastLength: Toast.LENGTH_SHORT,
