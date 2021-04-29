@@ -10,23 +10,28 @@ class AboutApp extends StatelessWidget {
       backgroundColor: Colors.white,
       body: Center(
         child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                "Shopping App",
-                style: TextStyle(fontSize: 30.0),
-              ),
-              SizedBox(
-                height: 5.0,
-              ),
-              Text(
-                "Developed by Vishal Pednekar and Tanvi Salian",
-                style: TextStyle(fontSize: 15.0),
-              ),
-              SizedBox(height: 50.0,),
-              Text("Version: 2.5 Beta",)
-            ]),
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              "Shopping App",
+              style: TextStyle(fontSize: 30.0),
+            ),
+            SizedBox(
+              height: 5.0,
+            ),
+            Text(
+              "Developed by Vishal Pednekar and Tanvi Salian",
+              style: TextStyle(fontSize: 15.0),
+            ),
+            SizedBox(
+              height: 50.0,
+            ),
+            Text(
+              "Version: 2.7 Beta",
+            )
+          ],
+        ),
       ),
     );
   }
