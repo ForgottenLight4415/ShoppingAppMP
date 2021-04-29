@@ -5,6 +5,29 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'helpers.dart';
 
+Future<http.Response> buyOneCart(String productID, int quantity, String cartID) async {
+  return http.post(Uri.http(serverURL, 'ShoppingAppServer/buy_cart.php'),
+      headers: <String,String> {
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String,dynamic> {
+        'productID': productID,
+        'userID': await getUID(),
+        'quantity': quantity,
+        'cartID': cartID
+      }));
+}
+
+Future<http.Response> checkoutCart() async {
+  return http.post(Uri.http(serverURL, 'ShoppingAppServer/checkout_cart.php'),
+      headers: <String,String> {
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String,String> {
+        'userID': await getUID(),
+      }));
+}
+
 Future<http.Response> addToCart(
     String userID, String productID, int quantity) async {
   return http.post(Uri.http(serverURL, 'ShoppingAppServer/add_cart.php'),
@@ -155,7 +178,12 @@ class _ShoppingCartState extends State<ShoppingCart> {
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: ElevatedButton(
-                                  onPressed: () {},
+                                  onPressed: () async {
+                                    //TODO: Replace testing code with route to confirmation page
+                                    http.Response response = await buyOneCart(d['ProductID'], int.parse(d['Quantity']), d['CartID']);
+                                    print(response.body);
+                                    _getCart();
+                                  },
                                   child: Text("Buy"),
                                   style: ButtonStyle(
                                     backgroundColor: MaterialStateProperty
@@ -279,7 +307,11 @@ class _ShoppingCartState extends State<ShoppingCart> {
                             ],
                           ),
                           FloatingActionButton.extended(
-                              onPressed: () {},
+                              onPressed: () async {
+                                //TODO: Replace temporary testing code with route to confirmation page
+                                http.Response response = await checkoutCart();
+                                print(response.body);
+                              },
                             icon: Icon(Icons.check, color: Colors.grey,),
                             label: Text('Checkout', style: TextStyle(
                               color: Colors.grey.shade700,

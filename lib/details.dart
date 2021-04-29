@@ -1,9 +1,22 @@
+import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mini_project_ii/helpers.dart';
 import 'cart.dart';
 import 'package:http/http.dart' as http;
+
+Future<http.Response> buyOne(String productID, int quantity) async {
+  return http.post(Uri.http(serverURL, 'ShoppingAppServer/buy_one.php'),
+  headers: <String,String> {
+    'Content-Type': 'application/json; charset=UTF-8',
+  },
+  body: jsonEncode(<String,dynamic> {
+    'productID': productID,
+    'userID': await getUID(),
+    'quantity': quantity
+  }));
+}
 
 // ignore: must_be_immutable
 class ProductDetail extends StatefulWidget {
@@ -207,7 +220,11 @@ class _ProductDetailState extends State<ProductDetail> {
                   borderRadius: BorderRadius.circular(25.0),
                   color: Color(0xFFF17532)),
               child: InkWell(
-                  onTap: () {},
+                  onTap: () async {
+                    //TODO: Replace temporary testing code with route to confirmation page
+                    http.Response response = await buyOne(widget.productID, quantity);
+                    print(response.body);
+                  },
                   child: Center(
                       child: Text(
                     'Buy Now',
