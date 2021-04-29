@@ -11,6 +11,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'helpers.dart';
 
+int category = 0;
+
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
@@ -32,12 +34,19 @@ class _HomePageState extends State<HomePage> {
     return [_uname, _uEmail];
   }
 
-  Future<http.Response> _getPostsFromServer(String userID) async {
+  Future<http.Response> getCategories() async {
+    return http
+        .get(Uri.http(serverURL, 'ShoppingAppServer/get_categories.php'));
+  }
+
+  Future<http.Response> _getPostsFromServer(
+      String userID, int categoryID) async {
     return http.post(Uri.http(serverURL, 'ShoppingAppServer/get_posts.php'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
-        body: jsonEncode(<String, String>{'userID': userID}));
+        body: jsonEncode(
+            <String, dynamic>{'userID': userID, 'categoryID': categoryID}));
   }
 
   List<Widget> _buildHome(data) {
@@ -58,9 +67,31 @@ class _HomePageState extends State<HomePage> {
     return posts;
   }
 
-  _getPosts() async {
-    print(_uid);
-    http.Response response = await _getPostsFromServer(_uid);
+  List<Widget> _buildDrawer(data) {
+    List<Widget> drawerCategories = [];
+    data.forEach((d) {
+      drawerCategories.add(ListTile(
+        title: Text(d['CategoryName']),
+        leading: Icon(Icons.arrow_forward_rounded),
+        onTap: () {
+          if (category == int.parse(d['CategoryID'])) {
+            Navigator.pop(context);
+          } else {
+            setState(() {
+              category = int.parse(d['CategoryID']);
+              _appBarTitle = d['CategoryName'];
+            });
+            getPosts();
+            Navigator.pop(context);
+          }
+        },
+      ));
+    });
+    return drawerCategories;
+  }
+
+  getPosts() async {
+    http.Response response = await _getPostsFromServer(_uid, category);
     if (response.body == "None") {
       _streamController.add(null);
     } else {
@@ -73,7 +104,7 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     _streamController = StreamController();
     _stream = _streamController.stream;
-    getSharedPrefs().then((value) => _getPosts());
+    getSharedPrefs().then((value) => getPosts());
   }
 
   @override
@@ -96,7 +127,7 @@ class _HomePageState extends State<HomePage> {
                                   builder: (context) => ShoppingCart()),
                             )
                             .then((value) => setState(() {
-                                  _getPosts();
+                                  getPosts();
                                 }));
                       })
                 ],
@@ -148,11 +179,53 @@ class _HomePageState extends State<HomePage> {
                       decoration: BoxDecoration(color: Colors.red),
                     ),
                     ListTile(
+                      title: Text('Home'),
+                      leading: Icon(Icons.home),
+                      onTap: () {
+                        if (category == 0) {
+                          Navigator.pop(context);
+                        } else {
+                          setState(() {
+                            category = 0;
+                            _appBarTitle = 'Home';
+                          });
+                          getPosts();
+                          Navigator.pop(context);
+                        }
+                      },
+                    ),
+                    FutureBuilder(
+                        future: getCategories(),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            List<Widget> drawerCategories =
+                                _buildDrawer(jsonDecode((snapshot.data).body));
+                            return Column(
+                              children: [
+                                ListView.builder(
+                                    padding: EdgeInsets.only(top: 0.0),
+                                    shrinkWrap: true,
+                                    itemCount: drawerCategories.length,
+                                    itemBuilder: (context, index) {
+                                      return drawerCategories[index];
+                                    }),
+                              ],
+                            );
+                          } else {
+                            return SizedBox(
+                              height: 0.0,
+                            );
+                          }
+                        }),
+                    ListTile(
                       title: Text('My orders'),
                       leading: Icon(Icons.list_alt),
                       onTap: () {
                         Navigator.pop(context);
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => OrderPage()));
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => OrderPage()));
                       },
                     ),
                     ListTile(
@@ -193,7 +266,7 @@ class _HomePageState extends State<HomePage> {
                     if (snapshot.data == null) {
                       return RefreshIndicator(
                         onRefresh: () async {
-                          _getPosts();
+                          getPosts();
                         },
                         child: Center(
                           child: Text("Nothing here yet."),
@@ -203,14 +276,13 @@ class _HomePageState extends State<HomePage> {
                       List<Widget> posts = _buildHome(snapshot.data);
                       return RefreshIndicator(
                         onRefresh: () async {
-                          _getPosts();
+                          getPosts();
                         },
                         child: GridView.builder(
                             itemCount: posts.length,
                             gridDelegate:
                                 new SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 2,
-                                childAspectRatio: 0.95),
+                                    crossAxisCount: 2, childAspectRatio: 0.95),
                             itemBuilder: (context, index) {
                               return posts[index];
                             }),
@@ -235,8 +307,8 @@ class ProductCard extends StatefulWidget {
   final String productDescription;
   final String pictureURL;
   final String productID;
-  final String cartID;
   final String userID;
+  String cartID;
   String addedToCart = "False";
 
   ProductCard(
@@ -244,7 +316,7 @@ class ProductCard extends StatefulWidget {
       this.productName,
       this.productMSRP,
       this.unitPrice,
-        this.productDescription,
+      this.productDescription,
       this.pictureURL,
       this.cartID,
       this.userID,
@@ -273,7 +345,7 @@ class _ProductCardState extends State<ProductCard> {
                       )));
             },
             child: Container(
-              height: displayHeight(context) * 0.5,
+                height: displayHeight(context) * 0.5,
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15.0),
                     boxShadow: [
@@ -298,17 +370,15 @@ class _ProductCardState extends State<ProductCard> {
                                   fit: BoxFit.contain)))),
                   SizedBox(height: 6.0),
                   Text('\u20B9' + widget.productMSRP,
-                      style: TextStyle(
-                          color: Color(0xFFCC8053),
-                          fontSize: 15.0)),
+                      style:
+                          TextStyle(color: Color(0xFFCC8053), fontSize: 15.0)),
                   Padding(
                     padding: const EdgeInsets.only(left: 8.0, right: 8.0),
                     child: Text(widget.productName,
                         overflow: TextOverflow.fade,
                         softWrap: false,
                         style: TextStyle(
-                            color: Color(0xFFCC8053),
-                            fontSize: 16.0)),
+                            color: Color(0xFFCC8053), fontSize: 16.0)),
                   ),
                   Container(color: Color(0xFFEBEBEB), height: 0.4),
                   TextButton(
@@ -316,9 +386,10 @@ class _ProductCardState extends State<ProductCard> {
                       if (widget.addedToCart != "True") {
                         http.Response response =
                             await addToCart(widget.userID, widget.productID, 1);
-                        print(response.body);
-                        if (response.body == "Done") {
+
+                        if (response.body != "Failed") {
                           setState(() {
+                            widget.cartID = response.body;
                             widget.addedToCart = "True";
                           });
                         } else {
@@ -328,7 +399,6 @@ class _ProductCardState extends State<ProductCard> {
                       } else {
                         http.Response response =
                             await removeFromCart(widget.cartID);
-                        print(widget.cartID);
                         if (response.body == "Done") {
                           setState(() {
                             widget.addedToCart = "False";
@@ -355,8 +425,7 @@ class _ProductCardState extends State<ProductCard> {
                                   ? "Added"
                                   : "Add to cart",
                               style: TextStyle(
-                                  color: Color(0xFFD17E50),
-                                  fontSize: 16.0))
+                                  color: Color(0xFFD17E50), fontSize: 16.0))
                         ],
                       ),
                     ),
