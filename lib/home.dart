@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mini_project_ii/details.dart';
 import 'package:mini_project_ii/orders.dart';
 import 'login.dart';
@@ -386,8 +387,12 @@ class _ProductCardState extends State<ProductCard> {
                       if (widget.addedToCart != "True") {
                         http.Response response =
                             await addToCart(widget.userID, widget.productID, 1);
-
-                        if (response.body != "Failed") {
+                        if (response.body == "MAX") {
+                          Fluttertoast.showToast(msg: "Maximum limit reached",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.CENTER,
+                              fontSize: 12.0);
+                        } else if (response.body != "Failed") {
                           setState(() {
                             widget.cartID = response.body;
                             widget.addedToCart = "True";

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mini_project_ii/helpers.dart';
 import 'cart.dart';
 import 'package:http/http.dart' as http;
@@ -172,10 +173,19 @@ class _ProductDetailState extends State<ProductDetail> {
                     http.Response response = await addToCart(
                         widget.userID, widget.productID, quantity);
                     print(response.body);
-                    if (response.body == "Done") {
+                    if (response.body == "MAX") {
+                      Fluttertoast.showToast(msg: "Maximum limit reached",
+                      toastLength: Toast.LENGTH_SHORT,
+                      gravity: ToastGravity.CENTER,
+                      fontSize: 12.0);
+                    } else if (response.body != "Failed") {
                       setState(() {
                         widget.addedToCart = "True";
                       });
+                      Fluttertoast.showToast(msg: "Added $quantity items to cart",
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.CENTER,
+                          fontSize: 12.0);
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('Something went wrong.')));
