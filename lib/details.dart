@@ -1,35 +1,12 @@
-import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:mini_project_ii/checkout.dart';
 import 'package:mini_project_ii/helpers.dart';
 import 'cart.dart';
 import 'package:http/http.dart' as http;
 
-// Buy from product details page server communication function
-Future<http.Response> buyFromProductDescription(
-    String productID, int quantity) async {
-  return http.post(Uri.http(serverURL, 'ShoppingAppServer/buy_one.php'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, dynamic>{
-        'productID': productID,
-        'userID': await getUID(),
-        'quantity': quantity
-      }));
-}
-
-// Customer details such as phone, email and address
-Future<http.Response> customerDetailsProvider() async {
-  return http.post(Uri.http(serverURL, 'ShoppingAppServer/get_cust_details.php'),
-  headers: <String,String> {
-    'Content-Type': 'application/json; charset=UTF-8',
-  },
-  body: jsonEncode(<String,String> {
-    'userID': await getUID(),
-  }));
-}
 
 // ignore: must_be_immutable
 class ProductDetail extends StatefulWidget {
@@ -44,14 +21,14 @@ class ProductDetail extends StatefulWidget {
 
   ProductDetail(
       {this.pictureURL,
-      this.productMSRP,
-      this.unitPrice,
-      this.productDescription,
-      this.productName,
-      this.addedToCart,
-      this.productID,
-      this.cartID,
-      this.userID});
+        this.productMSRP,
+        this.unitPrice,
+        this.productDescription,
+        this.productName,
+        this.addedToCart,
+        this.productID,
+        this.cartID,
+        this.userID});
 
   @override
   _ProductDetailState createState() => _ProductDetailState();
@@ -112,12 +89,12 @@ class _ProductDetailState extends State<ProductDetail> {
           SizedBox(height: 20.0),
           Center(
             child:
-                Text('Deal of the Day:' + " " + '\u20B9' + widget.productMSRP,
-                    style: TextStyle(
-                      fontSize: 22.0,
-                      color: Colors.green,
-                      fontWeight: FontWeight.bold,
-                    )),
+            Text('Deal of the Day:' + " " + '\u20B9' + widget.productMSRP,
+                style: TextStyle(
+                  fontSize: 22.0,
+                  color: Colors.green,
+                  fontWeight: FontWeight.bold,
+                )),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -207,7 +184,7 @@ class _ProductDetailState extends State<ProductDetail> {
                             fontSize: 12.0);
                       } else if (response.body != "Failed") {
                         setState(
-                          () {
+                              () {
                             widget.addedToCart = "True";
                           },
                         );
@@ -223,13 +200,13 @@ class _ProductDetailState extends State<ProductDetail> {
                     },
                     child: Center(
                         child: Text(
-                      'Add to cart',
-                      style: TextStyle(
-                        fontSize: 14.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    )))),
+                          'Add to cart',
+                          style: TextStyle(
+                            fontSize: 14.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        )))),
           ),
           SizedBox(height: 21.0),
           Center(
@@ -241,10 +218,15 @@ class _ProductDetailState extends State<ProductDetail> {
                   color: Color(0xFFF17532)),
               child: InkWell(
                 onTap: () async {
-                  //TODO: Replace temporary testing code with route to confirmation page
-                  http.Response response = await buyFromProductDescription(
-                      widget.productID, quantity);
-                  print(response.body);
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => CheckoutDetail(
+                        totalPrice:quantity*double.parse(widget.productMSRP),
+                        flag:1,
+
+                      ),
+                    ),
+                  );
                 },
                 child: Center(
                   child: Text(
@@ -269,7 +251,7 @@ class _ProductDetailState extends State<ProductDetail> {
                       : widget.productDescription,
                   textAlign: TextAlign.justify,
                   style:
-                      TextStyle(fontSize: 20.0, color: Colors.grey.shade700)),
+                  TextStyle(fontSize: 20.0, color: Colors.grey.shade700)),
             ),
           ),
         ],

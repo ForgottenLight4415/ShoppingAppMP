@@ -4,38 +4,8 @@ import 'dart:ui';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'helpers.dart';
+import 'checkout.dart';
 
-Future<http.Response> buyOneFromCart(
-    String productID, int quantity, String cartID) async {
-  return http.post(
-    Uri.http(serverURL, 'ShoppingAppServer/buy_cart.php'),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-    body: jsonEncode(
-      <String, dynamic>{
-        'productID': productID,
-        'userID': await getUID(),
-        'quantity': quantity,
-        'cartID': cartID
-      },
-    ),
-  );
-}
-
-Future<http.Response> checkoutCart() async {
-  return http.post(
-    Uri.http(serverURL, 'ShoppingAppServer/checkout_cart.php'),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-    body: jsonEncode(
-      <String, String>{
-        'userID': await getUID(),
-      },
-    ),
-  );
-}
 
 Future<http.Response> addToCart(
     String userID, String productID, int quantity) async {
@@ -201,13 +171,18 @@ class _ShoppingCartState extends State<ShoppingCart> {
                                   padding: const EdgeInsets.all(8.0),
                                   child: ElevatedButton(
                                     onPressed: () async {
-                                      //TODO: Replace testing code with route to confirmation page
-                                      http.Response response = await buyOneFromCart(
-                                          d['ProductID'],
-                                          int.parse(d['Quantity']),
-                                          d['CartID']);
-                                      print(response.body);
-                                      _getCart();
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) => CheckoutDetail(
+                                            totalPrice:int.parse(d['Quantity'])*double.parse(d['MSRP']),
+                                            cartID: d['cartID'],
+                                            productID: d['productID'],
+                                            quantity: int.parse(d['Quantity']),
+                                            flag:0,
+
+                                          ),
+                                        ),
+                                      );
                                     },
                                     child: Text("Buy"),
                                     style: ButtonStyle(
@@ -344,10 +319,15 @@ class _ShoppingCartState extends State<ShoppingCart> {
                           ),
                           FloatingActionButton.extended(
                             onPressed: () async {
-                              //TODO: Replace temporary testing code with route to confirmation page
-                              http.Response response = await checkoutCart();
-                              print(response.body);
-                              _getCart();
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => CheckoutDetail(
+                                    totalPrice:_getCartValue(snapshot.data),
+                                    flag:2,
+
+                                  ),
+                                ),
+                              );
                             },
                             icon: Icon(
                               Icons.check,
