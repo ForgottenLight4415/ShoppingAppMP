@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'helpers.dart';
 
-Future<http.Response> buyOneCart(
+Future<http.Response> buyOneFromCart(
     String productID, int quantity, String cartID) async {
   return http.post(
     Uri.http(serverURL, 'ShoppingAppServer/buy_cart.php'),
@@ -202,7 +202,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
                                   child: ElevatedButton(
                                     onPressed: () async {
                                       //TODO: Replace testing code with route to confirmation page
-                                      http.Response response = await buyOneCart(
+                                      http.Response response = await buyOneFromCart(
                                           d['ProductID'],
                                           int.parse(d['Quantity']),
                                           d['CartID']);

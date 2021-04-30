@@ -6,7 +6,9 @@ import 'package:mini_project_ii/helpers.dart';
 import 'cart.dart';
 import 'package:http/http.dart' as http;
 
-Future<http.Response> buyOne(String productID, int quantity) async {
+// Buy from product details page server communication function
+Future<http.Response> buyFromProductDescription(
+    String productID, int quantity) async {
   return http.post(Uri.http(serverURL, 'ShoppingAppServer/buy_one.php'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
@@ -16,6 +18,17 @@ Future<http.Response> buyOne(String productID, int quantity) async {
         'userID': await getUID(),
         'quantity': quantity
       }));
+}
+
+// Customer details such as phone, email and address
+Future<http.Response> customerDetailsProvider() async {
+  return http.post(Uri.http(serverURL, 'ShoppingAppServer/get_cust_details.php'),
+  headers: <String,String> {
+    'Content-Type': 'application/json; charset=UTF-8',
+  },
+  body: jsonEncode(<String,String> {
+    'userID': await getUID(),
+  }));
 }
 
 // ignore: must_be_immutable
@@ -229,8 +242,8 @@ class _ProductDetailState extends State<ProductDetail> {
               child: InkWell(
                 onTap: () async {
                   //TODO: Replace temporary testing code with route to confirmation page
-                  http.Response response =
-                      await buyOne(widget.productID, quantity);
+                  http.Response response = await buyFromProductDescription(
+                      widget.productID, quantity);
                   print(response.body);
                 },
                 child: Center(
