@@ -1,11 +1,12 @@
 import 'dart:convert';
+import 'package:mini_project_ii/helpers.dart';
 import 'registration_success.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 Future<http.Response> registerUser(String fName, String lName, String phone,
     String email, String address, String uName, String passw) {
-  return http.post(Uri.http('192.168.0.6:8080', 'ShoppingAppServer/register.php'),
+  return http.post(Uri.http(serverURL, 'ShoppingAppServer/register.php'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
