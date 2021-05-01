@@ -105,7 +105,6 @@ class CheckoutDetail extends StatelessWidget {
                 ),
                 title: Text('Checkout',
                     style: TextStyle(
-                        fontFamily: 'Trajan Pro',
                         fontSize: 20.0,
                         color: Color(0xFF545D68))),
                 actions: <Widget>[],
@@ -117,7 +116,6 @@ class CheckoutDetail extends StatelessWidget {
                   Center(
                     child: Text('Delivery Address: ',
                         style: TextStyle(
-                            fontFamily: 'Trajan Pro',
                             fontSize: 20.0,
                             fontWeight: FontWeight.bold,
                             color: Color(0xFFF17532))),
@@ -126,7 +124,6 @@ class CheckoutDetail extends StatelessWidget {
                   Center(
                     child: Text(customerData[0]['address'],
                         style: TextStyle(
-                            fontFamily: 'Trajan Pro',
                             fontSize: 20.0,
                             fontWeight: FontWeight.bold,
                             color: Color(0xFFF17532))),
@@ -135,7 +132,6 @@ class CheckoutDetail extends StatelessWidget {
                   Center(
                     child: Text(customerData[0]['phone'],
                         style: TextStyle(
-                            fontFamily: 'Trajan Pro',
                             fontSize: 20.0,
                             fontWeight: FontWeight.bold,
                             color: Color(0xFFF17532))),
@@ -144,25 +140,29 @@ class CheckoutDetail extends StatelessWidget {
                   Center(
                     child: Text(customerData[0]['email'],
                         style: TextStyle(
-                            fontFamily: 'Trajan Pro',
                             fontSize: 20.0,
                             fontWeight: FontWeight.bold,
                             color: Color(0xFFF17532))),
                   ),
-                  SizedBox(height: 20.0),
+                  SizedBox(height: displayHeight(context) * 0.10),
+                  Center(
+                    child: Text("You pay: ",
+                        style: TextStyle(
+                            fontSize: displayWidth(context) * 0.08,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF8C8C8C))),
+                  ),
                   Center(
                     child: Text("\u{20B9}" + totalPrice.toString(),
                         style: TextStyle(
-                            fontFamily: 'Trajan Pro',
-                            fontSize: 20.0,
+                            fontSize: displayWidth(context) * 0.12,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFFF17532))),
+                            color: Color(0xFF8C8C8C))),
                   ),
-                  SizedBox(height: 400.0),
+                  SizedBox(height: displayHeight(context) * 0.18),
                   Center(
                     child: Text('No Contact Delivery - ',
                         style: TextStyle(
-                          fontFamily: 'Trajan Pro',
                           fontSize: 20.0,
                           fontWeight: FontWeight.bold,
                           color: Colors.green,
@@ -173,7 +173,6 @@ class CheckoutDetail extends StatelessWidget {
                     child: Text(
                         'Delivery Associate will place the order on your door step and step back to maintain a 2-meter distance. ',
                         style: TextStyle(
-                          fontFamily: 'Trajan Pro',
                           fontSize: 20.0,
                           fontWeight: FontWeight.bold,
                           color: Colors.green,
@@ -221,7 +220,6 @@ class CheckoutDetail extends StatelessWidget {
                                 child: Text(
                               'Place Your Order',
                               style: TextStyle(
-                                fontFamily: 'Trajan Pro',
                                 fontSize: 14.0,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
@@ -245,7 +243,6 @@ class CheckoutDetail extends StatelessWidget {
                 ),
                 title: Text('Checkout',
                     style: TextStyle(
-                        fontFamily: 'Trajan Pro',
                         fontSize: 20.0,
                         color: Color(0xFF545D68))),
                 actions: <Widget>[],

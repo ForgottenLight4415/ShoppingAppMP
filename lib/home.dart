@@ -195,22 +195,6 @@ class _HomePageState extends State<HomePage> {
                     ),
                     decoration: BoxDecoration(color: Colors.red),
                   ),
-                  ListTile(
-                    title: Text('Home'),
-                    leading: Icon(Icons.home),
-                    onTap: () {
-                      if (category == 0) {
-                        Navigator.pop(context);
-                      } else {
-                        setState(() {
-                          category = 0;
-                          _appBarTitle = 'Home';
-                        });
-                        getPosts();
-                        Navigator.pop(context);
-                      }
-                    },
-                  ),
                   FutureBuilder(
                       future: getCategories(),
                       builder: (context, snapshot) {
@@ -219,12 +203,65 @@ class _HomePageState extends State<HomePage> {
                               _buildDrawer(jsonDecode((snapshot.data).body));
                           return Column(
                             children: [
+                              ListTile(
+                                title: Text('Home'),
+                                leading: Icon(Icons.home),
+                                onTap: () {
+                                  if (category == 0) {
+                                    Navigator.pop(context);
+                                  } else {
+                                    setState(() {
+                                      category = 0;
+                                      _appBarTitle = 'Home';
+                                    });
+                                    getPosts();
+                                    Navigator.pop(context);
+                                  }
+                                },
+                              ),
                               ListView.builder(
                                 padding: EdgeInsets.only(top: 0.0),
                                 shrinkWrap: true,
+                                physics: ClampingScrollPhysics(),
                                 itemCount: drawerCategories.length,
                                 itemBuilder: (context, index) {
                                   return drawerCategories[index];
+                                },
+                              ),
+                              ListTile(
+                                title: Text('My orders'),
+                                leading: Icon(Icons.list_alt),
+                                onTap: () {
+                                  Navigator.pop(context);
+                                  Navigator.push(context,
+                                      MaterialPageRoute(builder: (context) => OrderPage()));
+                                },
+                              ),
+                              ListTile(
+                                title: Text("About app"),
+                                leading: Icon(Icons.help_outline_sharp),
+                                onTap: () {
+                                  Navigator.pop(context);
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => AboutApp()),
+                                  );
+                                },
+                              ),
+                              ListTile(
+                                title: Text("Logout"),
+                                leading: Icon(Icons.logout),
+                                onTap: () async {
+                                  SharedPreferences pref =
+                                  await SharedPreferences.getInstance();
+                                  pref?.setBool("isLoggedIn", false);
+                                  pref?.setString("Name", "");
+                                  pref?.setString("Email", "");
+                                  pref?.setString("UserID", "");
+                                  Navigator.pushAndRemoveUntil(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => LoginForm()),
+                                          (route) => false);
                                 },
                               ),
                             ],
@@ -235,42 +272,6 @@ class _HomePageState extends State<HomePage> {
                           );
                         }
                       }),
-                  ListTile(
-                    title: Text('My orders'),
-                    leading: Icon(Icons.list_alt),
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => OrderPage()));
-                    },
-                  ),
-                  ListTile(
-                    title: Text("About app"),
-                    leading: Icon(Icons.help_outline_sharp),
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => AboutApp()),
-                      );
-                    },
-                  ),
-                  ListTile(
-                    title: Text("Logout"),
-                    leading: Icon(Icons.logout),
-                    onTap: () async {
-                      SharedPreferences pref =
-                          await SharedPreferences.getInstance();
-                      pref?.setBool("isLoggedIn", false);
-                      pref?.setString("Name", "");
-                      pref?.setString("Email", "");
-                      pref?.setString("UserID", "");
-                      Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(builder: (context) => LoginForm()),
-                          (route) => false);
-                    },
-                  ),
                 ],
               ),
             ),
