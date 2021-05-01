@@ -221,6 +221,8 @@ class _ProductDetailState extends State<ProductDetail> {
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => CheckoutDetail(
+                        productID: widget.productID,
+                        quantity: quantity,
                         totalPrice:quantity*double.parse(widget.productMSRP),
                         flag:1,
 

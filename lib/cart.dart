@@ -175,8 +175,8 @@ class _ShoppingCartState extends State<ShoppingCart> {
                                         MaterialPageRoute(
                                           builder: (context) => CheckoutDetail(
                                             totalPrice:int.parse(d['Quantity'])*double.parse(d['MSRP']),
-                                            cartID: d['cartID'],
-                                            productID: d['productID'],
+                                            cartID: d['CartID'],
+                                            productID: d['ProductID'],
                                             quantity: int.parse(d['Quantity']),
                                             flag:0,
 

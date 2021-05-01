@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'dart:async';
 import 'helpers.dart';
 import 'package:http/http.dart' as http;
@@ -19,6 +20,44 @@ class _OrderPageState extends State<OrderPage> {
           'Content-Type': 'application/json; charset=UTF-8',
         },
         body: jsonEncode(<String, String>{'UserID': userID}));
+  }
+  
+  Future<http.Response> _cancelOrder(String orderID) {
+    return http.post(Uri.http(serverURL, 'ShoppingAppServer/cancel.php'),
+    headers: <String,String> {
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(<String,String> {
+      'orderID': orderID,
+    }) );
+  }
+
+  Future<void> _cancelAlert(productName, quantity, orderID) {
+    return showDialog(context: context,
+        builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Cancel order'),
+        content: Text("Do you really want to cancel your order for \"$productName\" (Quantity: $quantity)"),
+        actions: <Widget>[
+          TextButton(onPressed: () {
+            Navigator.of(context).pop();
+          }, child: Text('No')),
+          TextButton(onPressed: () async {
+            Navigator.of(context).pop();
+            http.Response response = await _cancelOrder(orderID);
+            print(response.body);
+            if (response.body == "CANCELLED") {
+              Fluttertoast.showToast(
+                  msg: "Order cancelled",
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.CENTER,
+                  fontSize: 12.0);
+              _getOrders();
+            }
+          }, child: Text('Yes'))
+        ],
+      );
+        });
   }
 
   _getOrders() async {
@@ -122,7 +161,14 @@ class _OrderPageState extends State<OrderPage> {
                                     visible:
                                         (d['Status'] == '9') ? false : true,
                                     child: ElevatedButton(
-                                      onPressed: () {},
+                                      onPressed: () async {
+                                        int delStatus = int.parse(d['Status']);
+                                        if (delStatus == 7) {
+                                          //TODO: Code for writing review
+                                        } else if (delStatus == 8 || delStatus < 7) {
+                                          _cancelAlert(d['ProductName'], d['Quantity'], d['OrderNo']);
+                                        }
+                                      },
                                       child: Text((d['Status'] == '7')
                                           ? "Write a review"
                                           : "Cancel order"),
