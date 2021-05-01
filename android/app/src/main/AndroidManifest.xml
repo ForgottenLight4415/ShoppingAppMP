@@ -3,7 +3,7 @@
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
-        android:label="mini_project_ii"
+        android:label="PC Shoppe"
         android:icon="@mipmap/ic_launcher"
         android:usesCleartextTraffic="true">
         <activity

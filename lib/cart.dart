@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:ui';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'helpers.dart';
@@ -171,18 +172,25 @@ class _ShoppingCartState extends State<ShoppingCart> {
                                   padding: const EdgeInsets.all(8.0),
                                   child: ElevatedButton(
                                     onPressed: () async {
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder: (context) => CheckoutDetail(
-                                            totalPrice:int.parse(d['Quantity'])*double.parse(d['MSRP']),
-                                            cartID: d['CartID'],
-                                            productID: d['ProductID'],
-                                            quantity: int.parse(d['Quantity']),
-                                            flag:0,
-
+                                      if (int.parse(d['UnitsInStock']) == 0) {
+                                        Fluttertoast.showToast(
+                                            msg: "Out of stock",
+                                            toastLength: Toast.LENGTH_SHORT,
+                                            gravity: ToastGravity.CENTER,
+                                            fontSize: 12.0);
+                                      } else {
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (context) => CheckoutDetail(
+                                              totalPrice:int.parse(d['Quantity'])*double.parse(d['MSRP']),
+                                              cartID: d['CartID'],
+                                              productID: d['ProductID'],
+                                              quantity: int.parse(d['Quantity']),
+                                              flag:0,
+                                            ),
                                           ),
-                                        ),
-                                      );
+                                        );
+                                      }
                                     },
                                     child: Text("Buy"),
                                     style: ButtonStyle(

@@ -14,7 +14,7 @@ class AboutApp extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             Text(
-              "Shopping App",
+              "PC Shoppe",
               style: TextStyle(fontSize: 30.0),
             ),
             SizedBox(
@@ -28,7 +28,7 @@ class AboutApp extends StatelessWidget {
               height: 50.0,
             ),
             Text(
-              "Version: 2.7 Beta",
+              "Version: 3.0.0 Release 1",
             )
           ],
         ),

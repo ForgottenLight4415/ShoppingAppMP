@@ -64,6 +64,8 @@ class _HomePageState extends State<HomePage> {
             pictureURL: d['image'],
             cartID: d['cartID'],
             addedToCart: d['added'],
+            categoryID: d['categoryID'],
+            stock: d['stock'],
             userID: _uid,
           ),
         );
@@ -128,7 +130,6 @@ class _HomePageState extends State<HomePage> {
             appBar: AppBar(
               title: Text(_appBarTitle),
               actions: <Widget>[
-                IconButton(icon: Icon(Icons.search), onPressed: () {}),
                 IconButton(
                   icon: Icon(Icons.shopping_cart),
                   onPressed: () {
@@ -324,6 +325,8 @@ class ProductCard extends StatefulWidget {
   final String pictureURL;
   final String productID;
   final String userID;
+  final String categoryID;
+  final String stock;
   String cartID;
   String addedToCart = "False";
 
@@ -336,19 +339,34 @@ class ProductCard extends StatefulWidget {
       this.pictureURL,
       this.cartID,
       this.userID,
-      this.addedToCart});
+      this.addedToCart,
+      this.categoryID,
+      this.stock});
 
   @override
   _ProductCardState createState() => _ProductCardState();
 }
 
 class _ProductCardState extends State<ProductCard> {
+  
+  Future<http.Response> getCategoryName() {
+    return http.post(Uri.http(serverURL, 'ShoppingAppServer/get_cat_name.php'),
+    headers: <String,String> {
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(<String,String> {
+      'categoryID': widget.categoryID,
+    }));
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.all(5.0),
       child: InkWell(
-        onTap: () {
+        onTap: () async {
+          http.Response categoryName = await getCategoryName();
+          print(categoryName.body);
           Navigator.of(context).push(
             MaterialPageRoute(
               builder: (context) => ProductDetail(
@@ -359,6 +377,8 @@ class _ProductCardState extends State<ProductCard> {
                 productDescription: widget.productDescription,
                 userID: widget.userID,
                 productID: widget.productID,
+                categoryName: categoryName.body,
+                stock: widget.stock
               ),
             ),
           );
@@ -401,38 +421,46 @@ class _ProductCardState extends State<ProductCard> {
               Container(color: Color(0xFFEBEBEB), height: 0.4),
               TextButton(
                 onPressed: () async {
-                  if (widget.addedToCart != "True") {
-                    http.Response response =
-                        await addToCart(widget.userID, widget.productID, 1);
-                    if (response.body == "MAX") {
-                      Fluttertoast.showToast(
-                          msg: "Maximum limit reached",
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.CENTER,
-                          fontSize: 12.0);
-                    } else if (response.body != "Failed") {
-                      setState(
-                        () {
-                          widget.cartID = response.body;
-                          widget.addedToCart = "True";
-                        },
-                      );
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Something went wrong.')));
-                    }
+                  if (int.parse(widget.stock) == 0) {
+                    Fluttertoast.showToast(
+                        msg: "Out of stock",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.CENTER,
+                        fontSize: 12.0);
                   } else {
-                    http.Response response =
-                        await removeFromCart(widget.cartID);
-                    if (response.body == "Done") {
-                      setState(
-                        () {
-                          widget.addedToCart = "False";
-                        },
-                      );
+                    if (widget.addedToCart != "True") {
+                      http.Response response =
+                      await addToCart(widget.userID, widget.productID, 1);
+                      if (response.body == "MAX") {
+                        Fluttertoast.showToast(
+                            msg: "Maximum limit reached",
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.CENTER,
+                            fontSize: 12.0);
+                      } else if (response.body != "Failed") {
+                        setState(
+                              () {
+                            widget.cartID = response.body;
+                            widget.addedToCart = "True";
+                          },
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Something went wrong.')));
+                      }
                     } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Something went wrong.")));
+                      http.Response response =
+                      await removeFromCart(widget.cartID);
+                      if (response.body == "Done") {
+                        setState(
+                              () {
+                            widget.addedToCart = "False";
+                          },
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("Something went wrong.")));
+                      }
                     }
                   }
                 },
