@@ -63,7 +63,7 @@ somethingWentWrongToast() {
       fontSize: 12.0);
 }
 
-dynamic ratingSystemDelegate(int flag,
+dynamic ratingSystemInterface(int flag,
     {String productID, int rating, String reviewDesc, int reviewID}) async {
   if (flag == 0) {
     http.Response response =
