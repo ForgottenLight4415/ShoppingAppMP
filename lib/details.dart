@@ -86,11 +86,13 @@ dynamic ratingSystemInterface(int flag,
       if (response.body != "Failed") {
         // ReviewID is returned on successful review submission (as String)
         // Success message toast is shown
-        Fluttertoast.showToast(
-            msg: "Review posted",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            fontSize: 12.0);
+        if (response.body != "NO_REVIEWS"){
+          Fluttertoast.showToast(
+              msg: "Review posted",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              fontSize: 12.0);
+        }
         return response.body;
       } else {
         somethingWentWrongToast();
