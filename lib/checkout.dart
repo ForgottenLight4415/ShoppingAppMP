@@ -205,10 +205,12 @@ class CheckoutDetail extends StatelessWidget {
                               } else if (flag == 0) {
                                 http.Response response = await buyOneFromCart(
                                     productID, quantity, cartID);
-                                print(response.body);
+                                _confirmationPageNavigator(
+                                    response.body, context);
                               } else if (flag == 2) {
                                 http.Response response = await checkoutCart();
-                                print(response.body);
+                                _confirmationPageNavigator(
+                                    response.body, context);
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
