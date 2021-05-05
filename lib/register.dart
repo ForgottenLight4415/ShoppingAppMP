@@ -211,7 +211,7 @@ class _RegisterNewState extends State<RegisterNew> {
                         color: Colors.white),
                   ),
                   style: TextButton.styleFrom(
-                      backgroundColor: Colors.red,
+                      backgroundColor: Color(0xFFE6004C),
                       elevation: 3.0,
                       minimumSize: Size(125, 50),
                       shape: RoundedRectangleBorder(

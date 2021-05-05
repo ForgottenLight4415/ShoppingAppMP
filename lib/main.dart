@@ -12,7 +12,7 @@ Future<void> main() async {
     title: "Shopping App",
     home: status == true ? HomePage() : LoginForm(),
     theme: ThemeData(
-      primaryColor: Colors.red,
+      primaryColor: Color(0xFFE6004C),
       accentColor: Colors.orange,
       splashColor: Colors.orange,
       fontFamily: 'Open Sans',

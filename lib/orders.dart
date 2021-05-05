@@ -178,9 +178,8 @@ class _OrderPageState extends State<OrderPage> {
                                           (Set<MaterialState> states) {
                                             if (states.contains(
                                                 MaterialState.pressed))
-                                              return Colors.orange;
-                                            return Colors
-                                                .red; // Use the component's default.
+                                              return Colors.red.shade700;
+                                            return Color(0xFFE6004C); // Use the component's default.
                                           },
                                         ),
                                       ),
@@ -216,8 +215,8 @@ class _OrderPageState extends State<OrderPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: Text('My Orders'),
-        backgroundColor: Colors.red,
       ),
       body: StreamBuilder(
         stream: _stream,
@@ -252,8 +251,8 @@ class _OrderPageState extends State<OrderPage> {
                       backgroundColor: MaterialStateProperty.resolveWith<Color>(
                         (Set<MaterialState> states) {
                           if (states.contains(MaterialState.pressed))
-                            return Colors.orange;
-                          return Colors.red; // Use the component's default.
+                            return Colors.red.shade700;
+                          return Color(0xFFE6004C); // Use the component's default.
                         },
                       ),
                     ),

@@ -121,19 +121,19 @@ class _ShoppingCartState extends State<ShoppingCart> {
                               softWrap: false,
                               style: TextStyle(
                                 color: Colors.red.shade900,
-                                fontSize: 18.0,
+                                fontSize: 20.0,
                               ),
                             ),
                             SizedBox(
                               height: 10.0,
                             ),
                             Text(
-                              "\u{20B9} " + d['MSRP'],
-                              style: TextStyle(fontSize: 18.0),
+                              "\u{20B9} " + double.parse(d['MSRP']).toString(),
+                              style: TextStyle(fontSize: 18.0, color: Color(0xFF595959)),
                             ),
                             Text(
                               "Quantity: " + d['Quantity'],
-                              style: TextStyle(fontSize: 18.0),
+                              style: TextStyle(fontSize: 16.0, color: Color(0xFF595959)),
                             ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.end,
@@ -161,8 +161,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
                                           if (states
                                               .contains(MaterialState.pressed))
                                             return Colors.orange;
-                                          return Colors
-                                              .red; // Use the component's default.
+                                          return Color(0xFFE6004C); // Use the component's default.
                                         },
                                       ),
                                     ),
@@ -199,9 +198,8 @@ class _ShoppingCartState extends State<ShoppingCart> {
                                         (Set<MaterialState> states) {
                                           if (states
                                               .contains(MaterialState.pressed))
-                                            return Colors.orange;
-                                          return Colors
-                                              .red; // Use the component's default.
+                                            return Colors.red;
+                                          return Color(0xFFE6004C); // Use the component's default.
                                         },
                                       ),
                                     ),
@@ -258,8 +256,8 @@ class _ShoppingCartState extends State<ShoppingCart> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: Text("My Cart"),
-        backgroundColor: Colors.red,
       ),
       body: StreamBuilder(
         stream: _stream,
@@ -293,63 +291,74 @@ class _ShoppingCartState extends State<ShoppingCart> {
                     },
                   ),
                 ),
-                BottomAppBar(
-                  color: Colors.red,
-                  child: Padding(
-                    padding: const EdgeInsets.all(15.0),
-                    child: Container(
-                      width: displayWidth(context),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                'Total items: ' +
-                                    _getCartSize(snapshot.data).toString(),
-                                style: TextStyle(
-                                    fontSize: displayWidth(context) * 0.035,
-                                    color: Colors.white),
-                              ),
-                              Text(
-                                'Cart total: \u20B9' +
-                                    _getCartValue(snapshot.data).toString(),
-                                softWrap: false,
-                                overflow: TextOverflow.fade,
-                                style: TextStyle(
-                                    fontSize: displayWidth(context) * 0.045,
-                                    fontWeight: FontWeight.w700,
-                                    color: Colors.white),
-                              ),
-                            ],
-                          ),
-                          FloatingActionButton.extended(
-                            onPressed: () async {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => CheckoutDetail(
-                                    totalPrice:_getCartValue(snapshot.data),
-                                    flag:2,
-
-                                  ),
+                Container(
+                  decoration: BoxDecoration(
+                    boxShadow: <BoxShadow>[
+                      BoxShadow(
+                        color: Colors.black54,
+                        blurRadius: 10,
+                      )
+                    ]
+                  ),
+                  child: BottomAppBar(
+                    color: Color(0xFFFFFFFF),
+                    child: Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: Container(
+                        width: displayWidth(context),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text(
+                                  'Total items: ' +
+                                      _getCartSize(snapshot.data).toString(),
+                                  style: TextStyle(
+                                      fontSize: displayWidth(context) * 0.035,
+                                      color: Color(0xFF595959)),
                                 ),
-                              );
-                            },
-                            icon: Icon(
-                              Icons.check,
-                              color: Colors.grey,
+                                Text(
+                                  'Cart total: \u20B9' +
+                                      _getCartValue(snapshot.data).toString(),
+                                  softWrap: false,
+                                  overflow: TextOverflow.fade,
+                                  style: TextStyle(
+                                      fontSize: displayWidth(context) * 0.045,
+                                      fontWeight: FontWeight.w700,
+                                      color: Color(0xFF595959)),
+                                ),
+                              ],
                             ),
-                            label: Text(
-                              'Checkout',
-                              style: TextStyle(
-                                color: Colors.grey.shade700,
+                            FloatingActionButton.extended(
+                              onPressed: () async {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => CheckoutDetail(
+                                      totalPrice:_getCartValue(snapshot.data),
+                                      flag:2,
+
+                                    ),
+                                  ),
+                                );
+                              },
+                              icon: Icon(
+                                Icons.check,
+                                color: Colors.white,
                               ),
-                            ),
-                            backgroundColor: Colors.white,
-                          )
-                        ],
+                              label: Text(
+                                'Checkout',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              backgroundColor: Color(0xFFE6004C),
+                            )
+                          ],
+                        ),
                       ),
                     ),
                   ),

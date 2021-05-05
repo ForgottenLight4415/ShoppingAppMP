@@ -128,6 +128,7 @@ class _HomePageState extends State<HomePage> {
         if (snapshot.hasData) {
           return Scaffold(
             appBar: AppBar(
+              centerTitle: true,
               title: Text(_appBarTitle),
               actions: <Widget>[
                 IconButton(
@@ -193,7 +194,7 @@ class _HomePageState extends State<HomePage> {
                         )
                       ],
                     ),
-                    decoration: BoxDecoration(color: Colors.red),
+                    decoration: BoxDecoration(color: Color(0xFFE6004C)),
                   ),
                   FutureBuilder(
                       future: getCategories(),
