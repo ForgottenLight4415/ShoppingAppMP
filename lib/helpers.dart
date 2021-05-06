@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-String serverURL = '192.168.0.6:8080';
+String serverURL = '192.168.1.55:8080';
 
 Size displaySize(BuildContext context) {
   return MediaQuery.of(context).size;

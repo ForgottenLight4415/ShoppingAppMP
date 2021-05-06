@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:mini_project_ii/details.dart';
 import 'dart:async';
 import 'helpers.dart';
 import 'package:http/http.dart' as http;
@@ -63,6 +64,7 @@ class _OrderPageState extends State<OrderPage> {
   _getOrders() async {
     String userID = await getUID();
     http.Response response = await _getOrdersFromServer(userID);
+    print(response.body);
     if (response.body == "None") {
       _streamController.add(null);
     } else {
@@ -164,7 +166,20 @@ class _OrderPageState extends State<OrderPage> {
                                       onPressed: () async {
                                         int delStatus = int.parse(d['Status']);
                                         if (delStatus == 7) {
-                                          //TODO: Code for writing review
+                                          String _uid = await getUID();
+                                          Navigator.push(context, MaterialPageRoute(
+                                              builder: (context) => ProductDetail(
+                                                pictureURL: d['PictureURL'],
+                                                productMSRP: d['MSRP'],
+                                                productName: d['ProductName'],
+                                                unitPrice: d['unitPrice'],
+                                                productDescription: d['productDescription'],
+                                                productID: d['ProductID'],
+                                                cartID: d['cartID'],
+                                                userID: _uid,
+                                                stock: d['stock'],
+                                                categoryName: d['categoryName'],
+                                              )));
                                         } else if (delStatus == 8 || delStatus < 7) {
                                           _cancelAlert(d['ProductName'], d['Quantity'], d['OrderNo']);
                                         }
