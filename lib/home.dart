@@ -66,6 +66,7 @@ class _HomePageState extends State<HomePage> {
             addedToCart: d['added'],
             categoryID: d['categoryID'],
             stock: d['stock'],
+            purchasedBefore: d['purchasedBefore'],
             userID: _uid,
           ),
         );
@@ -234,8 +235,10 @@ class _HomePageState extends State<HomePage> {
                                 leading: Icon(Icons.list_alt),
                                 onTap: () {
                                   Navigator.pop(context);
-                                  Navigator.push(context,
-                                      MaterialPageRoute(builder: (context) => OrderPage()));
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => OrderPage()));
                                 },
                               ),
                               ListTile(
@@ -245,7 +248,8 @@ class _HomePageState extends State<HomePage> {
                                   Navigator.pop(context);
                                   Navigator.push(
                                     context,
-                                    MaterialPageRoute(builder: (context) => AboutApp()),
+                                    MaterialPageRoute(
+                                        builder: (context) => AboutApp()),
                                   );
                                 },
                               ),
@@ -254,15 +258,16 @@ class _HomePageState extends State<HomePage> {
                                 leading: Icon(Icons.logout),
                                 onTap: () async {
                                   SharedPreferences pref =
-                                  await SharedPreferences.getInstance();
+                                      await SharedPreferences.getInstance();
                                   pref?.setBool("isLoggedIn", false);
                                   pref?.setString("Name", "");
                                   pref?.setString("Email", "");
                                   pref?.setString("UserID", "");
                                   Navigator.pushAndRemoveUntil(
                                       context,
-                                      MaterialPageRoute(builder: (context) => LoginForm()),
-                                          (route) => false);
+                                      MaterialPageRoute(
+                                          builder: (context) => LoginForm()),
+                                      (route) => false);
                                 },
                               ),
                             ],
@@ -329,6 +334,7 @@ class ProductCard extends StatefulWidget {
   final String userID;
   final String categoryID;
   final String stock;
+  final String purchasedBefore;
   String cartID;
   String addedToCart = "False";
 
@@ -343,24 +349,24 @@ class ProductCard extends StatefulWidget {
       this.userID,
       this.addedToCart,
       this.categoryID,
-      this.stock});
+      this.stock,
+      this.purchasedBefore});
 
   @override
   _ProductCardState createState() => _ProductCardState();
 }
 
 class _ProductCardState extends State<ProductCard> {
-  
   Future<http.Response> getCategoryName() {
     return http.post(Uri.http(serverURL, 'ShoppingAppServer/get_cat_name.php'),
-    headers: <String,String> {
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-    body: jsonEncode(<String,String> {
-      'categoryID': widget.categoryID,
-    }));
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'categoryID': widget.categoryID,
+        }));
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -380,7 +386,8 @@ class _ProductCardState extends State<ProductCard> {
                 userID: widget.userID,
                 productID: widget.productID,
                 categoryName: categoryName.body,
-                stock: widget.stock
+                stock: widget.stock,
+                purchasedBefore: widget.purchasedBefore,
               ),
             ),
           );
@@ -432,7 +439,7 @@ class _ProductCardState extends State<ProductCard> {
                   } else {
                     if (widget.addedToCart != "True") {
                       http.Response response =
-                      await addToCart(widget.userID, widget.productID, 1);
+                          await addToCart(widget.userID, widget.productID, 1);
                       if (response.body == "MAX") {
                         Fluttertoast.showToast(
                             msg: "Maximum limit reached",
@@ -441,7 +448,7 @@ class _ProductCardState extends State<ProductCard> {
                             fontSize: 12.0);
                       } else if (response.body != "Failed") {
                         setState(
-                              () {
+                          () {
                             widget.cartID = response.body;
                             widget.addedToCart = "True";
                           },
@@ -452,10 +459,10 @@ class _ProductCardState extends State<ProductCard> {
                       }
                     } else {
                       http.Response response =
-                      await removeFromCart(widget.cartID);
+                          await removeFromCart(widget.cartID);
                       if (response.body == "Done") {
                         setState(
-                              () {
+                          () {
                             widget.addedToCart = "False";
                           },
                         );
