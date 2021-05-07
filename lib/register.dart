@@ -4,7 +4,7 @@ import 'registration_success.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-Future<http.Response> registerUser(String fName, String lName, String phone,
+Future<http.Response> _registerUser(String fName, String lName, String phone,
     String email, String address, String uName, String passw) {
   return http.post(Uri.http(serverURL, 'ShoppingAppServer/register.php'),
       headers: <String, String>{
@@ -145,8 +145,10 @@ class _RegisterNewState extends State<RegisterNew> {
                           ? _validatePhone = true
                           : _validatePhone = false;
                       _email.text.isEmpty ||
-                              !_email.text.contains(new RegExp(
-                                  r'^[A-Za-z][A-z0-9_.]*[@][a-z0-9\-]+[.][a-z]{2,3}[.]?[a-z]{0,2}'))
+                              !_email.text.contains(
+                                new RegExp(
+                                    r'^[A-Za-z][A-z0-9_.]*[@][a-z0-9\-]+[.][a-z]{2,3}[.]?[a-z]{0,2}'),
+                              )
                           ? _validateEmail = true
                           : _validateEmail = false;
                       _addrs.text.isEmpty
@@ -172,7 +174,7 @@ class _RegisterNewState extends State<RegisterNew> {
                         !_validateCPass) {
                       ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text("Registering you...")));
-                      final registerResponse = await registerUser(
+                      final registerResponse = await _registerUser(
                           _fName.text.trim(),
                           _lName.text.trim(),
                           _phone.text.trim(),
@@ -180,7 +182,6 @@ class _RegisterNewState extends State<RegisterNew> {
                           _addrs.text.trim(),
                           _uName.text.trim(),
                           _uPass.text);
-                      print(registerResponse.body);
                       if (registerResponse.statusCode == 200) {
                         if (registerResponse.body == '1') {
                           Navigator.pushAndRemoveUntil(
@@ -195,10 +196,12 @@ class _RegisterNewState extends State<RegisterNew> {
                             emailErrorText = "Email already exits";
                           });
                         } else if (registerResponse.body == '3') {
-                          setState(() {
-                            _validateUName = true;
-                            uNameErrorText = "Username already taken";
-                          });
+                          setState(
+                            () {
+                              _validateUName = true;
+                              uNameErrorText = "Username already taken";
+                            },
+                          );
                         }
                       }
                     }
@@ -211,23 +214,26 @@ class _RegisterNewState extends State<RegisterNew> {
                         color: Colors.white),
                   ),
                   style: TextButton.styleFrom(
-                      backgroundColor: Color(0xFFE6004C),
-                      elevation: 3.0,
-                      minimumSize: Size(125, 50),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30.0))),
+                    backgroundColor: Color(0xFFE6004C),
+                    elevation: 3.0,
+                    minimumSize: Size(125, 50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                  ),
                 ),
                 SizedBox(
                   height: 10.0,
                 ),
                 TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: Text(
-                      "Cancel",
-                      style: TextStyle(fontSize: 20.0),
-                    ))
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text(
+                    "Cancel",
+                    style: TextStyle(fontSize: 20.0),
+                  ),
+                )
               ],
             ),
           ),

@@ -9,7 +9,7 @@ import 'cart.dart';
 import 'package:http/http.dart' as http;
 import 'package:smooth_star_rating/smooth_star_rating.dart';
 
-Future<http.Response> reviewSystemServerCommunicator(int flag,
+Future<http.Response> _getAllReviews(int flag,
     {String productID,
     double rating,
     String reviewDesc,
@@ -62,14 +62,6 @@ Future<http.Response> reviewSystemServerCommunicator(int flag,
   }
 }
 
-somethingWentWrongToast() {
-  Fluttertoast.showToast(
-      msg: "Something went wrong",
-      toastLength: Toast.LENGTH_SHORT,
-      gravity: ToastGravity.CENTER,
-      fontSize: 12.0);
-}
-
 // ignore: must_be_immutable
 class ProductDetail extends StatefulWidget {
   final pictureURL,
@@ -107,29 +99,31 @@ class _ProductDetailState extends State<ProductDetail> {
   StreamController _streamController;
   Stream _stream;
   final _reviewDescController = TextEditingController();
+
   double productRating = 0;
   int quantity = 1;
-  String rID;
+  String reviewNo;
 
-  dynamic ratingSystemInterface(int flag,
+  dynamic _productRatingStreamUpdater(int flag,
       {String productID,
       double rating,
       String reviewDesc,
       String reviewID}) async {
+    // Flag 0: Get all reviews of particular product (Requires: productID)
+    // Flag 1: Submit a review (Requires: rating, reviewDesc, productID)
+    // Else/Flag 2: Delete a review (Requires: reviewID)
+
     if (flag == 0) {
-      http.Response response =
-          await reviewSystemServerCommunicator(flag, productID: productID);
+      http.Response response = await _getAllReviews(flag, productID: productID);
       if (response.statusCode == 200) {
         if (response.body != "Failed") {
           // Returns all reviews, if available, user's review is returned first
           // on index 0 in HashMap format
           if (response.body == "NO_REVIEWS") {
             _streamController.add(null);
-            // return response.body; // This line returns NO_REVIEWS
           } else {
             _streamController.add(jsonDecode(response.body));
           }
-          // return jsonDecode(response.body);
         } else {
           somethingWentWrongToast();
         }
@@ -137,13 +131,12 @@ class _ProductDetailState extends State<ProductDetail> {
         somethingWentWrongToast();
       }
     } else if (flag == 1) {
-      http.Response response = await reviewSystemServerCommunicator(flag,
+      http.Response response = await _getAllReviews(flag,
           productID: productID, rating: rating, reviewDesc: reviewDesc);
       if (response.statusCode == 200) {
         if (response.body != "Failed") {
           // ReviewID is returned on successful review submission (as String)
           // Success message toast is shown
-
           Fluttertoast.showToast(
               msg: "Review posted",
               toastLength: Toast.LENGTH_SHORT,
@@ -157,8 +150,7 @@ class _ProductDetailState extends State<ProductDetail> {
         somethingWentWrongToast();
       }
     } else {
-      http.Response response =
-          await reviewSystemServerCommunicator(flag, reviewID: reviewID);
+      http.Response response = await _getAllReviews(flag, reviewID: reviewID);
       if (response.statusCode == 200) {
         if (response.body != "Failed") {
           // Success message toast is shown, nothing returned
@@ -181,7 +173,7 @@ class _ProductDetailState extends State<ProductDetail> {
     super.initState();
     _streamController = StreamController();
     _stream = _streamController.stream;
-    ratingSystemInterface(0, productID: widget.productID);
+    _productRatingStreamUpdater(0, productID: widget.productID);
   }
 
   @override
@@ -205,368 +197,361 @@ class _ProductDetailState extends State<ProductDetail> {
         child: StreamBuilder(
           stream: _stream,
           builder: (context, snapshot) {
-            if (snapshot.data == null) {
-              print(widget.purchasedBefore == "True");
-              return ListView(
+            List<Widget> mainList = [
+              SizedBox(height: 15.0),
+              Center(
+                child: Text(
+                  widget.productName,
+                  style: TextStyle(
+                    fontSize: 20.0,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFFF17532),
+                  ),
+                ),
+              ),
+              SizedBox(height: 15.0),
+              Hero(
+                tag: widget.pictureURL,
+                child: Container(
+                  height: displayHeight(context) * 0.30,
+                  width: displayWidth(context),
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                        image: setImage(widget.pictureURL),
+                        fit: BoxFit.contain),
+                  ),
+                ),
+              ),
+              SizedBox(height: 20.0),
+              Center(
+                child: Text(
+                  'M.R.P' + " " + '\u20B9' + widget.unitPrice,
+                  style: TextStyle(
+                    fontSize: 21.0,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFFF17532),
+                    decoration: TextDecoration.lineThrough,
+                  ),
+                ),
+              ),
+              SizedBox(height: 20.0),
+              Center(
+                child: Text(
+                  'Deal of the Day:' + " " + '\u20B9' + widget.productMSRP,
+                  style: TextStyle(
+                    fontSize: 22.0,
+                    color: Colors.green,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              Visibility(
+                visible: (int.parse(widget.stock) == 0),
+                child: Center(
+                  child: Text(
+                    'Out of stock',
+                    style: TextStyle(
+                      fontSize: displayWidth(context) * 0.1,
+                      color: Colors.red,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+              Visibility(
+                visible: (int.parse(widget.stock) != 0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                Column(
-                  children: [
-                    SizedBox(height: 15.0),
-                    Center(
-                      child: Text(
-                        widget.productName,
-                        style: TextStyle(
-                          fontSize: 20.0,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFFF17532),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 15.0),
-                    Hero(
-                      tag: widget.pictureURL,
-                      child: Container(
-                        height: displayHeight(context) * 0.30,
-                        width: displayWidth(context),
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                              image: setImage(widget.pictureURL),
-                              fit: BoxFit.contain),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 20.0),
-                    Center(
-                      child: Text(
-                        'M.R.P' + " " + '\u20B9' + widget.unitPrice,
-                        style: TextStyle(
-                          fontSize: 21.0,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFFF17532),
-                          decoration: TextDecoration.lineThrough,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 20.0),
-                    Center(
-                      child: Text(
-                        'Deal of the Day:' +
-                            " " +
-                            '\u20B9' +
-                            widget.productMSRP,
-                        style: TextStyle(
-                          fontSize: 22.0,
-                          color: Colors.green,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    Visibility(
-                      visible: (int.parse(widget.stock) == 0),
-                      child: Center(
-                        child: Text(
-                          'Out of stock',
-                          style: TextStyle(
-                            fontSize: displayWidth(context) * 0.1,
-                            color: Colors.red,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Visibility(
-                      visible: (int.parse(widget.stock) != 0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Container(
-                                height: 45,
-                                width: 45,
-                                decoration: BoxDecoration(
-                                    color: Color.fromRGBO(228, 228, 228, 1),
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: InkWell(
-                                  onTap: () {
-                                    setState(
-                                      () {
-                                        if (quantity > 1) {
-                                          quantity--;
-                                        }
-                                      },
-                                    );
-                                  },
-                                  child: Center(
-                                    child: Text(
-                                      "-",
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                height: 49,
-                                width: 100,
-                                child: Center(
-                                  child: Text(
-                                    quantity.toString(),
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                height: 45,
-                                width: 45,
-                                decoration: BoxDecoration(
-                                    color: Color.fromRGBO(243, 175, 45, 1),
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: InkWell(
-                                  onTap: () {
-                                    setState(
-                                      () {
-                                        if (quantity <= 4) {
-                                          quantity++;
-                                        }
-                                      },
-                                    );
-                                  },
-                                  child: Center(
-                                    child: Text(
-                                      "+",
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 20.0),
-                          Center(
-                            child: Container(
-                              width: displayWidth(context) * 0.87,
-                              height: 50.0,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(25.0),
-                                color: Color(0xFFF17532),
-                              ),
-                              child: InkWell(
-                                onTap: () async {
-                                  http.Response response = await addToCart(
-                                      widget.userID,
-                                      widget.productID,
-                                      quantity);
-                                  if (response.body == "MAX") {
-                                    Fluttertoast.showToast(
-                                        msg: "Maximum limit reached",
-                                        toastLength: Toast.LENGTH_SHORT,
-                                        gravity: ToastGravity.CENTER,
-                                        fontSize: 12.0);
-                                  } else if (response.body != "Failed") {
-                                    setState(
-                                      () {
-                                        widget.addedToCart = "True";
-                                      },
-                                    );
-                                    Fluttertoast.showToast(
-                                        msg: "Added $quantity items to cart",
-                                        toastLength: Toast.LENGTH_SHORT,
-                                        gravity: ToastGravity.CENTER,
-                                        fontSize: 12.0);
-                                  } else {
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(
-                                      SnackBar(
-                                        content:
-                                            Text('Something went wrong.'),
-                                      ),
-                                    );
-                                  }
-                                },
-                                child: Center(
-                                  child: Text(
-                                    'Add to cart',
-                                    style: TextStyle(
-                                      fontSize: 14.0,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 21.0),
-                          Center(
-                            child: Container(
-                              width: MediaQuery.of(context).size.width - 50.0,
-                              height: 50.0,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(25.0),
-                                  color: Color(0xFFF17532)),
-                              child: InkWell(
-                                onTap: () async {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) => CheckoutDetail(
-                                        productID: widget.productID,
-                                        quantity: quantity,
-                                        totalPrice: quantity *
-                                            double.parse(widget.productMSRP),
-                                        flag: 1,
-                                      ),
-                                    ),
-                                  );
-                                },
-                                child: Center(
-                                  child: Text(
-                                    'Buy Now',
-                                    style: TextStyle(
-                                      fontSize: 14.0,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 20.0),
-                        ],
-                      ),
-                    ),
-                    Center(
-                      child: Container(
-                        width: MediaQuery.of(context).size.width - 50.0,
-                        child: Text(
-                            (widget.productDescription == null)
-                                ? "No product description"
-                                : widget.productDescription,
-                            textAlign: TextAlign.justify,
-                            style: TextStyle(
-                                fontSize: 20.0, color: Colors.grey.shade700)),
-                      ),
-                    ),
-                    Visibility(
-                      visible: widget.purchasedBefore == "True",
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          SmoothStarRating(
-                            starCount: 5,
-                            isReadOnly: false,
-                            spacing: 3,
-                            rating: productRating,
-                            size: 30,
-                            color: Colors.orange,
-                            borderColor: Colors.orange,
-                            allowHalfRating: false,
-                            onRated: (value) {
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Container(
+                          height: 45,
+                          width: 45,
+                          decoration: BoxDecoration(
+                              color: Color.fromRGBO(228, 228, 228, 1),
+                              borderRadius: BorderRadius.circular(10)),
+                          child: InkWell(
+                            onTap: () {
                               setState(
-                                () {
-                                  productRating = value;
+                                    () {
+                                  if (quantity > 1) {
+                                    quantity--;
+                                  }
                                 },
                               );
                             },
-                          ),
-                          SizedBox(height: 10.0),
-                          Center(
-                            child: Column(
-                              children: [
-                                TextField(
-                                  controller: _reviewDescController,
-                                  decoration: InputDecoration(
-                                    hintText: "Write a review...",
-                                    labelText: "Review",
-                                    labelStyle: TextStyle(
-                                      fontSize: 30,
-                                    ),
-                                    border: OutlineInputBorder(),
-                                  ),
-                                  maxLength: 500,
-                                  maxLines: 5,
+                            child: Center(
+                              child: Text(
+                                "-",
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
                                 ),
-                                ElevatedButton(
-                                  onPressed: () async {
-                                    String reviewID =
-                                        await ratingSystemInterface(
-                                      1,
-                                      productID: widget.productID,
-                                      rating: productRating,
-                                      reviewDesc: _reviewDescController.text,
-                                    );
-                                    print(reviewID);
-                                    ratingSystemInterface(0,
-                                        productID: widget.productID);
-                                    rID = reviewID;
-                                  },
-                                  child: Text(
-                                    "Submit",
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                        Container(
+                          height: 49,
+                          width: 100,
+                          child: Center(
+                            child: Text(
+                              quantity.toString(),
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          height: 45,
+                          width: 45,
+                          decoration: BoxDecoration(
+                              color: Color.fromRGBO(243, 175, 45, 1),
+                              borderRadius: BorderRadius.circular(10)),
+                          child: InkWell(
+                            onTap: () {
+                              setState(
+                                    () {
+                                  if (quantity <= 4) {
+                                    quantity++;
+                                  }
+                                },
+                              );
+                            },
+                            child: Center(
+                              child: Text(
+                                "+",
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Text("Reviews",
-                          style: TextStyle(
-                              color: Colors.orange,
-                              fontSize: 26.0,
-                              fontWeight: FontWeight.bold
+                    SizedBox(height: 20.0),
+                    Center(
+                      child: Container(
+                        width: displayWidth(context) * 0.87,
+                        height: 50.0,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(25.0),
+                          color: Color(0xFFF17532),
+                        ),
+                        child: InkWell(
+                          onTap: () async {
+                            http.Response response = await addToCart(
+                                widget.userID, widget.productID, quantity);
+                            if (response.body == "MAX") {
+                              Fluttertoast.showToast(
+                                  msg: "Maximum limit reached",
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.CENTER,
+                                  fontSize: 12.0);
+                            } else if (response.body != "Failed") {
+                              setState(
+                                    () {
+                                  widget.addedToCart = "True";
+                                },
+                              );
+                              Fluttertoast.showToast(
+                                  msg: "Added $quantity items to cart",
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.CENTER,
+                                  fontSize: 12.0);
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Something went wrong.'),
+                                ),
+                              );
+                            }
+                          },
+                          child: Center(
+                            child: Text(
+                              'Add to cart',
+                              style: TextStyle(
+                                fontSize: 14.0,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
                           ),
                         ),
                       ),
                     ),
+                    SizedBox(height: 21.0),
                     Center(
-                      child: Column(
-                        children: [
-                          SizedBox(
-                            height: displayHeight(context) * 0.1,
-                          ),
-                          Text(
-                            "No Reviews yet.",
-                            style: TextStyle(
-                              fontSize: 18.0,
+                      child: Container(
+                        width: MediaQuery.of(context).size.width - 50.0,
+                        height: 50.0,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(25.0),
+                            color: Color(0xFFF17532)),
+                        child: InkWell(
+                          onTap: () async {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => CheckoutDetail(
+                                  productID: widget.productID,
+                                  quantity: quantity,
+                                  totalPrice: quantity *
+                                      double.parse(widget.productMSRP),
+                                  flag: 1,
+                                ),
+                              ),
+                            );
+                          },
+                          child: Center(
+                            child: Text(
+                              'Buy Now',
+                              style: TextStyle(
+                                fontSize: 14.0,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
-                          SizedBox(
-                            height: displayHeight(context) * 0.1,
-                          ),
-                        ],
+                        ),
                       ),
                     ),
+                    SizedBox(height: 20.0),
                   ],
                 ),
+              ),
+              Center(
+                child: Container(
+                  width: MediaQuery.of(context).size.width - 50.0,
+                  child: Text(
+                      (widget.productDescription == null)
+                          ? "No product description"
+                          : widget.productDescription,
+                      textAlign: TextAlign.justify,
+                      style: TextStyle(
+                          fontSize: 18.0, color: Colors.grey.shade700)),
+                ),
+              ),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Text(
+                    "Reviews",
+                    style: TextStyle(
+                        color: Colors.orange,
+                        fontSize: 26.0,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
+              )
+            ];
+            if (snapshot.data == null) {
+              mainList.addAll([
+                Visibility(
+                  visible: widget.purchasedBefore == "True",
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SmoothStarRating(
+                        starCount: 5,
+                        isReadOnly: false,
+                        spacing: 3,
+                        rating: productRating,
+                        size: 30,
+                        color: Colors.orange,
+                        borderColor: Colors.orange,
+                        allowHalfRating: false,
+                        onRated: (value) {
+                          setState(
+                                () {
+                              productRating = value;
+                            },
+                          );
+                        },
+                      ),
+                      SizedBox(height: 10.0),
+                      Center(
+                        child: Column(
+                          children: [
+                            TextField(
+                              controller: _reviewDescController,
+                              decoration: InputDecoration(
+                                hintText: "Write a review...",
+                                labelText: "Review",
+                                labelStyle: TextStyle(
+                                  fontSize: 30,
+                                ),
+                                border: OutlineInputBorder(),
+                              ),
+                              maxLength: 500,
+                              maxLines: 5,
+                            ),
+                            ElevatedButton(
+                              onPressed: () async {
+                                String reviewID =
+                                await _productRatingStreamUpdater(
+                                  1,
+                                  productID: widget.productID,
+                                  rating: productRating,
+                                  reviewDesc: _reviewDescController.text,
+                                );
+                                _productRatingStreamUpdater(0,
+                                    productID: widget.productID);
+                                reviewNo = reviewID;
+                              },
+                              child: Text(
+                                "Submit",
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Center(
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: displayHeight(context) * 0.1,
+                      ),
+                      Text(
+                        "No Reviews yet.",
+                        style: TextStyle(
+                          fontSize: 18.0,
+                        ),
+                      ),
+                      SizedBox(
+                        height: displayHeight(context) * 0.1,
+                      ),
+                    ],
+                  ),
+                ),
               ]);
+              return ListView(
+                children: [
+                  Column(
+                    children: mainList,
+                  ),
+                ],
+              );
             } else {
               List<Widget> reviews = [];
               (snapshot.data).forEach(
                 (d) {
                   if (d['Self'] == 'True') {
-                    rID = d['ReviewID'];
+                    reviewNo = d['ReviewID'];
                   }
-                  print(d['Self'] == "False" &&
-                      reviews.length == 0 &&
-                      widget.purchasedBefore == "True");
                   reviews.add(
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
+                      padding:
+                          const EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
                       child: Column(
                         children: [
                           Visibility(
@@ -610,18 +595,17 @@ class _ProductDetailState extends State<ProductDetail> {
                                     ),
                                     ElevatedButton(
                                       onPressed: () async {
-                                        print(_reviewDescController.text);
                                         String reviewID =
-                                            await ratingSystemInterface(
+                                            await _productRatingStreamUpdater(
                                           1,
                                           productID: widget.productID,
                                           rating: productRating,
                                           reviewDesc:
                                               _reviewDescController.text,
                                         );
-                                        ratingSystemInterface(0,
+                                        _productRatingStreamUpdater(0,
                                             productID: widget.productID);
-                                        rID = reviewID;
+                                        reviewNo = reviewID;
                                       },
                                       child: Text(
                                         "Submit",
@@ -685,11 +669,11 @@ class _ProductDetailState extends State<ProductDetail> {
                                               0.0, 0, 25.0, 8.0),
                                           child: ElevatedButton(
                                             onPressed: () async {
-                                              await ratingSystemInterface(
+                                              await _productRatingStreamUpdater(
                                                 2,
-                                                reviewID: rID,
+                                                reviewID: reviewNo,
                                               );
-                                              ratingSystemInterface(0,
+                                              _productRatingStreamUpdater(0,
                                                   productID: widget.productID);
                                             },
                                             child: Text("Delete"),
@@ -708,257 +692,6 @@ class _ProductDetailState extends State<ProductDetail> {
                   );
                 },
               );
-              List<Widget> mainList = [
-                SizedBox(height: 15.0),
-                Center(
-                  child: Text(
-                    widget.productName,
-                    style: TextStyle(
-                      fontSize: 20.0,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFFF17532),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 15.0),
-                Hero(
-                  tag: widget.pictureURL,
-                  child: Container(
-                    height: displayHeight(context) * 0.30,
-                    width: displayWidth(context),
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                          image: setImage(widget.pictureURL),
-                          fit: BoxFit.contain),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 20.0),
-                Center(
-                  child: Text(
-                    'M.R.P' + " " + '\u20B9' + widget.unitPrice,
-                    style: TextStyle(
-                      fontSize: 21.0,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFFF17532),
-                      decoration: TextDecoration.lineThrough,
-                    ),
-                  ),
-                ),
-                SizedBox(height: 20.0),
-                Center(
-                  child: Text(
-                    'Deal of the Day:' + " " + '\u20B9' + widget.productMSRP,
-                    style: TextStyle(
-                      fontSize: 22.0,
-                      color: Colors.green,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                Visibility(
-                  visible: (int.parse(widget.stock) == 0),
-                  child: Center(
-                    child: Text(
-                      'Out of stock',
-                      style: TextStyle(
-                        fontSize: displayWidth(context) * 0.1,
-                        color: Colors.red,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-                Visibility(
-                  visible: (int.parse(widget.stock) != 0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Container(
-                            height: 45,
-                            width: 45,
-                            decoration: BoxDecoration(
-                                color: Color.fromRGBO(228, 228, 228, 1),
-                                borderRadius: BorderRadius.circular(10)),
-                            child: InkWell(
-                              onTap: () {
-                                setState(
-                                  () {
-                                    if (quantity > 1) {
-                                      quantity--;
-                                    }
-                                  },
-                                );
-                              },
-                              child: Center(
-                                child: Text(
-                                  "-",
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Container(
-                            height: 49,
-                            width: 100,
-                            child: Center(
-                              child: Text(
-                                quantity.toString(),
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Container(
-                            height: 45,
-                            width: 45,
-                            decoration: BoxDecoration(
-                                color: Color.fromRGBO(243, 175, 45, 1),
-                                borderRadius: BorderRadius.circular(10)),
-                            child: InkWell(
-                              onTap: () {
-                                setState(
-                                  () {
-                                    if (quantity <= 4) {
-                                      quantity++;
-                                    }
-                                  },
-                                );
-                              },
-                              child: Center(
-                                child: Text(
-                                  "+",
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 20.0),
-                      Center(
-                        child: Container(
-                          width: displayWidth(context) * 0.87,
-                          height: 50.0,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(25.0),
-                            color: Color(0xFFF17532),
-                          ),
-                          child: InkWell(
-                            onTap: () async {
-                              http.Response response = await addToCart(
-                                  widget.userID, widget.productID, quantity);
-                              if (response.body == "MAX") {
-                                Fluttertoast.showToast(
-                                    msg: "Maximum limit reached",
-                                    toastLength: Toast.LENGTH_SHORT,
-                                    gravity: ToastGravity.CENTER,
-                                    fontSize: 12.0);
-                              } else if (response.body != "Failed") {
-                                setState(
-                                  () {
-                                    widget.addedToCart = "True";
-                                  },
-                                );
-                                Fluttertoast.showToast(
-                                    msg: "Added $quantity items to cart",
-                                    toastLength: Toast.LENGTH_SHORT,
-                                    gravity: ToastGravity.CENTER,
-                                    fontSize: 12.0);
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text('Something went wrong.'),
-                                  ),
-                                );
-                              }
-                            },
-                            child: Center(
-                              child: Text(
-                                'Add to cart',
-                                style: TextStyle(
-                                  fontSize: 14.0,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 21.0),
-                      Center(
-                        child: Container(
-                          width: MediaQuery.of(context).size.width - 50.0,
-                          height: 50.0,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(25.0),
-                              color: Color(0xFFF17532)),
-                          child: InkWell(
-                            onTap: () async {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => CheckoutDetail(
-                                    productID: widget.productID,
-                                    quantity: quantity,
-                                    totalPrice: quantity *
-                                        double.parse(widget.productMSRP),
-                                    flag: 1,
-                                  ),
-                                ),
-                              );
-                            },
-                            child: Center(
-                              child: Text(
-                                'Buy Now',
-                                style: TextStyle(
-                                  fontSize: 14.0,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 20.0),
-                    ],
-                  ),
-                ),
-                Center(
-                  child: Container(
-                    width: MediaQuery.of(context).size.width - 50.0,
-                    child: Text(
-                        (widget.productDescription == null)
-                            ? "No product description"
-                            : widget.productDescription,
-                        textAlign: TextAlign.justify,
-                        style: TextStyle(
-                            fontSize: 20.0, color: Colors.grey.shade700)),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Text("Reviews",
-                    style: TextStyle(
-                        color: Colors.orange,
-                        fontSize: 26.0,
-                      fontWeight: FontWeight.bold
-                    ),
-                  ),
-                )
-              ];
               mainList.addAll(reviews);
               return ListView(
                 children: mainList,

@@ -15,56 +15,70 @@ class _OrderPageState extends State<OrderPage> {
   StreamController _streamController;
   Stream _stream;
 
-  Future<http.Response> _getOrdersFromServer(String userID) {
-    return http.post(Uri.http(serverURL, 'ShoppingAppServer/get_orders.php'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(<String, String>{'UserID': userID}));
+  Future<http.Response> _getUserOrders(String userID) {
+    return http.post(
+      Uri.http(serverURL, 'ShoppingAppServer/get_orders.php'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(
+        <String, String>{'UserID': userID},
+      ),
+    );
   }
-  
+
   Future<http.Response> _cancelOrder(String orderID) {
-    return http.post(Uri.http(serverURL, 'ShoppingAppServer/cancel.php'),
-    headers: <String,String> {
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-    body: jsonEncode(<String,String> {
-      'orderID': orderID,
-    }) );
+    return http.post(
+      Uri.http(serverURL, 'ShoppingAppServer/cancel.php'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(
+        <String, String>{
+          'orderID': orderID,
+        },
+      ),
+    );
   }
 
-  Future<void> _cancelAlert(productName, quantity, orderID) {
-    return showDialog(context: context,
-        builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text('Cancel order'),
-        content: Text("Do you really want to cancel your order for \"$productName\" (Quantity: $quantity)"),
-        actions: <Widget>[
-          TextButton(onPressed: () {
-            Navigator.of(context).pop();
-          }, child: Text('No')),
-          TextButton(onPressed: () async {
-            Navigator.of(context).pop();
-            http.Response response = await _cancelOrder(orderID);
-            print(response.body);
-            if (response.body == "CANCELLED") {
-              Fluttertoast.showToast(
-                  msg: "Order cancelled",
-                  toastLength: Toast.LENGTH_SHORT,
-                  gravity: ToastGravity.CENTER,
-                  fontSize: 12.0);
-              _getOrders();
-            }
-          }, child: Text('Yes'))
-        ],
-      );
-        });
+  Future<void> _cancelAlert(
+      String productName, String quantity, String orderID) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Cancel order'),
+          content: Text(
+              "Do you really want to cancel your order for \"$productName\" (Quantity: $quantity)"),
+          actions: <Widget>[
+            TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('No')),
+            TextButton(
+                onPressed: () async {
+                  Navigator.of(context).pop();
+                  http.Response response = await _cancelOrder(orderID);
+                  if (response.body == "CANCELLED") {
+                    Fluttertoast.showToast(
+                        msg: "Order cancelled",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.CENTER,
+                        fontSize: 12.0);
+                    _orderPageStreamUpdater();
+                  }
+                },
+                child: Text('Yes'))
+          ],
+        );
+      },
+    );
   }
 
-  _getOrders() async {
+  void _orderPageStreamUpdater() async {
     String userID = await getUID();
-    http.Response response = await _getOrdersFromServer(userID);
-    print(response.body);
+    http.Response response = await _getUserOrders(userID);
     if (response.body == "None") {
       _streamController.add(null);
     } else {
@@ -72,19 +86,19 @@ class _OrderPageState extends State<OrderPage> {
     }
   }
 
-  _fontColorProvider(statusCode) {
+  Color _dstFontColorProvider(int statusCode) {
     if (statusCode < 6) {
       return Color(0xFFFF6600);
     } else if (statusCode == 6 || statusCode == 7) {
       return Color(0xFF00CC00);
     } else if (statusCode == 8) {
       return Color(0xFF8C8C8C);
-    } else if (statusCode == 9) {
+    } else {
       return Color(0xFFFF1A1A);
     }
   }
 
-  _buildOrderCards(data) {
+  List<Widget> _buildOrderCards(List data) {
     List<Widget> orders = [];
     data.forEach(
       (d) {
@@ -151,7 +165,7 @@ class _OrderPageState extends State<OrderPage> {
                               d['StatusDesc'],
                               style: TextStyle(
                                   fontSize: 15.0,
-                                  color: _fontColorProvider(
+                                  color: _dstFontColorProvider(
                                       int.parse(d['Status']))),
                             ),
                             Row(
@@ -167,21 +181,34 @@ class _OrderPageState extends State<OrderPage> {
                                         int delStatus = int.parse(d['Status']);
                                         if (delStatus == 7) {
                                           String _uid = await getUID();
-                                          Navigator.push(context, MaterialPageRoute(
-                                              builder: (context) => ProductDetail(
-                                                pictureURL: d['PictureURL'],
-                                                productMSRP: d['MSRP'],
-                                                productName: d['ProductName'],
-                                                unitPrice: d['unitPrice'],
-                                                productDescription: d['productDescription'],
-                                                productID: d['ProductID'],
-                                                cartID: d['cartID'],
-                                                userID: _uid,
-                                                stock: d['stock'],
-                                                categoryName: d['categoryName'],
-                                              )));
-                                        } else if (delStatus == 8 || delStatus < 7) {
-                                          _cancelAlert(d['ProductName'], d['Quantity'], d['OrderNo']);
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      ProductDetail(
+                                                        pictureURL:
+                                                            d['PictureURL'],
+                                                        productMSRP: d['MSRP'],
+                                                        productName:
+                                                            d['ProductName'],
+                                                        unitPrice:
+                                                            d['unitPrice'],
+                                                        productDescription: d[
+                                                            'productDescription'],
+                                                        productID:
+                                                            d['ProductID'],
+                                                        cartID: d['cartID'],
+                                                        userID: _uid,
+                                                        stock: d['stock'],
+                                                        purchasedBefore: d[
+                                                            'purchasedBefore'],
+                                                        categoryName:
+                                                            d['categoryName'],
+                                                      )));
+                                        } else if (delStatus == 8 ||
+                                            delStatus < 7) {
+                                          _cancelAlert(d['ProductName'],
+                                              d['Quantity'], d['OrderNo']);
                                         }
                                       },
                                       child: Text((d['Status'] == '7')
@@ -194,7 +221,8 @@ class _OrderPageState extends State<OrderPage> {
                                             if (states.contains(
                                                 MaterialState.pressed))
                                               return Colors.red.shade700;
-                                            return Color(0xFFE6004C); // Use the component's default.
+                                            return Color(
+                                                0xFFE6004C); // Use the component's default.
                                           },
                                         ),
                                       ),
@@ -223,7 +251,7 @@ class _OrderPageState extends State<OrderPage> {
     super.initState();
     _streamController = new StreamController();
     _stream = _streamController.stream;
-    _getOrders();
+    _orderPageStreamUpdater();
   }
 
   @override
@@ -267,7 +295,8 @@ class _OrderPageState extends State<OrderPage> {
                         (Set<MaterialState> states) {
                           if (states.contains(MaterialState.pressed))
                             return Colors.red.shade700;
-                          return Color(0xFFE6004C); // Use the component's default.
+                          return Color(
+                              0xFFE6004C); // Use the component's default.
                         },
                       ),
                     ),
@@ -279,7 +308,7 @@ class _OrderPageState extends State<OrderPage> {
             List<Widget> posts = _buildOrderCards(snapshot.data);
             return RefreshIndicator(
               onRefresh: () async {
-                _getOrders();
+                _orderPageStreamUpdater();
               },
               child: ListView.builder(
                 itemCount: posts.length,

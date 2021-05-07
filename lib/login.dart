@@ -62,7 +62,6 @@ void login(username, password, context) async {
               "Something went wrong.")));
     }
   } catch (e) {
-    print(e);
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(
         content: Text(

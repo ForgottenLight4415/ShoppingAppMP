@@ -13,8 +13,8 @@ Future<void> main() async {
     home: status == true ? HomePage() : LoginForm(),
     theme: ThemeData(
       primaryColor: Color(0xFFE6004C),
-      accentColor: Colors.orange,
-      splashColor: Colors.orange,
+      accentColor: Colors.red,
+      splashColor: Colors.red,
       fontFamily: 'Open Sans',
     ),
   ));

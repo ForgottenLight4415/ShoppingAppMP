@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'helpers.dart';
 import 'checkout.dart';
 
-
 Future<http.Response> addToCart(
     String userID, String productID, int quantity) async {
   return http.post(
@@ -48,7 +47,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
   StreamController _streamController;
   Stream _stream;
 
-  Future<http.Response> getCartFromServer(String userID) {
+  Future<http.Response> _getUserCart(String userID) {
     return http.post(
       Uri.http(serverURL, 'ShoppingAppServer/get_cart.php'),
       headers: <String, String>{
@@ -62,9 +61,9 @@ class _ShoppingCartState extends State<ShoppingCart> {
     );
   }
 
-  _getCart() async {
+  _cartPageStreamUpdater() async {
     String userID = await getUID();
-    http.Response response = await getCartFromServer(userID);
+    http.Response response = await _getUserCart(userID);
     if (response.body == "None") {
       _streamController.add(null);
     } else {
@@ -72,7 +71,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
     }
   }
 
-  _buildCart(data) {
+  _cartPageBuilder(data) {
     List<Widget> cart = [];
     data.forEach(
       (d) {
@@ -129,11 +128,17 @@ class _ShoppingCartState extends State<ShoppingCart> {
                             ),
                             Text(
                               "\u{20B9} " + double.parse(d['MSRP']).toString(),
-                              style: TextStyle(fontSize: 18.0, color: Color(0xFF595959)),
+                              style: TextStyle(
+                                fontSize: 18.0,
+                                color: Color(0xFF595959),
+                              ),
                             ),
                             Text(
                               "Quantity: " + d['Quantity'],
-                              style: TextStyle(fontSize: 16.0, color: Color(0xFF595959)),
+                              style: TextStyle(
+                                fontSize: 16.0,
+                                color: Color(0xFF595959),
+                              ),
                             ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.end,
@@ -145,12 +150,9 @@ class _ShoppingCartState extends State<ShoppingCart> {
                                       http.Response response =
                                           await removeFromCart(d['CartID']);
                                       if (response.body == "Done") {
-                                        _getCart();
+                                        _cartPageStreamUpdater();
                                       } else {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(SnackBar(
-                                                content: Text(
-                                                    "Something went wrong.")));
+                                        somethingWentWrongToast();
                                       }
                                     },
                                     child: Text("Remove"),
@@ -161,7 +163,8 @@ class _ShoppingCartState extends State<ShoppingCart> {
                                           if (states
                                               .contains(MaterialState.pressed))
                                             return Colors.orange;
-                                          return Color(0xFFE6004C); // Use the component's default.
+                                          return Color(
+                                              0xFFE6004C); // Use the component's default.
                                         },
                                       ),
                                     ),
@@ -180,12 +183,16 @@ class _ShoppingCartState extends State<ShoppingCart> {
                                       } else {
                                         Navigator.of(context).push(
                                           MaterialPageRoute(
-                                            builder: (context) => CheckoutDetail(
-                                              totalPrice:int.parse(d['Quantity'])*double.parse(d['MSRP']),
+                                            builder: (context) =>
+                                                CheckoutDetail(
+                                              totalPrice:
+                                                  int.parse(d['Quantity']) *
+                                                      double.parse(d['MSRP']),
                                               cartID: d['CartID'],
                                               productID: d['ProductID'],
-                                              quantity: int.parse(d['Quantity']),
-                                              flag:0,
+                                              quantity:
+                                                  int.parse(d['Quantity']),
+                                              flag: 0,
                                             ),
                                           ),
                                         );
@@ -199,7 +206,8 @@ class _ShoppingCartState extends State<ShoppingCart> {
                                           if (states
                                               .contains(MaterialState.pressed))
                                             return Colors.red;
-                                          return Color(0xFFE6004C); // Use the component's default.
+                                          return Color(
+                                              0xFFE6004C); // Use the component's default.
                                         },
                                       ),
                                     ),
@@ -249,7 +257,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
     super.initState();
     _streamController = new StreamController();
     _stream = _streamController.stream;
-    _getCart();
+    _cartPageStreamUpdater();
   }
 
   @override
@@ -280,7 +288,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
               ),
             );
           } else {
-            List<Widget> posts = _buildCart(snapshot.data);
+            List<Widget> posts = _cartPageBuilder(snapshot.data);
             return Column(
               children: [
                 Expanded(
@@ -292,14 +300,12 @@ class _ShoppingCartState extends State<ShoppingCart> {
                   ),
                 ),
                 Container(
-                  decoration: BoxDecoration(
-                    boxShadow: <BoxShadow>[
-                      BoxShadow(
-                        color: Colors.black54,
-                        blurRadius: 10,
-                      )
-                    ]
-                  ),
+                  decoration: BoxDecoration(boxShadow: <BoxShadow>[
+                    BoxShadow(
+                      color: Colors.black54,
+                      blurRadius: 10,
+                    )
+                  ]),
                   child: BottomAppBar(
                     color: Color(0xFFFFFFFF),
                     child: Padding(
@@ -337,9 +343,8 @@ class _ShoppingCartState extends State<ShoppingCart> {
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
                                     builder: (context) => CheckoutDetail(
-                                      totalPrice:_getCartValue(snapshot.data),
-                                      flag:2,
-
+                                      totalPrice: _getCartValue(snapshot.data),
+                                      flag: 2,
                                     ),
                                   ),
                                 );

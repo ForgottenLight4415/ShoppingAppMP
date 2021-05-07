@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -12,6 +13,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'helpers.dart';
 
+// This variable is used to switch product categories from app drawer
 int category = 0;
 
 class HomePage extends StatefulWidget {
@@ -20,27 +22,31 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  String _uname;
+  String _uName;
   String _uEmail;
-  String _uid;
+  String _uID;
   StreamController _streamController;
   Stream _stream;
-  String _appBarTitle = "Home";
+  String _appBarTitle = "Home"; // Page title based on category
 
-  Future<List> getSharedPrefs() async {
+  // Gets Username, Email and UserID for drawer
+  Future<List> _getSharedPrefs() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
-    _uname = pref.getString("Name");
+    _uName = pref.getString("Name");
     _uEmail = pref.getString("Email");
-    _uid = pref.getString("UserID");
-    return [_uname, _uEmail];
+    _uID = pref.getString("UserID");
+    return [_uName, _uEmail];
   }
 
-  Future<http.Response> getCategories() async {
+  // Gets Category names for drawer
+  Future<http.Response> _getCategories() async {
     return http
         .get(Uri.http(serverURL, 'ShoppingAppServer/get_categories.php'));
   }
 
-  Future<http.Response> _getPostsFromServer(
+  // Gets Product catalogue with its user specific meta data
+  // in JSON format to build Catalogue page
+  Future<http.Response> _getProductCatalogue(
       String userID, int categoryID) async {
     return http.post(Uri.http(serverURL, 'ShoppingAppServer/get_posts.php'),
         headers: <String, String>{
@@ -50,7 +56,8 @@ class _HomePageState extends State<HomePage> {
             <String, dynamic>{'userID': userID, 'categoryID': categoryID}));
   }
 
-  List<Widget> _buildHome(data) {
+  // Builds the product catalogue on client
+  List<Widget> _buildCatalogueUtility(data) {
     List<Widget> posts = [];
     data.forEach(
       (d) async {
@@ -67,7 +74,7 @@ class _HomePageState extends State<HomePage> {
             categoryID: d['categoryID'],
             stock: d['stock'],
             purchasedBefore: d['purchasedBefore'],
-            userID: _uid,
+            userID: _uID,
           ),
         );
       },
@@ -75,7 +82,8 @@ class _HomePageState extends State<HomePage> {
     return posts;
   }
 
-  List<Widget> _buildDrawer(data) {
+  // Builds app drawer on home screen
+  List<Widget> _buildDrawerUtility(data) {
     List<Widget> drawerCategories = [];
     data.forEach(
       (d) {
@@ -93,7 +101,7 @@ class _HomePageState extends State<HomePage> {
                     _appBarTitle = d['CategoryName'];
                   },
                 );
-                getPosts();
+                catalogueStreamUpdater();
                 Navigator.pop(context);
               }
             },
@@ -104,12 +112,23 @@ class _HomePageState extends State<HomePage> {
     return drawerCategories;
   }
 
-  getPosts() async {
-    http.Response response = await _getPostsFromServer(_uid, category);
-    if (response.body == "None") {
-      _streamController.add(null);
-    } else {
-      _streamController.add(jsonDecode(response.body));
+  // Calls the server to get product catalogue and updates the stream
+  catalogueStreamUpdater() async {
+    try {
+      http.Response response = await _getProductCatalogue(_uID, category);
+      if (response.body == "None") {
+        _streamController.add(null);
+      } else {
+        _streamController.add(jsonDecode(response.body));
+      }
+    } on SocketException {
+      Fluttertoast.showToast(
+          msg: "Couldn't connect to server.",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          fontSize: 12.0);
+      sleep(Duration(seconds: 15));
+      catalogueStreamUpdater();
     }
   }
 
@@ -118,13 +137,14 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     _streamController = StreamController();
     _stream = _streamController.stream;
-    getSharedPrefs().then((value) => getPosts());
+    _getSharedPrefs().then((value) => catalogueStreamUpdater());
   }
 
+  // Main UI: AppBar, Drawer
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: getSharedPrefs(),
+      future: _getSharedPrefs(),
       builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
         if (snapshot.hasData) {
           return Scaffold(
@@ -143,7 +163,7 @@ class _HomePageState extends State<HomePage> {
                         .then(
                           (value) => setState(
                             () {
-                              getPosts();
+                              catalogueStreamUpdater();
                             },
                           ),
                         );
@@ -167,7 +187,7 @@ class _HomePageState extends State<HomePage> {
                               borderRadius: BorderRadius.circular(50.0),
                               color: Colors.white),
                           child: Icon(Icons.person),
-                        ),
+                        ), // Profile picture
                         SizedBox(
                           width: 10.0,
                         ),
@@ -177,7 +197,7 @@ class _HomePageState extends State<HomePage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                _uname.toUpperCase(),
+                                _uName.toUpperCase(),
                                 overflow: TextOverflow.fade,
                                 softWrap: false,
                                 style: TextStyle(
@@ -198,116 +218,119 @@ class _HomePageState extends State<HomePage> {
                     decoration: BoxDecoration(color: Color(0xFFE6004C)),
                   ),
                   FutureBuilder(
-                      future: getCategories(),
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          List<Widget> drawerCategories =
-                              _buildDrawer(jsonDecode((snapshot.data).body));
-                          return Column(
-                            children: [
-                              ListTile(
-                                title: Text('Home'),
-                                leading: Icon(Icons.home),
-                                onTap: () {
-                                  if (category == 0) {
-                                    Navigator.pop(context);
-                                  } else {
-                                    setState(() {
-                                      category = 0;
-                                      _appBarTitle = 'Home';
-                                    });
-                                    getPosts();
-                                    Navigator.pop(context);
-                                  }
-                                },
-                              ),
-                              ListView.builder(
-                                padding: EdgeInsets.only(top: 0.0),
-                                shrinkWrap: true,
-                                physics: ClampingScrollPhysics(),
-                                itemCount: drawerCategories.length,
-                                itemBuilder: (context, index) {
-                                  return drawerCategories[index];
-                                },
-                              ),
-                              ListTile(
-                                title: Text('My orders'),
-                                leading: Icon(Icons.list_alt),
-                                onTap: () {
+                    future: _getCategories(),
+                    builder: (BuildContext context, AsyncSnapshot snapshot) {
+                      if (snapshot.hasData) {
+                        List<Widget> drawerCategories = _buildDrawerUtility(
+                            jsonDecode((snapshot.data).body));
+                        return Column(
+                          children: [
+                            ListTile(
+                              title: Text('Home'),
+                              leading: Icon(Icons.home),
+                              onTap: () {
+                                if (category == 0) {
                                   Navigator.pop(context);
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => OrderPage()));
-                                },
-                              ),
-                              ListTile(
-                                title: Text("About app"),
-                                leading: Icon(Icons.help_outline_sharp),
-                                onTap: () {
+                                } else {
+                                  setState(() {
+                                    category = 0;
+                                    _appBarTitle = 'Home';
+                                  });
+                                  catalogueStreamUpdater();
                                   Navigator.pop(context);
-                                  Navigator.push(
+                                }
+                              },
+                            ),
+                            ListView.builder(
+                              padding: EdgeInsets.only(top: 0.0),
+                              shrinkWrap: true,
+                              physics: ClampingScrollPhysics(),
+                              itemCount: drawerCategories.length,
+                              itemBuilder: (context, index) {
+                                return drawerCategories[index];
+                              },
+                            ),
+                            ListTile(
+                              title: Text('My orders'),
+                              leading: Icon(Icons.list_alt),
+                              onTap: () {
+                                Navigator.pop(context);
+                                Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => AboutApp()),
-                                  );
-                                },
-                              ),
-                              ListTile(
-                                title: Text("Logout"),
-                                leading: Icon(Icons.logout),
-                                onTap: () async {
-                                  SharedPreferences pref =
-                                      await SharedPreferences.getInstance();
-                                  pref?.setBool("isLoggedIn", false);
-                                  pref?.setString("Name", "");
-                                  pref?.setString("Email", "");
-                                  pref?.setString("UserID", "");
-                                  Navigator.pushAndRemoveUntil(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => LoginForm()),
-                                      (route) => false);
-                                },
-                              ),
-                            ],
-                          );
-                        } else {
-                          return SizedBox(
-                            height: 0.0,
-                          );
-                        }
-                      }),
+                                        builder: (context) => OrderPage()));
+                              },
+                            ),
+                            ListTile(
+                              title: Text("About app"),
+                              leading: Icon(Icons.help_outline_sharp),
+                              onTap: () {
+                                Navigator.pop(context);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => AboutApp()),
+                                );
+                              },
+                            ),
+                            ListTile(
+                              title: Text("Logout"),
+                              leading: Icon(Icons.logout),
+                              onTap: () async {
+                                SharedPreferences pref =
+                                    await SharedPreferences.getInstance();
+                                pref?.setBool("isLoggedIn", false);
+                                pref?.setString("Name", "");
+                                pref?.setString("Email", "");
+                                pref?.setString("UserID", "");
+                                Navigator.pushAndRemoveUntil(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => LoginForm()),
+                                    (route) => false);
+                              },
+                            ),
+                          ],
+                        );
+                      } else {
+                        return SizedBox(
+                          height: 0.0,
+                        );
+                      }
+                    },
+                  ),
                 ],
               ),
             ),
             backgroundColor: Colors.white,
             body: StreamBuilder<dynamic>(
               stream: _stream,
-              builder: (context, snapshot) {
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
                 if (snapshot.data == null) {
                   return RefreshIndicator(
                     onRefresh: () async {
-                      getPosts();
+                      catalogueStreamUpdater();
                     },
                     child: Center(
                       child: Text("Nothing here yet."),
                     ),
                   );
                 } else {
-                  List<Widget> posts = _buildHome(snapshot.data);
+                  List<Widget> _productCatalogueList =
+                      _buildCatalogueUtility(snapshot.data);
                   return RefreshIndicator(
                     onRefresh: () async {
-                      getPosts();
+                      catalogueStreamUpdater();
                     },
                     child: GridView.builder(
-                        itemCount: posts.length,
-                        gridDelegate:
-                            new SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2, childAspectRatio: 0.95),
-                        itemBuilder: (context, index) {
-                          return posts[index];
-                        }),
+                      itemCount: _productCatalogueList.length,
+                      gridDelegate:
+                          new SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2, childAspectRatio: 0.95),
+                      itemBuilder: (context, index) {
+                        return _productCatalogueList[index];
+                      },
+                    ),
                   );
                 }
               },
@@ -323,6 +346,7 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
+// Individual product card from catalogue
 // ignore: must_be_immutable
 class ProductCard extends StatefulWidget {
   final String productName;
@@ -357,14 +381,18 @@ class ProductCard extends StatefulWidget {
 }
 
 class _ProductCardState extends State<ProductCard> {
-  Future<http.Response> getCategoryName() {
-    return http.post(Uri.http(serverURL, 'ShoppingAppServer/get_cat_name.php'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(<String, String>{
+  Future<http.Response> _getProductCategoryName() {
+    return http.post(
+      Uri.http(serverURL, 'ShoppingAppServer/get_cat_name.php'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(
+        <String, String>{
           'categoryID': widget.categoryID,
-        }));
+        },
+      ),
+    );
   }
 
   @override
@@ -373,8 +401,7 @@ class _ProductCardState extends State<ProductCard> {
       padding: EdgeInsets.all(5.0),
       child: InkWell(
         onTap: () async {
-          http.Response categoryName = await getCategoryName();
-          print(categoryName.body);
+          http.Response categoryName = await _getProductCategoryName();
           Navigator.of(context).push(
             MaterialPageRoute(
               builder: (context) => ProductDetail(
@@ -409,14 +436,17 @@ class _ProductCardState extends State<ProductCard> {
                 padding: EdgeInsets.all(5.0),
               ),
               Hero(
-                  tag: widget.productID,
-                  child: Container(
-                      height: displayHeight(context) * 0.1,
-                      width: displayWidth(context) * 0.5,
-                      decoration: BoxDecoration(
-                          image: DecorationImage(
-                              image: setImage(widget.pictureURL),
-                              fit: BoxFit.contain)))),
+                tag: widget.productID,
+                child: Container(
+                  height: displayHeight(context) * 0.1,
+                  width: displayWidth(context) * 0.5,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                        image: setImage(widget.pictureURL),
+                        fit: BoxFit.contain),
+                  ),
+                ),
+              ),
               SizedBox(height: 6.0),
               Text('\u20B9' + widget.productMSRP,
                   style: TextStyle(color: Color(0xFFCC8053), fontSize: 15.0)),

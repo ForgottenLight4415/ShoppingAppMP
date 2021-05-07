@@ -13,7 +13,7 @@ class ConfirmationPage extends StatefulWidget {
 }
 
 class _ConfirmationPageState extends State<ConfirmationPage> {
-  Color colorProvider(int flag) {
+  Color _colorProvider(int flag) {
     if (flag == 0) {
       return Colors.green.shade500;
     } else if (flag == 1) {
@@ -23,7 +23,7 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
     }
   }
 
-  IconData iconProvider(int flag) {
+  IconData _iconProvider(int flag) {
     if (flag == 0) {
       return Icons.check;
     } else if (flag == 1) {
@@ -33,7 +33,7 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
     }
   }
 
-  Text confirmationTextProvider(int flag) {
+  Text _confirmationTextProvider(int flag) {
     if (flag == 0) {
       return Text(
         "Order placed",
@@ -83,11 +83,11 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
               height: displayWidth(context) * 0.5,
               width: displayWidth(context) * 0.5,
               decoration: BoxDecoration(
-                  color: colorProvider(widget.flag),
+                  color: _colorProvider(widget.flag),
                   borderRadius:
                       BorderRadius.circular(displayWidth(context) * 0.25)),
               child: Icon(
-                iconProvider(widget.flag),
+                _iconProvider(widget.flag),
                 color: Colors.white,
                 size: displayWidth(context) * 0.35,
               ),
@@ -95,7 +95,7 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
             SizedBox(
               height: displayHeight(context) * 0.05,
             ),
-            confirmationTextProvider(widget.flag),
+            _confirmationTextProvider(widget.flag),
           ],
         ),
       ),

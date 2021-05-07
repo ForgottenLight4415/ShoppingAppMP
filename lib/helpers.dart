@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 String serverURL = '192.168.0.6:8080';
+
+void somethingWentWrongToast() {
+  Fluttertoast.showToast(
+      msg: "Something went wrong",
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.CENTER,
+      fontSize: 12.0);
+}
 
 Size displaySize(BuildContext context) {
   return MediaQuery.of(context).size;
