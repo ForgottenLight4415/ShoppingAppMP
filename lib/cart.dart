@@ -10,7 +10,7 @@ import 'checkout.dart';
 Future<http.Response> addToCart(
     String userID, String productID, int quantity) async {
   return http.post(
-    Uri.http(serverURL, 'ShoppingAppServer/add_cart.php'),
+    Uri.https(serverURL, 'ShoppingAppServer/add_cart.php'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
     },
@@ -26,7 +26,7 @@ Future<http.Response> addToCart(
 
 Future<http.Response> removeFromCart(String cartID) {
   return http.post(
-    Uri.http(serverURL, 'ShoppingAppServer/remove_cart.php'),
+    Uri.https(serverURL, 'ShoppingAppServer/remove_cart.php'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
     },
@@ -49,7 +49,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
 
   Future<http.Response> _getUserCart(String userID) {
     return http.post(
-      Uri.http(serverURL, 'ShoppingAppServer/get_cart.php'),
+      Uri.https(serverURL, 'ShoppingAppServer/get_cart.php'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },

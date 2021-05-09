@@ -9,7 +9,7 @@ import 'confirmation_page.dart';
 // Buy from product details page server communication function
 Future<http.Response> _buyFromProductDesc(
     String productID, int quantity) async {
-  return http.post(Uri.http(serverURL, 'ShoppingAppServer/buy_one.php'),
+  return http.post(Uri.https(serverURL, 'ShoppingAppServer/buy_one.php'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -23,7 +23,7 @@ Future<http.Response> _buyFromProductDesc(
 // Customer details such as phone, email and address
 Future<http.Response> _customerDetailsProvider() async {
   return http.post(
-      Uri.http(serverURL, 'ShoppingAppServer/get_cust_details.php'),
+      Uri.https(serverURL, 'ShoppingAppServer/get_cust_details.php'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -35,7 +35,7 @@ Future<http.Response> _customerDetailsProvider() async {
 Future<http.Response> buyOneFromCart(
     String productID, int quantity, String cartID) async {
   return http.post(
-    Uri.http(serverURL, 'ShoppingAppServer/buy_cart.php'),
+    Uri.https(serverURL, 'ShoppingAppServer/buy_cart.php'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
     },
@@ -52,7 +52,7 @@ Future<http.Response> buyOneFromCart(
 
 Future<http.Response> checkoutCart() async {
   return http.post(
-    Uri.http(serverURL, 'ShoppingAppServer/checkout_cart.php'),
+    Uri.https(serverURL, 'ShoppingAppServer/checkout_cart.php'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
     },

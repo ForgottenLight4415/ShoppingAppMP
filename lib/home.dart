@@ -41,14 +41,14 @@ class _HomePageState extends State<HomePage> {
   // Gets Category names for drawer
   Future<http.Response> _getCategories() async {
     return http
-        .get(Uri.http(serverURL, 'ShoppingAppServer/get_categories.php'));
+        .get(Uri.https(serverURL, 'ShoppingAppServer/get_categories.php'));
   }
 
   // Gets Product catalogue with its user specific meta data
   // in JSON format to build Catalogue page
   Future<http.Response> _getProductCatalogue(
       String userID, int categoryID) async {
-    return http.post(Uri.http(serverURL, 'ShoppingAppServer/get_posts.php'),
+    return http.post(Uri.https(serverURL, 'ShoppingAppServer/get_posts.php'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -383,7 +383,7 @@ class ProductCard extends StatefulWidget {
 class _ProductCardState extends State<ProductCard> {
   Future<http.Response> _getProductCategoryName() {
     return http.post(
-      Uri.http(serverURL, 'ShoppingAppServer/get_cat_name.php'),
+      Uri.https(serverURL, 'ShoppingAppServer/get_cat_name.php'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },

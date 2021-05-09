@@ -17,7 +17,7 @@ class _OrderPageState extends State<OrderPage> {
 
   Future<http.Response> _getUserOrders(String userID) {
     return http.post(
-      Uri.http(serverURL, 'ShoppingAppServer/get_orders.php'),
+      Uri.https(serverURL, 'ShoppingAppServer/get_orders.php'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -29,7 +29,7 @@ class _OrderPageState extends State<OrderPage> {
 
   Future<http.Response> _cancelOrder(String orderID) {
     return http.post(
-      Uri.http(serverURL, 'ShoppingAppServer/cancel.php'),
+      Uri.https(serverURL, 'ShoppingAppServer/cancel.php'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },

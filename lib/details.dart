@@ -17,7 +17,7 @@ Future<http.Response> _getAllReviews(int flag,
   if (flag == 0) {
     // To get reviews from server
     return http.post(
-      Uri.http(serverURL, 'ShoppingAppServer/star_rating.php'),
+      Uri.https(serverURL, 'ShoppingAppServer/star_rating.php'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -32,7 +32,7 @@ Future<http.Response> _getAllReviews(int flag,
   } else if (flag == 1) {
     // To post new review
     return http.post(
-      Uri.http(serverURL, 'ShoppingAppServer/star_rating.php'),
+      Uri.https(serverURL, 'ShoppingAppServer/star_rating.php'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -48,7 +48,7 @@ Future<http.Response> _getAllReviews(int flag,
     );
   } else {
     return http.post(
-      Uri.http(serverURL, 'ShoppingAppServer/star_rating.php'),
+      Uri.https(serverURL, 'ShoppingAppServer/star_rating.php'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },

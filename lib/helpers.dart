@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-String serverURL = '192.168.0.6:8080';
+String serverURL = 'shoppingappserver.000webhostapp.com';
 
 void somethingWentWrongToast() {
   Fluttertoast.showToast(
