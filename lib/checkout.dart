@@ -121,7 +121,7 @@ class CheckoutDetail extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 20.0,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFFF17532),
+                        color: Color(0xFFE6004C),
                       ),
                     ),
                   ),
@@ -132,7 +132,7 @@ class CheckoutDetail extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 20.0,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFFF17532),
+                        color: Color(0xFFE6004C),
                       ),
                     ),
                   ),
@@ -143,7 +143,7 @@ class CheckoutDetail extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 20.0,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFFF17532),
+                        color: Color(0xFFE6004C),
                       ),
                     ),
                   ),
@@ -154,7 +154,7 @@ class CheckoutDetail extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 20.0,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFFF17532),
+                        color: Color(0xFFE6004C),
                       ),
                     ),
                   ),
@@ -206,7 +206,7 @@ class CheckoutDetail extends StatelessWidget {
                       height: 50.0,
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(25.0),
-                          color: Color(0xFFF17532)),
+                          color: Color(0xFFE6004C)),
                       child: InkWell(
                         onTap: () async {
                           if (flag == 1) {

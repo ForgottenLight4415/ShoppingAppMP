@@ -205,7 +205,7 @@ class _ProductDetailState extends State<ProductDetail> {
                   style: TextStyle(
                     fontSize: 20.0,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFFF17532),
+                    color: Color(0xFFE6004C),
                   ),
                 ),
               ),
@@ -229,7 +229,7 @@ class _ProductDetailState extends State<ProductDetail> {
                   style: TextStyle(
                     fontSize: 21.0,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFFF17532),
+                    color: Color(0xFFE6004C),
                     decoration: TextDecoration.lineThrough,
                   ),
                 ),
@@ -271,7 +271,7 @@ class _ProductDetailState extends State<ProductDetail> {
                           width: 45,
                           decoration: BoxDecoration(
                               color: Color.fromRGBO(228, 228, 228, 1),
-                              borderRadius: BorderRadius.circular(10)),
+                              borderRadius: BorderRadius.circular(14.0)),
                           child: InkWell(
                             onTap: () {
                               setState(
@@ -310,7 +310,7 @@ class _ProductDetailState extends State<ProductDetail> {
                           height: 45,
                           width: 45,
                           decoration: BoxDecoration(
-                              color: Color.fromRGBO(243, 175, 45, 1),
+                              color: Color(0xFFE6004C),
                               borderRadius: BorderRadius.circular(10)),
                           child: InkWell(
                             onTap: () {
@@ -342,7 +342,7 @@ class _ProductDetailState extends State<ProductDetail> {
                         height: 50.0,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(25.0),
-                          color: Color(0xFFF17532),
+                          color: Color(0xFFE6004C),
                         ),
                         child: InkWell(
                           onTap: () async {
@@ -393,7 +393,7 @@ class _ProductDetailState extends State<ProductDetail> {
                         height: 50.0,
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(25.0),
-                            color: Color(0xFFF17532)),
+                            color: Color(0xFFE6004C)),
                         child: InkWell(
                           onTap: () async {
                             Navigator.of(context).push(
@@ -444,7 +444,7 @@ class _ProductDetailState extends State<ProductDetail> {
                   child: Text(
                     "Reviews",
                     style: TextStyle(
-                        color: Colors.orange,
+                        color: Color(0xFFE6004C),
                         fontSize: 26.0,
                         fontWeight: FontWeight.bold),
                   ),
@@ -507,6 +507,14 @@ class _ProductDetailState extends State<ProductDetail> {
                               },
                               child: Text(
                                 "Submit",
+                              ),
+                              style: ButtonStyle(
+                                backgroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states){
+                                  if(states.contains(MaterialState.pressed))
+                                    return Color(0xFFE6004C);
+                                  return Color(0xFFE6004C);
+                                },
+                                ),
                               ),
                             ),
                           ],
@@ -608,10 +616,16 @@ class _ProductDetailState extends State<ProductDetail> {
                                         reviewNo = reviewID;
                                       },
                                       child: Text(
-                                        "Submit",
+                                        "Submit"),
+                                        style: ButtonStyle(
+                                          backgroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states){
+                                            if(states.contains(MaterialState.pressed))
+                                                return Color(0xFFE6004C);
+                                              return Color(0xFFE6004C);
+                                          },
+                                          ),
                                       ),
-                                    ),
-                                  ],
+                                    ) ],
                                 ),
                               ),
                             ),
@@ -622,7 +636,7 @@ class _ProductDetailState extends State<ProductDetail> {
                               color: Colors.white,
                               elevation: 5.0,
                               borderRadius: BorderRadius.circular(24.0),
-                              shadowColor: Color(0x802196F3),
+                              shadowColor: Colors.black54,
                               child: Column(
                                 children: [
                                   Container(
@@ -631,7 +645,7 @@ class _ProductDetailState extends State<ProductDetail> {
                                       d['FullName'],
                                       textAlign: TextAlign.justify,
                                       style: TextStyle(
-                                        color: Colors.orange,
+                                        color: Color(0xFFE6004C),
                                         fontSize: 22.0,
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -677,6 +691,14 @@ class _ProductDetailState extends State<ProductDetail> {
                                                   productID: widget.productID);
                                             },
                                             child: Text("Delete"),
+                                            style: ButtonStyle(
+                                              backgroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states){
+                                                if(states.contains(MaterialState.pressed))
+                                                  return Color(0xFFE6004C);
+                                                return Color(0xFFE6004C);
+                                              },
+                                              ),
+                                            ),
                                           ),
                                         ),
                                       )

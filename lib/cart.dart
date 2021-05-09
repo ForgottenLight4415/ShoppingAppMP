@@ -93,7 +93,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
                           spreadRadius: 1.0,
                         ),
                       ],
-                      borderRadius: BorderRadius.circular(10.0)),
+                      borderRadius: BorderRadius.circular(14.0)),
                   child: Row(
                     children: [
                       Container(

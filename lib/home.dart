@@ -422,7 +422,7 @@ class _ProductCardState extends State<ProductCard> {
         child: Container(
           height: displayHeight(context) * 0.5,
           decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15.0),
+              borderRadius: BorderRadius.circular(14.0),
               boxShadow: [
                 BoxShadow(
                     color: Colors.grey.withOpacity(0.2),
@@ -449,13 +449,13 @@ class _ProductCardState extends State<ProductCard> {
               ),
               SizedBox(height: 6.0),
               Text('\u20B9' + widget.productMSRP,
-                  style: TextStyle(color: Color(0xFFCC8053), fontSize: 15.0)),
+                  style: TextStyle(color: Colors.blueGrey, fontSize: 15.0)),
               Padding(
                 padding: const EdgeInsets.only(left: 8.0, right: 8.0),
                 child: Text(widget.productName,
                     overflow: TextOverflow.fade,
                     softWrap: false,
-                    style: TextStyle(color: Color(0xFFCC8053), fontSize: 16.0)),
+                    style: TextStyle(color: Colors.blueGrey, fontSize: 16.0)),
               ),
               Container(color: Color(0xFFEBEBEB), height: 0.4),
               TextButton(
@@ -512,14 +512,14 @@ class _ProductCardState extends State<ProductCard> {
                           (widget.addedToCart == "True")
                               ? Icons.check
                               : Icons.shopping_basket,
-                          color: Color(0xFFD17E50),
+                          color: Colors.blueGrey,
                           size: 15.0),
                       Text(
                           (widget.addedToCart == "True")
                               ? "Added"
                               : "Add to cart",
                           style: TextStyle(
-                              color: Color(0xFFD17E50), fontSize: 16.0))
+                              color: Colors.blueGrey, fontSize: 16.0))
                     ],
                   ),
                 ),
