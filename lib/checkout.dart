@@ -112,135 +112,149 @@ class CheckoutDetail extends StatelessWidget {
             ),
             body: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: ListView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  SizedBox(height: 15.0),
-                  Center(
-                    child: Text(
-                      'Delivery Address: ',
-                      style: TextStyle(
-                        fontSize: 20.0,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFFE6004C),
+                  Column(
+                    children: [
+                      Center(
+                        child: Text(
+                          'Delivery Address: ',
+                          style: TextStyle(
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFFE6004C),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  SizedBox(height: 15.0),
-                  Center(
-                    child: Text(
-                      customerData[0]['address'],
-                      style: TextStyle(
-                        fontSize: 20.0,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFFE6004C),
+                      SizedBox(height: 15.0),
+                      Center(
+                        child: Text(
+                          customerData[0]['address'],
+                          style: TextStyle(
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFFE6004C),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  SizedBox(height: 15.0),
-                  Center(
-                    child: Text(
-                      customerData[0]['phone'],
-                      style: TextStyle(
-                        fontSize: 20.0,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFFE6004C),
+                      SizedBox(height: 15.0),
+                      Center(
+                        child: Text(
+                          customerData[0]['phone'],
+                          style: TextStyle(
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFFE6004C),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  SizedBox(height: 15.0),
-                  Center(
-                    child: Text(
-                      customerData[0]['email'],
-                      style: TextStyle(
-                        fontSize: 20.0,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFFE6004C),
+                      SizedBox(height: 8.0),
+                      Center(
+                        child: Text(
+                          customerData[0]['email'],
+                          style: TextStyle(
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFFE6004C),
+                          ),
+                        ),
                       ),
-                    ),
+                    ],
                   ),
-                  SizedBox(height: displayHeight(context) * 0.10),
-                  Center(
-                    child: Text(
-                      "You pay: ",
-                      style: TextStyle(
-                        fontSize: displayWidth(context) * 0.08,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF8C8C8C),
+                  Column(
+                    children: [
+                      Center(
+                        child: Text(
+                          "You pay: ",
+                          style: TextStyle(
+                            fontSize: displayWidth(context) * 0.08,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF8C8C8C),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  Center(
-                    child: Text(
-                      "\u{20B9}" + totalPrice.toString(),
-                      style: TextStyle(
-                        fontSize: displayWidth(context) * 0.12,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF8C8C8C),
+                      Center(
+                        child: Text(
+                          "\u{20B9}" + totalPrice.toString(),
+                          style: TextStyle(
+                            fontSize: displayWidth(context) * 0.12,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF8C8C8C),
+                          ),
+                        ),
                       ),
-                    ),
+                    ],
                   ),
-                  SizedBox(height: displayHeight(context) * 0.18),
-                  Center(
-                    child: Text('No Contact Delivery - ',
-                        style: TextStyle(
-                          fontSize: 20.0,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.green,
-                        )),
-                  ),
-                  SizedBox(height: 10.0),
-                  Center(
-                    child: Text(
-                      'Delivery Associate will place the order on your door step and step back to maintain a 2-meter distance. ',
-                      style: TextStyle(
-                        fontSize: 20.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.green,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 15.0),
-                  Center(
-                    child: Container(
-                      width: MediaQuery.of(context).size.width - 50.0,
-                      height: 50.0,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(25.0),
-                          color: Color(0xFFE6004C)),
-                      child: InkWell(
-                        onTap: () async {
-                          if (flag == 1) {
-                            http.Response response =
-                                await _buyFromProductDesc(productID, quantity);
-                            if (response.statusCode == 200) {
-                              _confirmationPageNavigator(
-                                  response.body, context);
-                            } else {
-                              somethingWentWrongToast();
-                            }
-                          } else if (flag == 0) {
-                            http.Response response = await buyOneFromCart(
-                                productID, quantity, cartID);
-                            _confirmationPageNavigator(response.body, context);
-                          } else if (flag == 2) {
-                            http.Response response = await checkoutCart();
-                            _confirmationPageNavigator(response.body, context);
-                          } else {
-                            somethingWentWrongToast();
-                          }
-                        },
-                        child: Center(
-                          child: Text(
-                            'Place Your Order',
+                  Column(
+                    children: [
+                      Center(
+                        child: Text('No Contact Delivery - ',
                             style: TextStyle(
-                              fontSize: 14.0,
+                              fontSize: 20.0,
                               fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                              color: Colors.green,
+                            )),
+                      ),
+                      SizedBox(height: 8.0),
+                      Center(
+                        child: Text(
+                          'Delivery Associate will place the order on your door step and step back to maintain a 2-meter distance. ',
+                          style: TextStyle(
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.green,
+                          ),
+                          textAlign: TextAlign.justify,
+                        ),
+                      ),
+                      SizedBox(height: 15.0),
+                      Center(
+                        child: Container(
+                          width: MediaQuery.of(context).size.width - 50.0,
+                          height: 50.0,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(25.0),
+                              color: Color(0xFFE6004C)),
+                          child: InkWell(
+                            onTap: () async {
+                              if (flag == 1) {
+                                http.Response response =
+                                    await _buyFromProductDesc(
+                                        productID, quantity);
+                                if (response.statusCode == 200) {
+                                  _confirmationPageNavigator(
+                                      response.body, context);
+                                } else {
+                                  somethingWentWrongToast();
+                                }
+                              } else if (flag == 0) {
+                                http.Response response = await buyOneFromCart(
+                                    productID, quantity, cartID);
+                                _confirmationPageNavigator(
+                                    response.body, context);
+                              } else if (flag == 2) {
+                                http.Response response = await checkoutCart();
+                                _confirmationPageNavigator(
+                                    response.body, context);
+                              } else {
+                                somethingWentWrongToast();
+                              }
+                            },
+                            child: Center(
+                              child: Text(
+                                'Place Your Order',
+                                style: TextStyle(
+                                  fontSize: 14.0,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
+                    ],
                   )
                 ],
               ),

@@ -104,6 +104,9 @@ class _ProductDetailState extends State<ProductDetail> {
   int quantity = 1;
   String reviewNo;
 
+  Color _quantityButtonActivated = Color(0xFFE6004C);
+  Color _quantityButtonDeactivated = Color.fromRGBO(228, 228, 228, 1);
+
   dynamic _productRatingStreamUpdater(int flag,
       {String productID,
       double rating,
@@ -270,12 +273,14 @@ class _ProductDetailState extends State<ProductDetail> {
                           height: 45,
                           width: 45,
                           decoration: BoxDecoration(
-                              color: Color.fromRGBO(228, 228, 228, 1),
+                              color: (quantity == 1)
+                                  ? _quantityButtonDeactivated
+                                  : _quantityButtonActivated,
                               borderRadius: BorderRadius.circular(14.0)),
                           child: InkWell(
                             onTap: () {
                               setState(
-                                    () {
+                                () {
                                   if (quantity > 1) {
                                     quantity--;
                                   }
@@ -286,6 +291,7 @@ class _ProductDetailState extends State<ProductDetail> {
                               child: Text(
                                 "-",
                                 style: TextStyle(
+                                  color: (quantity == 1) ? Colors.black : Colors.white,
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -310,12 +316,14 @@ class _ProductDetailState extends State<ProductDetail> {
                           height: 45,
                           width: 45,
                           decoration: BoxDecoration(
-                              color: Color(0xFFE6004C),
+                              color: (quantity == 5)
+                                  ? _quantityButtonDeactivated
+                                  : _quantityButtonActivated,
                               borderRadius: BorderRadius.circular(10)),
                           child: InkWell(
                             onTap: () {
                               setState(
-                                    () {
+                                () {
                                   if (quantity <= 4) {
                                     quantity++;
                                   }
@@ -326,6 +334,7 @@ class _ProductDetailState extends State<ProductDetail> {
                               child: Text(
                                 "+",
                                 style: TextStyle(
+                                  color: (quantity == 5) ? Colors.black : Colors.white,
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -356,7 +365,7 @@ class _ProductDetailState extends State<ProductDetail> {
                                   fontSize: 12.0);
                             } else if (response.body != "Failed") {
                               setState(
-                                    () {
+                                () {
                                   widget.addedToCart = "True";
                                 },
                               );
@@ -469,7 +478,7 @@ class _ProductDetailState extends State<ProductDetail> {
                         allowHalfRating: false,
                         onRated: (value) {
                           setState(
-                                () {
+                            () {
                               productRating = value;
                             },
                           );
@@ -495,7 +504,7 @@ class _ProductDetailState extends State<ProductDetail> {
                             ElevatedButton(
                               onPressed: () async {
                                 String reviewID =
-                                await _productRatingStreamUpdater(
+                                    await _productRatingStreamUpdater(
                                   1,
                                   productID: widget.productID,
                                   rating: productRating,
@@ -509,11 +518,13 @@ class _ProductDetailState extends State<ProductDetail> {
                                 "Submit",
                               ),
                               style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states){
-                                  if(states.contains(MaterialState.pressed))
+                                backgroundColor:
+                                    MaterialStateProperty.resolveWith<Color>(
+                                  (Set<MaterialState> states) {
+                                    if (states.contains(MaterialState.pressed))
+                                      return Color(0xFFE6004C);
                                     return Color(0xFFE6004C);
-                                  return Color(0xFFE6004C);
-                                },
+                                  },
                                 ),
                               ),
                             ),
@@ -615,17 +626,20 @@ class _ProductDetailState extends State<ProductDetail> {
                                             productID: widget.productID);
                                         reviewNo = reviewID;
                                       },
-                                      child: Text(
-                                        "Submit"),
-                                        style: ButtonStyle(
-                                          backgroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states){
-                                            if(states.contains(MaterialState.pressed))
-                                                return Color(0xFFE6004C);
+                                      child: Text("Submit"),
+                                      style: ButtonStyle(
+                                        backgroundColor: MaterialStateProperty
+                                            .resolveWith<Color>(
+                                          (Set<MaterialState> states) {
+                                            if (states.contains(
+                                                MaterialState.pressed))
                                               return Color(0xFFE6004C);
+                                            return Color(0xFFE6004C);
                                           },
-                                          ),
+                                        ),
                                       ),
-                                    ) ],
+                                    )
+                                  ],
                                 ),
                               ),
                             ),
@@ -637,74 +651,81 @@ class _ProductDetailState extends State<ProductDetail> {
                               elevation: 5.0,
                               borderRadius: BorderRadius.circular(24.0),
                               shadowColor: Colors.black54,
-                              child: Column(
-                                children: [
-                                  Container(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Text(
-                                      d['FullName'],
-                                      textAlign: TextAlign.justify,
-                                      style: TextStyle(
-                                        color: Color(0xFFE6004C),
-                                        fontSize: 22.0,
-                                        fontWeight: FontWeight.bold,
+                              child: Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text(
+                                        d['FullName'],
+                                        textAlign: TextAlign.justify,
+                                        style: TextStyle(
+                                          color: Color(0xFFE6004C),
+                                          fontSize: 22.0,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  Container(
-                                    child: SmoothStarRating(
-                                      starCount: 5,
-                                      isReadOnly: true,
-                                      spacing: 3,
-                                      rating: double.parse(d['Rating']),
-                                      size: 20,
-                                      color: Colors.orange,
-                                      borderColor: Colors.orange,
-                                    ),
-                                  ),
-                                  Container(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Text(
-                                      d['ReviewDesc'],
-                                      textAlign: TextAlign.justify,
-                                      style: TextStyle(
-                                        color: Colors.blueGrey,
-                                        fontSize: 18.0,
+                                    Container(
+                                      child: SmoothStarRating(
+                                        starCount: 5,
+                                        isReadOnly: true,
+                                        spacing: 3,
+                                        rating: double.parse(d['Rating']),
+                                        size: 20,
+                                        color: Colors.orange,
+                                        borderColor: Colors.orange,
                                       ),
                                     ),
-                                  ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Visibility(
-                                        visible: d['Self'] == 'True',
-                                        child: Padding(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              0.0, 0, 25.0, 8.0),
-                                          child: ElevatedButton(
-                                            onPressed: () async {
-                                              await _productRatingStreamUpdater(
-                                                2,
-                                                reviewID: reviewNo,
-                                              );
-                                              _productRatingStreamUpdater(0,
-                                                  productID: widget.productID);
-                                            },
-                                            child: Text("Delete"),
-                                            style: ButtonStyle(
-                                              backgroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states){
-                                                if(states.contains(MaterialState.pressed))
-                                                  return Color(0xFFE6004C);
-                                                return Color(0xFFE6004C);
+                                    Container(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text(
+                                        d['ReviewDesc'],
+                                        textAlign: TextAlign.justify,
+                                        style: TextStyle(
+                                          color: Colors.blueGrey,
+                                          fontSize: 18.0,
+                                        ),
+                                      ),
+                                    ),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        Visibility(
+                                          visible: d['Self'] == 'True',
+                                          child: Padding(
+                                            padding: const EdgeInsets.fromLTRB(
+                                                0.0, 0, 25.0, 8.0),
+                                            child: ElevatedButton(
+                                              onPressed: () async {
+                                                await _productRatingStreamUpdater(
+                                                  2,
+                                                  reviewID: reviewNo,
+                                                );
+                                                _productRatingStreamUpdater(0,
+                                                    productID: widget.productID);
                                               },
+                                              child: Text("Delete"),
+                                              style: ButtonStyle(
+                                                backgroundColor:
+                                                    MaterialStateProperty
+                                                        .resolveWith<Color>(
+                                                  (Set<MaterialState> states) {
+                                                    if (states.contains(
+                                                        MaterialState.pressed))
+                                                      return Color(0xFFE6004C);
+                                                    return Color(0xFFE6004C);
+                                                  },
+                                                ),
                                               ),
                                             ),
                                           ),
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ],
+                                        )
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
