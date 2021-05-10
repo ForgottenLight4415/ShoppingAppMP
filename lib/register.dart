@@ -172,8 +172,37 @@ class _RegisterNewState extends State<RegisterNew> {
                         !_validateUName &&
                         !_validateUPass &&
                         !_validateCPass) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Registering you...")));
+                      showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (BuildContext context) {
+                            return WillPopScope(
+                              onWillPop: () async => false,
+                              child: SimpleDialog(
+                                children: [
+                                  Padding(
+                                    padding:
+                                    const EdgeInsets.all(
+                                        15.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                      MainAxisAlignment
+                                          .spaceEvenly,
+                                      children: [
+                                        CircularProgressIndicator(),
+                                        Text(
+                                          "Registering you",
+                                          style: TextStyle(
+                                            fontSize: 16.0,
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  )
+                                ],
+                              ),
+                            );
+                          });
                       final registerResponse = await _registerUser(
                           _fName.text.trim(),
                           _lName.text.trim(),
@@ -190,11 +219,13 @@ class _RegisterNewState extends State<RegisterNew> {
                                   builder: (context) => RegistrationSuccess()),
                               (route) => false);
                         } else if (registerResponse.body == '2') {
+                          Navigator.pop(context);
                           setState(() {
                             _validateEmail = true;
                             emailErrorText = "Email already exits";
                           });
                         } else if (registerResponse.body == '3') {
+                          Navigator.pop(context);
                           setState(
                             () {
                               _validateUName = true;
