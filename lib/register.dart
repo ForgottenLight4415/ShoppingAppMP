@@ -187,8 +187,7 @@ class _RegisterNewState extends State<RegisterNew> {
                           Navigator.pushAndRemoveUntil(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => RegistrationSuccess(
-                                      _uName.text, _uPass.text)),
+                                  builder: (context) => RegistrationSuccess()),
                               (route) => false);
                         } else if (registerResponse.body == '2') {
                           setState(() {

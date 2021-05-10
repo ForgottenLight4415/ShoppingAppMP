@@ -19,53 +19,30 @@ Future<http.Response> getCredentialsFromServer(String uName, String uPass) {
 void login(username, password, context) async {
   try {
     final loginCredentials =
-        await getCredentialsFromServer(
-        username.trim(),
-        password);
-    var serverResponse =
-    loginCredentials.body
-        .split(';');
-    if (loginCredentials
-        .statusCode ==
-        200) {
-      if (serverResponse[0] ==
-          "true") {
-        SharedPreferences pref =
-            await SharedPreferences
-            .getInstance();
-        pref?.setBool(
-            "isLoggedIn", true);
-        pref?.setString("Name",
-            serverResponse[1]);
-        pref?.setString("Email",
-            serverResponse[2]);
-        pref?.setString("UserID",
-            serverResponse[3]);
-        Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-                builder:
-                    (context) =>
-                    HomePage()),
-                (r) => false);
+        await getCredentialsFromServer(username.trim(), password);
+    var serverResponse = loginCredentials.body.split(';');
+    if (loginCredentials.statusCode == 200) {
+      if (serverResponse[0] == "true") {
+        SharedPreferences pref = await SharedPreferences.getInstance();
+        pref?.setBool("isLoggedIn", true);
+        pref?.setString("Name", serverResponse[1]);
+        pref?.setString("Email", serverResponse[2]);
+        pref?.setString("UserID", serverResponse[3]);
+        Navigator.pushAndRemoveUntil(context,
+            MaterialPageRoute(builder: (context) => HomePage()), (r) => false);
       } else {
-        ScaffoldMessenger.of(
-            context)
-            .showSnackBar(SnackBar(
-            content: Text(
-                "Invalid username or password.")));
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Invalid username or password.")));
       }
     } else {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(
-          content: Text(
-              "Something went wrong.")));
+      Navigator.pop(context);
+      somethingWentWrongToast();
     }
   } catch (e) {
+    Navigator.pop(context);
     ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(
-        content: Text(
-            "Failed to connect to server.")));
+        .showSnackBar(SnackBar(content: Text("Failed to connect to server.")));
   }
 }
 
@@ -108,9 +85,7 @@ class _LoginFormState extends State<LoginForm> {
                   children: <Widget>[
                     Text(
                       "Sign in to your account",
-                      style: TextStyle(
-                          fontSize: 48.0,
-                          color: Colors.white),
+                      style: TextStyle(fontSize: 48.0, color: Colors.white),
                     ),
                     SizedBox(
                       height: displayHeight(context) * 0.05,
@@ -121,8 +96,8 @@ class _LoginFormState extends State<LoginForm> {
                         children: <Widget>[
                           Container(
                             child: Padding(
-                              padding: const EdgeInsets.fromLTRB(
-                                  3.0, 0.0, 3.0, 8.0),
+                              padding:
+                                  const EdgeInsets.fromLTRB(3.0, 0.0, 3.0, 8.0),
                               child: TextFormField(
                                 controller: _uname,
                                 decoration: InputDecoration(
@@ -141,8 +116,7 @@ class _LoginFormState extends State<LoginForm> {
                                     fillColor: Colors.white,
                                     filled: true,
                                     errorBorder: UnderlineInputBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(50.0),
+                                      borderRadius: BorderRadius.circular(50.0),
                                     ),
                                     focusedBorder: UnderlineInputBorder(
                                         borderRadius:
@@ -178,8 +152,7 @@ class _LoginFormState extends State<LoginForm> {
                                     fillColor: Colors.white,
                                     filled: true,
                                     errorBorder: UnderlineInputBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(50.0),
+                                      borderRadius: BorderRadius.circular(50.0),
                                     ),
                                     focusedBorder: UnderlineInputBorder(
                                         //borderSide: BorderSide(),
@@ -220,9 +193,40 @@ class _LoginFormState extends State<LoginForm> {
                                               ? _validatePass = true
                                               : _validatePass = false;
                                         });
-                                        if (!_validateUname &&
-                                            !_validatePass) {
-                                          login(_uname.text, _pass.text, context);
+                                        if (!_validateUname && !_validatePass) {
+                                          showDialog(
+                                              context: context,
+                                              barrierDismissible: false,
+                                              builder: (BuildContext context) {
+                                                return WillPopScope(
+                                                  onWillPop: () async => false,
+                                                  child: SimpleDialog(
+                                                    children: [
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets.all(
+                                                                15.0),
+                                                        child: Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceEvenly,
+                                                          children: [
+                                                            CircularProgressIndicator(),
+                                                            Text(
+                                                              "Logging in",
+                                                              style: TextStyle(
+                                                                fontSize: 16.0,
+                                                              ),
+                                                            )
+                                                          ],
+                                                        ),
+                                                      )
+                                                    ],
+                                                  ),
+                                                );
+                                              });
+                                          login(
+                                              _uname.text, _pass.text, context);
                                         }
                                       },
                                       label: Text(
@@ -255,8 +259,7 @@ class _LoginFormState extends State<LoginForm> {
                                       label: Text(
                                         "Create Account",
                                         style: TextStyle(
-                                            color:
-                                                Colors.blueGrey.shade700),
+                                            color: Colors.blueGrey.shade700),
                                       ),
                                       icon: Icon(
                                         Icons.add,
@@ -281,13 +284,10 @@ class _LoginFormState extends State<LoginForm> {
       floatingActionButton: FloatingActionButton(
           backgroundColor: Colors.white,
           heroTag: "AboutBtn",
-          child: Icon(Icons.info_outlined,
-              color: Colors.blueGrey.shade700),
+          child: Icon(Icons.info_outlined, color: Colors.blueGrey.shade700),
           onPressed: () {
             Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => AboutApp()));
+                context, MaterialPageRoute(builder: (context) => AboutApp()));
           }),
     );
   }

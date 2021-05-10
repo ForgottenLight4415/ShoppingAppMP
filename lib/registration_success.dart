@@ -4,23 +4,11 @@ import 'login.dart';
 import 'dart:async';
 
 class RegistrationSuccess extends StatefulWidget {
-
-  final String _username;
-  final String _password;
-
-  RegistrationSuccess(this._username, this._password);
-
   @override
-  _RegistrationSuccessState createState() => _RegistrationSuccessState(_username, _password);
+  _RegistrationSuccessState createState() => _RegistrationSuccessState();
 }
 
 class _RegistrationSuccessState extends State<RegistrationSuccess> {
-
-  final String _username;
-  final String _password;
-
-  _RegistrationSuccessState(this._username, this._password);
-
   @override
   void initState() {
     super.initState();
@@ -33,7 +21,8 @@ class _RegistrationSuccessState extends State<RegistrationSuccess> {
   }
 
   route() async {
-    login(_username, _password, context);
+    Navigator.pushAndRemoveUntil(context,
+        MaterialPageRoute(builder: (context) => LoginForm()), (route) => false);
   }
 
   @override
@@ -57,15 +46,20 @@ class _RegistrationSuccessState extends State<RegistrationSuccess> {
                 decoration: BoxDecoration(
                     color: Colors.green.shade500,
                     borderRadius:
-                    BorderRadius.circular(displayWidth(context) * 0.25)),
+                        BorderRadius.circular(displayWidth(context) * 0.25)),
                 child: Icon(
                   Icons.check,
                   color: Colors.white,
                   size: displayWidth(context) * 0.35,
                 ),
               ),
-              SizedBox(height: displayHeight(context) * 0.05,),
-              Text("Success!", style: TextStyle(fontSize: 40.0),),
+              SizedBox(
+                height: displayHeight(context) * 0.05,
+              ),
+              Text(
+                "Success!",
+                style: TextStyle(fontSize: 40.0),
+              ),
             ],
           ),
         ),
