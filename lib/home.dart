@@ -306,33 +306,61 @@ class _HomePageState extends State<HomePage> {
             body: StreamBuilder<dynamic>(
               stream: _stream,
               builder: (BuildContext context, AsyncSnapshot snapshot) {
-                if (snapshot.data == null) {
-                  return RefreshIndicator(
-                    onRefresh: () async {
-                      catalogueStreamUpdater();
-                    },
-                    child: Center(
-                      child: Text("Nothing here yet."),
-                    ),
-                  );
-                } else {
-                  List<Widget> _productCatalogueList =
-                      _buildCatalogueUtility(snapshot.data);
-                  return RefreshIndicator(
-                    onRefresh: () async {
-                      catalogueStreamUpdater();
-                    },
-                    child: GridView.builder(
-                      itemCount: _productCatalogueList.length,
-                      gridDelegate:
-                          new SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2, childAspectRatio: 0.95),
-                      itemBuilder: (context, index) {
-                        return _productCatalogueList[index];
-                      },
-                    ),
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text(
+                        'We are experiencing some problems right now. Please try again later.'),
                   );
                 }
+                switch (snapshot.connectionState) {
+                  case ConnectionState.none:
+                    continue waiting;
+                  waiting:
+                  case ConnectionState.waiting:
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          CircularProgressIndicator(),
+                          SizedBox(height: 10.0,),
+                          Text("Loading")
+                        ],
+                      ),
+                    );
+                  case ConnectionState.active:
+                    continue data_ready;
+                  data_ready:
+                  case ConnectionState.done:
+                    if (snapshot.data == null) {
+                      return RefreshIndicator(
+                        onRefresh: () async {
+                          catalogueStreamUpdater();
+                        },
+                        child: Center(
+                          child: Text("Nothing here yet."),
+                        ),
+                      );
+                    } else {
+                      List<Widget> _productCatalogueList =
+                      _buildCatalogueUtility(snapshot.data);
+                      return RefreshIndicator(
+                        onRefresh: () async {
+                          catalogueStreamUpdater();
+                        },
+                        child: GridView.builder(
+                          itemCount: _productCatalogueList.length,
+                          gridDelegate:
+                          new SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2, childAspectRatio: 0.95),
+                          itemBuilder: (context, index) {
+                            return _productCatalogueList[index];
+                          },
+                        ),
+                      );
+                    }
+                }
+                return null;
               },
             ),
           );

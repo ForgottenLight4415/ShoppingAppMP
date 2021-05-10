@@ -60,14 +60,19 @@ class _OrderPageState extends State<OrderPage> {
                 onPressed: () async {
                   Navigator.of(context).pop();
                   http.Response response = await _cancelOrder(orderID);
-                  print(response.body);
-                  if (response.body == "CANCELLED") {
-                    Fluttertoast.showToast(
-                        msg: "Order cancelled",
-                        toastLength: Toast.LENGTH_SHORT,
-                        gravity: ToastGravity.CENTER,
-                        fontSize: 12.0);
-                    _orderPageStreamUpdater();
+                  if (response.statusCode == 200) {
+                    if (response.body == "CANCELLED") {
+                      Fluttertoast.showToast(
+                          msg: "Order cancelled",
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.CENTER,
+                          fontSize: 12.0);
+                      _orderPageStreamUpdater();
+                    } else {
+                      somethingWentWrongToast();
+                    }
+                  } else {
+                    somethingWentWrongToast();
                   }
                 },
                 child: Text('Yes'))

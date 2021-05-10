@@ -121,40 +121,40 @@ class CheckoutDetail extends StatelessWidget {
                         child: Text(
                           'Delivery Address: ',
                           style: TextStyle(
-                            fontSize: 20.0,
+                            fontSize: displayWidth(context) * 0.048,
                             fontWeight: FontWeight.bold,
                             color: Color(0xFFE6004C),
                           ),
                         ),
                       ),
-                      SizedBox(height: 15.0),
+                      SizedBox(height: displayWidth(context) * 0.03),
                       Center(
                         child: Text(
                           customerData[0]['address'],
                           style: TextStyle(
-                            fontSize: 20.0,
+                            fontSize: displayWidth(context) * 0.048,
                             fontWeight: FontWeight.bold,
                             color: Color(0xFFE6004C),
                           ),
                         ),
                       ),
-                      SizedBox(height: 15.0),
+                      SizedBox(height: displayWidth(context) * 0.03),
                       Center(
                         child: Text(
                           customerData[0]['phone'],
                           style: TextStyle(
-                            fontSize: 20.0,
+                            fontSize: displayWidth(context) * 0.048,
                             fontWeight: FontWeight.bold,
                             color: Color(0xFFE6004C),
                           ),
                         ),
                       ),
-                      SizedBox(height: 8.0),
+                      SizedBox(height: displayWidth(context) * 0.02),
                       Center(
                         child: Text(
                           customerData[0]['email'],
                           style: TextStyle(
-                            fontSize: 20.0,
+                            fontSize: displayWidth(context) * 0.048,
                             fontWeight: FontWeight.bold,
                             color: Color(0xFFE6004C),
                           ),
@@ -191,7 +191,7 @@ class CheckoutDetail extends StatelessWidget {
                       Center(
                         child: Text('No Contact Delivery - ',
                             style: TextStyle(
-                              fontSize: 20.0,
+                              fontSize: displayWidth(context) * 0.05,
                               fontWeight: FontWeight.bold,
                               color: Colors.green,
                             )),
@@ -201,7 +201,7 @@ class CheckoutDetail extends StatelessWidget {
                         child: Text(
                           'Delivery Associate will place the order on your door step and step back to maintain a 2-meter distance. ',
                           style: TextStyle(
-                            fontSize: 20.0,
+                            fontSize: displayWidth(context) * 0.05,
                             fontWeight: FontWeight.bold,
                             color: Colors.green,
                           ),
@@ -251,8 +251,13 @@ class CheckoutDetail extends StatelessWidget {
                                     await _buyFromProductDesc(
                                         productID, quantity);
                                 if (response.statusCode == 200) {
-                                  _confirmationPageNavigator(
-                                      response.body, context);
+                                  if (response.body == 'SUCCESS' || response.body == 'SOME_ORDER_REFUSED' || response.body == 'NOT_ENOUGH_STOCK') {
+                                    _confirmationPageNavigator(
+                                        response.body, context);
+                                  } else {
+                                    Navigator.pop(context);
+                                    somethingWentWrongToast();
+                                  }
                                 } else {
                                   Navigator.pop(context);
                                   somethingWentWrongToast();
@@ -261,8 +266,13 @@ class CheckoutDetail extends StatelessWidget {
                                 http.Response response = await buyOneFromCart(
                                     productID, quantity, cartID);
                                 if (response.statusCode == 200) {
-                                  _confirmationPageNavigator(
-                                      response.body, context);
+                                  if (response.body == 'SUCCESS' || response.body == 'SOME_ORDER_REFUSED' || response.body == 'NOT_ENOUGH_STOCK') {
+                                    _confirmationPageNavigator(
+                                        response.body, context);
+                                  } else {
+                                    Navigator.pop(context);
+                                    somethingWentWrongToast();
+                                  }
                                 } else {
                                   Navigator.pop(context);
                                   somethingWentWrongToast();
@@ -270,8 +280,14 @@ class CheckoutDetail extends StatelessWidget {
                               } else if (flag == 2) {
                                 http.Response response = await checkoutCart();
                                 if (response.statusCode == 200) {
-                                  _confirmationPageNavigator(
-                                      response.body, context);
+                                  print(response.body);
+                                  if (response.body == 'SUCCESS' || response.body == 'SOME_ORDER_REFUSED' || response.body == 'NOT_ENOUGH_STOCK') {
+                                    _confirmationPageNavigator(
+                                        response.body, context);
+                                  } else {
+                                    Navigator.pop(context);
+                                    somethingWentWrongToast();
+                                  }
                                 } else {
                                   Navigator.pop(context);
                                   somethingWentWrongToast();
