@@ -218,6 +218,34 @@ class CheckoutDetail extends StatelessWidget {
                               color: Color(0xFFE6004C)),
                           child: InkWell(
                             onTap: () async {
+                              showDialog(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder: (BuildContext context) {
+                                    return WillPopScope(
+                                      onWillPop: () async => false,
+                                      child: SimpleDialog(
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.all(15.0),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                CircularProgressIndicator(),
+                                                Text(
+                                                  "Confirming your order",
+                                                  style: TextStyle(
+                                                    fontSize: 16.0,
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    );
+                                  });
                               if (flag == 1) {
                                 http.Response response =
                                     await _buyFromProductDesc(
@@ -226,18 +254,30 @@ class CheckoutDetail extends StatelessWidget {
                                   _confirmationPageNavigator(
                                       response.body, context);
                                 } else {
+                                  Navigator.pop(context);
                                   somethingWentWrongToast();
                                 }
                               } else if (flag == 0) {
                                 http.Response response = await buyOneFromCart(
                                     productID, quantity, cartID);
-                                _confirmationPageNavigator(
-                                    response.body, context);
+                                if (response.statusCode == 200) {
+                                  _confirmationPageNavigator(
+                                      response.body, context);
+                                } else {
+                                  Navigator.pop(context);
+                                  somethingWentWrongToast();
+                                }
                               } else if (flag == 2) {
                                 http.Response response = await checkoutCart();
-                                _confirmationPageNavigator(
-                                    response.body, context);
+                                if (response.statusCode == 200) {
+                                  _confirmationPageNavigator(
+                                      response.body, context);
+                                } else {
+                                  Navigator.pop(context);
+                                  somethingWentWrongToast();
+                                }
                               } else {
+                                Navigator.pop(context);
                                 somethingWentWrongToast();
                               }
                             },

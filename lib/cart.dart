@@ -120,7 +120,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
                               softWrap: false,
                               style: TextStyle(
                                 color: Colors.red.shade900,
-                                fontSize: 20.0,
+                                fontSize: displayWidth(context) * 0.043,
                               ),
                             ),
                             SizedBox(
@@ -129,14 +129,14 @@ class _ShoppingCartState extends State<ShoppingCart> {
                             Text(
                               "\u{20B9} " + double.parse(d['MSRP']).toString(),
                               style: TextStyle(
-                                fontSize: 18.0,
+                                fontSize: displayWidth(context) * 0.041,
                                 color: Color(0xFF595959),
                               ),
                             ),
                             Text(
                               "Quantity: " + d['Quantity'],
                               style: TextStyle(
-                                fontSize: 16.0,
+                                fontSize: displayWidth(context) * 0.039,
                                 color: Color(0xFF595959),
                               ),
                             ),
@@ -145,70 +145,76 @@ class _ShoppingCartState extends State<ShoppingCart> {
                               children: [
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
-                                  child: ElevatedButton(
-                                    onPressed: () async {
-                                      http.Response response =
-                                          await removeFromCart(d['CartID']);
-                                      if (response.body == "Done") {
-                                        _cartPageStreamUpdater();
-                                      } else {
-                                        somethingWentWrongToast();
-                                      }
-                                    },
-                                    child: Text("Remove"),
-                                    style: ButtonStyle(
-                                      backgroundColor: MaterialStateProperty
-                                          .resolveWith<Color>(
-                                        (Set<MaterialState> states) {
-                                          if (states
-                                              .contains(MaterialState.pressed))
-                                            return Colors.orange;
-                                          return Color(
-                                              0xFFE6004C); // Use the component's default.
-                                        },
+                                  child: SizedBox(
+                                      height: displayHeight(context) * 0.04,
+                                    child: ElevatedButton(
+                                      onPressed: () async {
+                                        http.Response response =
+                                            await removeFromCart(d['CartID']);
+                                        if (response.body == "Done") {
+                                          _cartPageStreamUpdater();
+                                        } else {
+                                          somethingWentWrongToast();
+                                        }
+                                      },
+                                      child: Text("Remove"),
+                                      style: ButtonStyle(
+                                        backgroundColor: MaterialStateProperty
+                                            .resolveWith<Color>(
+                                          (Set<MaterialState> states) {
+                                            if (states
+                                                .contains(MaterialState.pressed))
+                                              return Colors.orange;
+                                            return Color(
+                                                0xFFE6004C); // Use the component's default.
+                                          },
+                                        ),
                                       ),
                                     ),
                                   ),
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
-                                  child: ElevatedButton(
-                                    onPressed: () async {
-                                      if (int.parse(d['UnitsInStock']) == 0) {
-                                        Fluttertoast.showToast(
-                                            msg: "Out of stock",
-                                            toastLength: Toast.LENGTH_SHORT,
-                                            gravity: ToastGravity.CENTER,
-                                            fontSize: 12.0);
-                                      } else {
-                                        Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                CheckoutDetail(
-                                              totalPrice:
-                                                  int.parse(d['Quantity']) *
-                                                      double.parse(d['MSRP']),
-                                              cartID: d['CartID'],
-                                              productID: d['ProductID'],
-                                              quantity:
-                                                  int.parse(d['Quantity']),
-                                              flag: 0,
+                                  child: SizedBox(
+                                    height: displayHeight(context) * 0.04,
+                                    child: ElevatedButton(
+                                      onPressed: () async {
+                                        if (int.parse(d['UnitsInStock']) == 0) {
+                                          Fluttertoast.showToast(
+                                              msg: "Out of stock",
+                                              toastLength: Toast.LENGTH_SHORT,
+                                              gravity: ToastGravity.CENTER,
+                                              fontSize: 12.0);
+                                        } else {
+                                          Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  CheckoutDetail(
+                                                totalPrice:
+                                                    int.parse(d['Quantity']) *
+                                                        double.parse(d['MSRP']),
+                                                cartID: d['CartID'],
+                                                productID: d['ProductID'],
+                                                quantity:
+                                                    int.parse(d['Quantity']),
+                                                flag: 0,
+                                              ),
                                             ),
-                                          ),
-                                        );
-                                      }
-                                    },
-                                    child: Text("Buy"),
-                                    style: ButtonStyle(
-                                      backgroundColor: MaterialStateProperty
-                                          .resolveWith<Color>(
-                                        (Set<MaterialState> states) {
-                                          if (states
-                                              .contains(MaterialState.pressed))
-                                            return Colors.red;
-                                          return Color(
-                                              0xFFE6004C); // Use the component's default.
-                                        },
+                                          );
+                                        }
+                                      },
+                                      child: Text("Buy"),
+                                      style: ButtonStyle(
+                                        backgroundColor: MaterialStateProperty
+                                            .resolveWith<Color>(
+                                          (Set<MaterialState> states) {
+                                            if (states
+                                                .contains(MaterialState.pressed))
+                                              return Colors.red;
+                                            return Color(
+                                                0xFFE6004C); // Use the component's default.
+                                          },
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -270,107 +276,132 @@ class _ShoppingCartState extends State<ShoppingCart> {
       body: StreamBuilder(
         stream: _stream,
         builder: (context, snapshot) {
-          if (snapshot.data == null) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text("Nothing to show here!"),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text("Start by adding a few items from store."),
-                  )
-                ],
-              ),
-            );
-          } else {
-            List<Widget> posts = _cartPageBuilder(snapshot.data);
-            return Column(
-              children: [
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: posts.length,
-                    itemBuilder: (context, index) {
-                      return posts[index];
-                    },
-                  ),
+          if (snapshot.hasError) {
+            return Center(child: Text('An error occurred while fetching your cart'));
+          }
+          switch (snapshot.connectionState) {
+            case ConnectionState.none:
+              continue waiting;
+            waiting:
+            case ConnectionState.waiting:
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(),
+                    SizedBox(height: 10.0,),
+                    Text("Loading")
+                  ],
                 ),
-                Container(
-                  decoration: BoxDecoration(boxShadow: <BoxShadow>[
-                    BoxShadow(
-                      color: Colors.black54,
-                      blurRadius: 10,
-                    )
-                  ]),
-                  child: BottomAppBar(
-                    color: Color(0xFFFFFFFF),
-                    child: Padding(
-                      padding: const EdgeInsets.all(15.0),
-                      child: Container(
-                        width: displayWidth(context),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Text(
-                                  'Total items: ' +
-                                      _getCartSize(snapshot.data).toString(),
-                                  style: TextStyle(
-                                      fontSize: displayWidth(context) * 0.035,
-                                      color: Color(0xFF595959)),
+              );
+            case ConnectionState.active:
+              continue data_ready;
+            data_ready:
+            case ConnectionState.done:
+              if (snapshot.data == null) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text("Nothing to show here!"),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text("Start by adding a few items from store."),
+                      )
+                    ],
+                  ),
+                );
+              } else {
+                List<Widget> posts = _cartPageBuilder(snapshot.data);
+                return Column(
+                  children: [
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: posts.length,
+                        itemBuilder: (context, index) {
+                          return posts[index];
+                        },
+                      ),
+                    ),
+                    Container(
+                      decoration: BoxDecoration(boxShadow: <BoxShadow>[
+                        BoxShadow(
+                          color: Colors.black54,
+                          blurRadius: 10,
+                        )
+                      ]),
+                      child: BottomAppBar(
+                        color: Color(0xFFFFFFFF),
+                        child: Padding(
+                          padding: const EdgeInsets.all(15.0),
+                          child: Container(
+                            width: displayWidth(context),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Text(
+                                      'Total items: ' +
+                                          _getCartSize(snapshot.data).toString(),
+                                      style: TextStyle(
+                                          fontSize: displayWidth(context) * 0.035,
+                                          color: Color(0xFF595959)),
+                                    ),
+                                    Text(
+                                      'Cart total: \u20B9' +
+                                          _getCartValue(snapshot.data).toString(),
+                                      softWrap: false,
+                                      overflow: TextOverflow.fade,
+                                      style: TextStyle(
+                                          fontSize: displayWidth(context) * 0.045,
+                                          fontWeight: FontWeight.w700,
+                                          color: Color(0xFF595959)),
+                                    ),
+                                  ],
                                 ),
-                                Text(
-                                  'Cart total: \u20B9' +
-                                      _getCartValue(snapshot.data).toString(),
-                                  softWrap: false,
-                                  overflow: TextOverflow.fade,
-                                  style: TextStyle(
-                                      fontSize: displayWidth(context) * 0.045,
-                                      fontWeight: FontWeight.w700,
-                                      color: Color(0xFF595959)),
-                                ),
-                              ],
-                            ),
-                            FloatingActionButton.extended(
-                              onPressed: () async {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) => CheckoutDetail(
-                                      totalPrice: _getCartValue(snapshot.data),
-                                      flag: 2,
+                                FloatingActionButton.extended(
+                                  onPressed: () async {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => CheckoutDetail(
+                                          totalPrice: _getCartValue(snapshot.data),
+                                          flag: 2,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  icon: Icon(
+                                    Icons.check,
+                                    color: Colors.white,
+                                  ),
+                                  label: Text(
+                                    'Checkout',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                );
-                              },
-                              icon: Icon(
-                                Icons.check,
-                                color: Colors.white,
-                              ),
-                              label: Text(
-                                'Checkout',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              backgroundColor: Color(0xFFE6004C),
-                            )
-                          ],
+                                  backgroundColor: Color(0xFFE6004C),
+                                )
+                              ],
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ),
-              ],
-            );
+                  ],
+                );
+              }
           }
+          return null;
         },
       ),
     );

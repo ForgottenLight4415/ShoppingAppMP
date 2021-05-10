@@ -60,6 +60,7 @@ class _OrderPageState extends State<OrderPage> {
                 onPressed: () async {
                   Navigator.of(context).pop();
                   http.Response response = await _cancelOrder(orderID);
+                  print(response.body);
                   if (response.body == "CANCELLED") {
                     Fluttertoast.showToast(
                         msg: "Order cancelled",
@@ -264,60 +265,88 @@ class _OrderPageState extends State<OrderPage> {
       body: StreamBuilder(
         stream: _stream,
         builder: (context, snapshot) {
-          if (snapshot.data == null) {
+          if (snapshot.hasError) {
             return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                    'No orders yet.',
-                    style: TextStyle(
-                      fontSize: displayWidth(context) * 0.05,
-                      color: Colors.grey.shade700,
-                    ),
-                  ),
-                  SizedBox(
-                    height: displayHeight(context) * 0.03,
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: Text(
-                      'Search the store',
-                      style: TextStyle(
-                        fontSize: displayWidth(context) * 0.05,
-                      ),
-                    ),
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                        (Set<MaterialState> states) {
-                          if (states.contains(MaterialState.pressed))
-                            return Colors.red.shade700;
-                          return Color(
-                              0xFFE6004C); // Use the component's default.
-                        },
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            );
-          } else {
-            List<Widget> posts = _buildOrderCards(snapshot.data);
-            return RefreshIndicator(
-              onRefresh: () async {
-                _orderPageStreamUpdater();
-              },
-              child: ListView.builder(
-                itemCount: posts.length,
-                itemBuilder: (context, index) {
-                  return posts[index];
-                },
-              ),
+              child: Text(
+                  'We are experiencing some problems right now. Please try again later.'),
             );
           }
+          switch (snapshot.connectionState) {
+            case ConnectionState.none:
+              continue waiting;
+            waiting:
+            case ConnectionState.waiting:
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(),
+                    SizedBox(height: 10.0,),
+                    Text("Loading")
+                  ],
+                ),
+              );
+            case ConnectionState.active:
+              continue data_ready;
+            data_ready:
+            case ConnectionState.done:
+              if (snapshot.data == null) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        'No orders yet.',
+                        style: TextStyle(
+                          fontSize: displayWidth(context) * 0.05,
+                          color: Colors.grey.shade700,
+                        ),
+                      ),
+                      SizedBox(
+                        height: displayHeight(context) * 0.03,
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text(
+                          'Search the store',
+                          style: TextStyle(
+                            fontSize: displayWidth(context) * 0.05,
+                          ),
+                        ),
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                                (Set<MaterialState> states) {
+                              if (states.contains(MaterialState.pressed))
+                                return Colors.red.shade700;
+                              return Color(
+                                  0xFFE6004C); // Use the component's default.
+                            },
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                );
+              } else {
+                List<Widget> posts = _buildOrderCards(snapshot.data);
+                return RefreshIndicator(
+                  onRefresh: () async {
+                    _orderPageStreamUpdater();
+                  },
+                  child: ListView.builder(
+                    itemCount: posts.length,
+                    itemBuilder: (context, index) {
+                      return posts[index];
+                    },
+                  ),
+                );
+              }
+          }
+          return null;
         },
       ),
     );
