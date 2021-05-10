@@ -280,7 +280,6 @@ class CheckoutDetail extends StatelessWidget {
                               } else if (flag == 2) {
                                 http.Response response = await checkoutCart();
                                 if (response.statusCode == 200) {
-                                  print(response.body);
                                   if (response.body == 'SUCCESS' || response.body == 'SOME_ORDER_REFUSED' || response.body == 'NOT_ENOUGH_STOCK') {
                                     _confirmationPageNavigator(
                                         response.body, context);

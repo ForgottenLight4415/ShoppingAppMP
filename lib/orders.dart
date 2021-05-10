@@ -153,7 +153,7 @@ class _OrderPageState extends State<OrderPage> {
                               softWrap: false,
                               style: TextStyle(
                                 color: Colors.red.shade900,
-                                fontSize: 18.0,
+                                fontSize: displayHeight(context) * 0.02,
                               ),
                             ),
                             SizedBox(
@@ -161,16 +161,16 @@ class _OrderPageState extends State<OrderPage> {
                             ),
                             Text(
                               "\u{20B9} " + d['MSRP'],
-                              style: TextStyle(fontSize: 18.0),
+                              style: TextStyle(fontSize: displayHeight(context) * 0.02),
                             ),
                             Text(
                               "Quantity: " + d['Quantity'],
-                              style: TextStyle(fontSize: 18.0),
+                              style: TextStyle(fontSize: displayHeight(context) * 0.02),
                             ),
                             Text(
                               d['StatusDesc'],
                               style: TextStyle(
-                                  fontSize: 15.0,
+                                  fontSize: displayHeight(context) * 0.0165,
                                   color: _dstFontColorProvider(
                                       int.parse(d['Status']))),
                             ),
