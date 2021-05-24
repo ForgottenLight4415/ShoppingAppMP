@@ -55,7 +55,7 @@ class _OrderPageState extends State<OrderPage> {
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: Text('No')),
+                child: const Text('No')),
             TextButton(
                 onPressed: () async {
                   Navigator.of(context).pop();
@@ -75,7 +75,7 @@ class _OrderPageState extends State<OrderPage> {
                     somethingWentWrongToast();
                   }
                 },
-                child: Text('Yes'))
+                child: const Text('Yes'))
           ],
         );
       },
@@ -105,6 +105,10 @@ class _OrderPageState extends State<OrderPage> {
   }
 
   List<Widget> _buildOrderCards(List data) {
+    final Size size = displaySize(context);
+    final double height = size.height;
+    final double width = size.width;
+
     List<Widget> orders = [];
     data.forEach(
       (d) {
@@ -114,12 +118,11 @@ class _OrderPageState extends State<OrderPage> {
             child: Column(
               children: <Widget>[
                 Container(
-                  height: displayHeight(context) * 0.23,
-                  width: displayWidth(context),
+                  height: height * 0.25,
                   decoration: BoxDecoration(
                       color: Colors.white,
                       boxShadow: [
-                        BoxShadow(
+                        const BoxShadow(
                           color: Colors.grey,
                           offset: const Offset(2.5, 2.5),
                           blurRadius: 5.0,
@@ -130,56 +133,54 @@ class _OrderPageState extends State<OrderPage> {
                   child: Row(
                     children: [
                       Container(
-                        margin: EdgeInsets.all(10.0),
-                        width: displayWidth(context) * 0.38,
-                        height: displayHeight(context) * 0.20,
+                        margin: const EdgeInsets.all(8.0),
+                        width: width * 0.35,
+                        height: height * 0.20,
                         decoration: BoxDecoration(
                           image: DecorationImage(
                             image: setImage(d['PictureURL']),
                           ),
                         ),
                       ),
-                      Container(
-                        margin: EdgeInsets.all(10.0),
-                        height: displayHeight(context) * 0.20,
-                        width: displayWidth(context) * 0.48,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              d['ProductName'],
-                              overflow: TextOverflow.fade,
-                              softWrap: false,
-                              style: TextStyle(
-                                color: Colors.red.shade900,
-                                fontSize: displayHeight(context) * 0.02,
+                      Expanded(
+                        child: Container(
+                          margin: const EdgeInsets.all(8.0),
+                          height: height * 0.24,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                d['ProductName'],
+                                overflow: TextOverflow.fade,
+                                softWrap: false,
+                                style: TextStyle(
+                                  color: Colors.red.shade900,
+                                  fontSize: 20,
+                                ),
                               ),
-                            ),
-                            SizedBox(
-                              height: 10.0,
-                            ),
-                            Text(
-                              "\u{20B9} " + d['MSRP'],
-                              style: TextStyle(fontSize: displayHeight(context) * 0.02),
-                            ),
-                            Text(
-                              "Quantity: " + d['Quantity'],
-                              style: TextStyle(fontSize: displayHeight(context) * 0.02),
-                            ),
-                            Text(
-                              d['StatusDesc'],
-                              style: TextStyle(
-                                  fontSize: displayHeight(context) * 0.0165,
-                                  color: _dstFontColorProvider(
-                                      int.parse(d['Status']))),
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Visibility(
+                              const SizedBox(
+                                height: 3.0,
+                              ),
+                              Text(
+                                "\u{20B9} " + d['MSRP'],
+                                style: const TextStyle(fontSize: 18),
+                              ),
+                              Text(
+                                "Quantity: " + d['Quantity'],
+                                style: const TextStyle(fontSize: 14),
+                              ),
+                              Text(
+                                d['StatusDesc'],
+                                style: TextStyle(
+                                    fontSize: 14,
+                                    color: _dstFontColorProvider(
+                                        int.parse(d['Status']))),
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Visibility(
                                     visible:
                                         (d['Status'] == '9') ? false : true,
                                     child: ElevatedButton(
@@ -234,10 +235,10 @@ class _OrderPageState extends State<OrderPage> {
                                       ),
                                     ),
                                   ),
-                                ),
-                              ],
-                            )
-                          ],
+                                ],
+                              )
+                            ],
+                          ),
                         ),
                       )
                     ],
@@ -262,16 +263,19 @@ class _OrderPageState extends State<OrderPage> {
 
   @override
   Widget build(BuildContext context) {
+    final Size size = displaySize(context);
+    final double width = size.width;
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text('My Orders'),
+        title: const Text('My Orders'),
       ),
       body: StreamBuilder(
         stream: _stream,
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return Center(
+            return const Center(
               child: Text(
                   'We are experiencing some problems right now. Please try again later.'),
             );
@@ -286,9 +290,9 @@ class _OrderPageState extends State<OrderPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    CircularProgressIndicator(),
-                    SizedBox(height: 10.0,),
-                    Text("Loading")
+                    const CircularProgressIndicator(),
+                    const SizedBox(height: 10.0,),
+                    const Text("Loading")
                   ],
                 ),
               );
@@ -305,12 +309,12 @@ class _OrderPageState extends State<OrderPage> {
                       Text(
                         'No orders yet.',
                         style: TextStyle(
-                          fontSize: displayWidth(context) * 0.05,
+                          fontSize: width * 0.05,
                           color: Colors.grey.shade700,
                         ),
                       ),
-                      SizedBox(
-                        height: displayHeight(context) * 0.03,
+                      const SizedBox(
+                        height: 20.0,
                       ),
                       ElevatedButton(
                         onPressed: () {
@@ -319,7 +323,7 @@ class _OrderPageState extends State<OrderPage> {
                         child: Text(
                           'Search the store',
                           style: TextStyle(
-                            fontSize: displayWidth(context) * 0.05,
+                            fontSize: width * 0.05,
                           ),
                         ),
                         style: ButtonStyle(

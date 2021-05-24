@@ -72,6 +72,10 @@ class _ShoppingCartState extends State<ShoppingCart> {
   }
 
   _cartPageBuilder(data) {
+    final Size size = displaySize(context);
+    final double height = size.height;
+    final double width = size.width;
+
     List<Widget> cart = [];
     data.forEach(
       (d) {
@@ -81,8 +85,8 @@ class _ShoppingCartState extends State<ShoppingCart> {
             child: Column(
               children: <Widget>[
                 Container(
-                  height: displayHeight(context) * 0.20,
-                  width: displayWidth(context),
+                  height: height * 0.22,
+                  width: width,
                   decoration: BoxDecoration(
                       color: Colors.white,
                       boxShadow: [
@@ -97,131 +101,120 @@ class _ShoppingCartState extends State<ShoppingCart> {
                   child: Row(
                     children: [
                       Container(
-                        margin: EdgeInsets.all(10.0),
-                        width: displayWidth(context) * 0.38,
-                        height: displayHeight(context) * 0.16,
+                        margin: EdgeInsets.all(8.0),
+                        width: width * 0.35,
+                        height: height * 0.20,
                         decoration: BoxDecoration(
                           image: DecorationImage(
                             image: setImage(d['PictureURL']),
                           ),
                         ),
                       ),
-                      Container(
-                        margin: EdgeInsets.all(10.0),
-                        height: displayHeight(context) * 0.18,
-                        width: displayWidth(context) * 0.48,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              d['ProductName'],
-                              overflow: TextOverflow.fade,
-                              softWrap: false,
-                              style: TextStyle(
-                                color: Colors.red.shade900,
-                                fontSize: displayWidth(context) * 0.043,
-                              ),
-                            ),
-                            SizedBox(
-                              height: 10.0,
-                            ),
-                            Text(
-                              "\u{20B9} " + double.parse(d['MSRP']).toString(),
-                              style: TextStyle(
-                                fontSize: displayWidth(context) * 0.041,
-                                color: Color(0xFF595959),
-                              ),
-                            ),
-                            Text(
-                              "Quantity: " + d['Quantity'],
-                              style: TextStyle(
-                                fontSize: displayWidth(context) * 0.039,
-                                color: Color(0xFF595959),
-                              ),
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: SizedBox(
-                                      height: displayHeight(context) * 0.04,
-                                    child: ElevatedButton(
-                                      onPressed: () async {
-                                        http.Response response =
-                                            await removeFromCart(d['CartID']);
-                                        if (response.body == "Done") {
-                                          _cartPageStreamUpdater();
-                                        } else {
-                                          somethingWentWrongToast();
-                                        }
-                                      },
-                                      child: Text("Remove"),
-                                      style: ButtonStyle(
-                                        backgroundColor: MaterialStateProperty
-                                            .resolveWith<Color>(
-                                          (Set<MaterialState> states) {
-                                            if (states
-                                                .contains(MaterialState.pressed))
-                                              return Colors.orange;
-                                            return Color(
-                                                0xFFE6004C); // Use the component's default.
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                  ),
+                      Expanded(
+                        child: Container(
+                          margin: EdgeInsets.all(8.0),
+                          height: height * 0.21,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                d['ProductName'],
+                                overflow: TextOverflow.fade,
+                                softWrap: false,
+                                style: TextStyle(
+                                  color: Colors.red.shade900,
+                                  fontSize: 20,
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: SizedBox(
-                                    height: displayHeight(context) * 0.04,
-                                    child: ElevatedButton(
-                                      onPressed: () async {
-                                        if (int.parse(d['UnitsInStock']) == 0) {
-                                          Fluttertoast.showToast(
-                                              msg: "Out of stock",
-                                              toastLength: Toast.LENGTH_SHORT,
-                                              gravity: ToastGravity.CENTER,
-                                              fontSize: 12.0);
-                                        } else {
-                                          Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  CheckoutDetail(
-                                                totalPrice:
-                                                    int.parse(d['Quantity']) *
-                                                        double.parse(d['MSRP']),
-                                                cartID: d['CartID'],
-                                                productID: d['ProductID'],
-                                                quantity:
-                                                    int.parse(d['Quantity']),
-                                                flag: 0,
-                                              ),
-                                            ),
-                                          );
-                                        }
-                                      },
-                                      child: Text("Buy"),
-                                      style: ButtonStyle(
-                                        backgroundColor: MaterialStateProperty
-                                            .resolveWith<Color>(
-                                          (Set<MaterialState> states) {
-                                            if (states
-                                                .contains(MaterialState.pressed))
-                                              return Colors.red;
-                                            return Color(
-                                                0xFFE6004C); // Use the component's default.
-                                          },
-                                        ),
+                              ),
+                              const SizedBox(
+                                height: 3.0,
+                              ),
+                              Text(
+                                "\u{20B9} " + double.parse(d['MSRP']).toString(),
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  color: Color(0xFF595959),
+                                ),
+                              ),
+                              Text(
+                                "Quantity: " + d['Quantity'],
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Color(0xFF595959),
+                                ),
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                children: [
+                                  ElevatedButton(
+                                    onPressed: () async {
+                                      http.Response response =
+                                          await removeFromCart(d['CartID']);
+                                      if (response.body == "Done") {
+                                        _cartPageStreamUpdater();
+                                      } else {
+                                        somethingWentWrongToast();
+                                      }
+                                    },
+                                    child: const Text("Remove"),
+                                    style: ButtonStyle(
+                                      backgroundColor: MaterialStateProperty
+                                          .resolveWith<Color>(
+                                        (Set<MaterialState> states) {
+                                          if (states
+                                              .contains(MaterialState.pressed))
+                                            return Colors.orange;
+                                          return Color(
+                                              0xFFE6004C); // Use the component's default.
+                                        },
                                       ),
                                     ),
                                   ),
-                                )
-                              ],
-                            )
-                          ],
+                                  ElevatedButton(
+                                    onPressed: () async {
+                                      if (int.parse(d['UnitsInStock']) == 0) {
+                                        Fluttertoast.showToast(
+                                            msg: "Out of stock",
+                                            toastLength: Toast.LENGTH_SHORT,
+                                            gravity: ToastGravity.CENTER,
+                                            fontSize: 12.0);
+                                      } else {
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                CheckoutDetail(
+                                              totalPrice:
+                                                  int.parse(d['Quantity']) *
+                                                      double.parse(d['MSRP']),
+                                              cartID: d['CartID'],
+                                              productID: d['ProductID'],
+                                              quantity:
+                                                  int.parse(d['Quantity']),
+                                              flag: 0,
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                    },
+                                    child: Text("Buy"),
+                                    style: ButtonStyle(
+                                      backgroundColor: MaterialStateProperty
+                                          .resolveWith<Color>(
+                                        (Set<MaterialState> states) {
+                                          if (states
+                                              .contains(MaterialState.pressed))
+                                            return Colors.red;
+                                          return Color(
+                                              0xFFE6004C); // Use the component's default.
+                                        },
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              )
+                            ],
+                          ),
                         ),
                       )
                     ],

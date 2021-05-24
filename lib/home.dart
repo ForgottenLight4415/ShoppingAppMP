@@ -90,7 +90,7 @@ class _HomePageState extends State<HomePage> {
         drawerCategories.add(
           ListTile(
             title: Text(d['CategoryName']),
-            leading: Icon(Icons.arrow_forward_rounded),
+            leading: const Icon(Icons.arrow_forward_rounded),
             onTap: () {
               if (category == int.parse(d['CategoryID'])) {
                 Navigator.pop(context);
@@ -153,7 +153,7 @@ class _HomePageState extends State<HomePage> {
               title: Text(_appBarTitle),
               actions: <Widget>[
                 IconButton(
-                  icon: Icon(Icons.shopping_cart),
+                  icon: const Icon(Icons.shopping_cart),
                   onPressed: () {
                     Navigator.of(context)
                         .push(
@@ -186,9 +186,9 @@ class _HomePageState extends State<HomePage> {
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(50.0),
                               color: Colors.white),
-                          child: Icon(Icons.person),
+                          child: const Icon(Icons.person),
                         ), // Profile picture
-                        SizedBox(
+                        const SizedBox(
                           width: 10.0,
                         ),
                         Expanded(
@@ -200,14 +200,14 @@ class _HomePageState extends State<HomePage> {
                                 _uName.toUpperCase(),
                                 overflow: TextOverflow.fade,
                                 softWrap: false,
-                                style: TextStyle(
+                                style: const TextStyle(
                                     fontSize: 18.0, color: Colors.white),
                               ),
                               Text(
                                 _uEmail,
                                 overflow: TextOverflow.fade,
                                 softWrap: false,
-                                style: TextStyle(
+                                style: const TextStyle(
                                     fontSize: 13.0, color: Colors.white),
                               ),
                             ],
@@ -215,7 +215,7 @@ class _HomePageState extends State<HomePage> {
                         )
                       ],
                     ),
-                    decoration: BoxDecoration(color: Color(0xFFE6004C)),
+                    decoration: const BoxDecoration(color: Color(0xFFE6004C)),
                   ),
                   FutureBuilder(
                     future: _getCategories(),
@@ -226,8 +226,8 @@ class _HomePageState extends State<HomePage> {
                         return Column(
                           children: [
                             ListTile(
-                              title: Text('Home'),
-                              leading: Icon(Icons.home),
+                              title: const Text('Home'),
+                              leading: const Icon(Icons.home),
                               onTap: () {
                                 if (category == 0) {
                                   Navigator.pop(context);
@@ -242,7 +242,7 @@ class _HomePageState extends State<HomePage> {
                               },
                             ),
                             ListView.builder(
-                              padding: EdgeInsets.only(top: 0.0),
+                              padding: const EdgeInsets.only(top: 0.0),
                               shrinkWrap: true,
                               physics: ClampingScrollPhysics(),
                               itemCount: drawerCategories.length,
@@ -251,8 +251,8 @@ class _HomePageState extends State<HomePage> {
                               },
                             ),
                             ListTile(
-                              title: Text('My orders'),
-                              leading: Icon(Icons.list_alt),
+                              title: const Text('My orders'),
+                              leading: const Icon(Icons.list_alt),
                               onTap: () {
                                 Navigator.pop(context);
                                 Navigator.push(
@@ -262,8 +262,8 @@ class _HomePageState extends State<HomePage> {
                               },
                             ),
                             ListTile(
-                              title: Text("About app"),
-                              leading: Icon(Icons.help_outline_sharp),
+                              title: const Text("About app"),
+                              leading: const Icon(Icons.help_outline_sharp),
                               onTap: () {
                                 Navigator.pop(context);
                                 Navigator.push(
@@ -274,8 +274,8 @@ class _HomePageState extends State<HomePage> {
                               },
                             ),
                             ListTile(
-                              title: Text("Logout"),
-                              leading: Icon(Icons.logout),
+                              title: const Text("Logout"),
+                              leading: const Icon(Icons.logout),
                               onTap: () async {
                                 SharedPreferences pref =
                                     await SharedPreferences.getInstance();
@@ -293,7 +293,7 @@ class _HomePageState extends State<HomePage> {
                           ],
                         );
                       } else {
-                        return SizedBox(
+                        return const SizedBox(
                           height: 0.0,
                         );
                       }
@@ -308,7 +308,7 @@ class _HomePageState extends State<HomePage> {
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 if (snapshot.hasError) {
                   return Center(
-                    child: Text(
+                    child: const Text(
                         'We are experiencing some problems right now. Please try again later.'),
                   );
                 }
@@ -322,9 +322,11 @@ class _HomePageState extends State<HomePage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          CircularProgressIndicator(),
-                          SizedBox(height: 10.0,),
-                          Text("Loading")
+                          const CircularProgressIndicator(),
+                          const SizedBox(
+                            height: 10.0,
+                          ),
+                          const Text("Loading")
                         ],
                       ),
                     );
@@ -337,13 +339,13 @@ class _HomePageState extends State<HomePage> {
                         onRefresh: () async {
                           catalogueStreamUpdater();
                         },
-                        child: Center(
+                        child: const Center(
                           child: Text("Nothing here yet."),
                         ),
                       );
                     } else {
                       List<Widget> _productCatalogueList =
-                      _buildCatalogueUtility(snapshot.data);
+                          _buildCatalogueUtility(snapshot.data);
                       return RefreshIndicator(
                         onRefresh: () async {
                           catalogueStreamUpdater();
@@ -351,8 +353,8 @@ class _HomePageState extends State<HomePage> {
                         child: GridView.builder(
                           itemCount: _productCatalogueList.length,
                           gridDelegate:
-                          new SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2, childAspectRatio: 0.95),
+                              new SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2, childAspectRatio: 0.95),
                           itemBuilder: (context, index) {
                             return _productCatalogueList[index];
                           },
@@ -366,7 +368,7 @@ class _HomePageState extends State<HomePage> {
           );
         } else {
           return Scaffold(
-            body: Center(child: Text("Loading...Please wait...")),
+            body: const Center(child: Text("Loading...Please wait...")),
           );
         }
       },
@@ -423,13 +425,20 @@ class _ProductCardState extends State<ProductCard> {
     );
   }
 
+  static const TextStyle _textStyle =
+      TextStyle(color: Colors.blueGrey, fontSize: 16.0);
+
   @override
   Widget build(BuildContext context) {
+    final Size size = displaySize(context);
+    final double height = size.height;
+    final double width = size.width;
+
     return Padding(
       padding: EdgeInsets.all(5.0),
       child: InkWell(
         onTap: () async {
-          http.Response categoryName = await _getProductCategoryName();
+          final http.Response categoryName = await _getProductCategoryName();
           Navigator.of(context).push(
             MaterialPageRoute(
               builder: (context) => ProductDetail(
@@ -448,7 +457,7 @@ class _ProductCardState extends State<ProductCard> {
           );
         },
         child: Container(
-          height: displayHeight(context) * 0.5,
+          height: height * 0.5,
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(14.0),
               boxShadow: [
@@ -460,14 +469,14 @@ class _ProductCardState extends State<ProductCard> {
               color: Colors.white),
           child: Column(
             children: [
-              Padding(
-                padding: EdgeInsets.all(5.0),
+              const SizedBox(
+                height: 10.0,
               ),
               Hero(
                 tag: widget.productID,
                 child: Container(
-                  height: displayHeight(context) * 0.1,
-                  width: displayWidth(context) * 0.5,
+                  height: height * 0.1,
+                  width: width * 0.5,
                   decoration: BoxDecoration(
                     image: DecorationImage(
                         image: setImage(widget.pictureURL),
@@ -475,17 +484,16 @@ class _ProductCardState extends State<ProductCard> {
                   ),
                 ),
               ),
-              SizedBox(height: 6.0),
-              Text('\u20B9' + widget.productMSRP,
-                  style: TextStyle(color: Colors.blueGrey, fontSize: 15.0)),
+              const SizedBox(height: 6.0),
+              Text('\u20B9' + widget.productMSRP, style: _textStyle),
               Padding(
                 padding: const EdgeInsets.only(left: 8.0, right: 8.0),
                 child: Text(widget.productName,
                     overflow: TextOverflow.fade,
                     softWrap: false,
-                    style: TextStyle(color: Colors.blueGrey, fontSize: 16.0)),
+                    style: _textStyle),
               ),
-              Container(color: Color(0xFFEBEBEB), height: 0.4),
+              Container(color: const Color(0xFFEBEBEB), height: 0.4),
               TextButton(
                 onPressed: () async {
                   if (int.parse(widget.stock) == 0) {
@@ -513,7 +521,8 @@ class _ProductCardState extends State<ProductCard> {
                         );
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Something went wrong.')));
+                            const SnackBar(
+                                content: Text('Something went wrong.')));
                       }
                     } else {
                       http.Response response =
@@ -526,7 +535,8 @@ class _ProductCardState extends State<ProductCard> {
                         );
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("Something went wrong.")));
+                            const SnackBar(
+                                content: Text("Something went wrong.")));
                       }
                     }
                   }
@@ -546,8 +556,7 @@ class _ProductCardState extends State<ProductCard> {
                           (widget.addedToCart == "True")
                               ? "Added"
                               : "Add to cart",
-                          style: TextStyle(
-                              color: Colors.blueGrey, fontSize: 16.0))
+                          style: _textStyle)
                     ],
                   ),
                 ),

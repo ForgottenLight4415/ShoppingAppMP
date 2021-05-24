@@ -19,7 +19,7 @@ Future<http.Response> getCredentialsFromServer(String uName, String uPass) {
 void login(username, password, context) async {
   try {
     final loginCredentials =
-        await getCredentialsFromServer(username.trim(), password);
+    await getCredentialsFromServer(username.trim(), password);
     var serverResponse = loginCredentials.body.split(';');
     if (loginCredentials.statusCode == 200) {
       if (serverResponse[0] == "true") {
@@ -62,6 +62,10 @@ class _LoginFormState extends State<LoginForm> {
 
   @override
   Widget build(BuildContext context) {
+    final Size size = displaySize(context);
+    final double height = size.height;
+    final double width = size.width;
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Container(
@@ -83,34 +87,34 @@ class _LoginFormState extends State<LoginForm> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                    Text(
+                    const Text(
                       "Sign in to your account",
                       style: TextStyle(fontSize: 48.0, color: Colors.white),
                     ),
                     SizedBox(
-                      height: displayHeight(context) * 0.05,
+                      height: height * 0.05,
                     ),
                     Container(
-                      height: displayHeight(context) * 0.30,
+                      height: height * 0.33,
                       child: Column(
                         children: <Widget>[
                           Container(
                             child: Padding(
                               padding:
-                                  const EdgeInsets.fromLTRB(3.0, 0.0, 3.0, 8.0),
+                              const EdgeInsets.fromLTRB(3.0, 0.0, 3.0, 8.0),
                               child: TextFormField(
                                 controller: _uname,
                                 decoration: InputDecoration(
-                                    prefixIcon: Icon(Icons.person),
+                                    prefixIcon: const Icon(Icons.person),
                                     labelText: "Username",
                                     hintText: "Enter your username",
                                     errorText: _validateUname
                                         ? "Username cannot be empty"
                                         : null,
-                                    errorStyle: TextStyle(
+                                    errorStyle: const TextStyle(
                                       color: Colors.white,
                                     ),
-                                    labelStyle: TextStyle(
+                                    labelStyle: const TextStyle(
                                       color: Colors.black,
                                     ),
                                     fillColor: Colors.white,
@@ -120,13 +124,13 @@ class _LoginFormState extends State<LoginForm> {
                                     ),
                                     focusedBorder: UnderlineInputBorder(
                                         borderRadius:
-                                            BorderRadius.circular(50.0)),
+                                        BorderRadius.circular(50.0)),
                                     enabledBorder: UnderlineInputBorder(
                                         borderRadius:
-                                            BorderRadius.circular(50.0)),
+                                        BorderRadius.circular(50.0)),
                                     border: UnderlineInputBorder(
                                         borderRadius:
-                                            BorderRadius.circular(50.0))),
+                                        BorderRadius.circular(50.0))),
                               ),
                             ),
                           ),
@@ -137,16 +141,16 @@ class _LoginFormState extends State<LoginForm> {
                               child: TextFormField(
                                 controller: _pass,
                                 decoration: InputDecoration(
-                                    prefixIcon: Icon(Icons.lock_rounded),
+                                    prefixIcon: const Icon(Icons.lock_rounded),
                                     labelText: "Password",
                                     hintText: "Enter your password",
                                     errorText: _validatePass
                                         ? "Password cannot be empty"
                                         : null,
-                                    errorStyle: TextStyle(
+                                    errorStyle: const TextStyle(
                                       color: Colors.white,
                                     ),
-                                    labelStyle: TextStyle(
+                                    labelStyle: const TextStyle(
                                       color: Colors.black,
                                     ),
                                     fillColor: Colors.white,
@@ -155,117 +159,107 @@ class _LoginFormState extends State<LoginForm> {
                                       borderRadius: BorderRadius.circular(50.0),
                                     ),
                                     focusedBorder: UnderlineInputBorder(
-                                        //borderSide: BorderSide(),
+                                      //borderSide: BorderSide(),
                                         borderRadius:
-                                            BorderRadius.circular(50.0)),
+                                        BorderRadius.circular(50.0)),
                                     enabledBorder: UnderlineInputBorder(
-                                        //borderSide: BorderSide(),
+                                      //borderSide: BorderSide(),
                                         borderRadius:
-                                            BorderRadius.circular(50.0)),
+                                        BorderRadius.circular(50.0)),
                                     border: UnderlineInputBorder(
-                                        //borderSide: BorderSide(),
+                                      //borderSide: BorderSide(),
                                         borderRadius:
-                                            BorderRadius.circular(50.0))),
+                                        BorderRadius.circular(50.0))),
                                 obscureText: true,
                               ),
                             ),
                           ),
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Padding(
-                                padding: const EdgeInsets.only(top: 1.0),
-                                child: Container(
-                                  height: displayHeight(context) * 0.06,
-                                  width: displayWidth(context) * 0.3,
-                                  child: FittedBox(
-                                    child: FloatingActionButton.extended(
-                                      backgroundColor: Colors.white,
-                                      heroTag: "LoginBtn",
-                                      elevation: 5.0,
-                                      onPressed: () async {
-                                        setState(() {
-                                          _uname.text.isEmpty
-                                              ? _validateUname = true
-                                              : _validateUname = false;
-                                          _pass.text.isEmpty
-                                              ? _validatePass = true
-                                              : _validatePass = false;
-                                        });
-                                        if (!_validateUname && !_validatePass) {
-                                          showDialog(
-                                              context: context,
-                                              barrierDismissible: false,
-                                              builder: (BuildContext context) {
-                                                return WillPopScope(
-                                                  onWillPop: () async => false,
-                                                  child: SimpleDialog(
-                                                    children: [
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets.all(
-                                                                15.0),
-                                                        child: Row(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .spaceEvenly,
-                                                          children: [
-                                                            CircularProgressIndicator(),
-                                                            Text(
-                                                              "Logging in",
-                                                              style: TextStyle(
-                                                                fontSize: 16.0,
-                                                              ),
-                                                            )
-                                                          ],
-                                                        ),
-                                                      )
-                                                    ],
-                                                  ),
-                                                );
-                                              });
-                                          login(
-                                              _uname.text, _pass.text, context);
-                                        }
-                                      },
-                                      label: Text(
-                                        "Login",
-                                        style: TextStyle(
-                                          color: Colors.blueGrey.shade700,
-                                        ),
-                                      ),
+                              Container(
+                                height: height * 0.08,
+                                width: width * 0.3,
+                                child: FloatingActionButton.extended(
+                                  backgroundColor: Colors.white,
+                                  heroTag: "LoginBtn",
+                                  elevation: 5.0,
+                                  onPressed: () async {
+                                    setState(() {
+                                      _uname.text.isEmpty
+                                          ? _validateUname = true
+                                          : _validateUname = false;
+                                      _pass.text.isEmpty
+                                          ? _validatePass = true
+                                          : _validatePass = false;
+                                    });
+                                    if (!_validateUname && !_validatePass) {
+                                      showDialog(
+                                          context: context,
+                                          barrierDismissible: false,
+                                          builder: (BuildContext context) {
+                                            return WillPopScope(
+                                              onWillPop: () async => false,
+                                              child: SimpleDialog(
+                                                children: [
+                                                  Padding(
+                                                    padding:
+                                                    const EdgeInsets.all(
+                                                        15.0),
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceEvenly,
+                                                      children: [
+                                                        const CircularProgressIndicator(),
+                                                        const Text(
+                                                          "Logging in",
+                                                          style: TextStyle(
+                                                            fontSize: 16.0,
+                                                          ),
+                                                        )
+                                                      ],
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                            );
+                                          });
+                                      login(
+                                          _uname.text, _pass.text, context);
+                                    }
+                                  },
+                                  label: Text(
+                                    "Login",
+                                    style: TextStyle(
+                                      color: Colors.blueGrey.shade700,
                                     ),
                                   ),
                                 ),
                               ),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 1.0),
-                                child: Container(
-                                  height: displayHeight(context) * 0.06,
-                                  width: displayWidth(context) * 0.55,
-                                  child: FittedBox(
-                                    child: FloatingActionButton.extended(
-                                      backgroundColor: Colors.white,
-                                      heroTag: "CreateAccountBtn",
-                                      elevation: 5.0,
-                                      onPressed: () {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    RegisterNew()));
-                                      },
-                                      label: Text(
-                                        "Create Account",
-                                        style: TextStyle(
-                                            color: Colors.blueGrey.shade700),
-                                      ),
-                                      icon: Icon(
-                                        Icons.add,
-                                        color: Colors.blueGrey.shade700,
-                                      ),
-                                    ),
+                              Container(
+                                height: height * 0.08,
+                                width: width * 0.55,
+                                child: FloatingActionButton.extended(
+                                  backgroundColor: Colors.white,
+                                  heroTag: "CreateAccountBtn",
+                                  elevation: 5.0,
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                RegisterNew()));
+                                  },
+                                  label: Text(
+                                    "Create Account",
+                                    style: TextStyle(
+                                        color: Colors.blueGrey.shade700),
+                                  ),
+                                  icon: Icon(
+                                    Icons.add,
+                                    color: Colors.blueGrey.shade700,
                                   ),
                                 ),
                               ),

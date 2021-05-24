@@ -104,8 +104,8 @@ class _ProductDetailState extends State<ProductDetail> {
   int quantity = 1;
   String reviewNo;
 
-  Color _quantityButtonActivated = Color(0xFFE6004C);
-  Color _quantityButtonDeactivated = Color.fromRGBO(228, 228, 228, 1);
+  Color _quantityButtonActivated = const Color(0xFFE6004C);
+  Color _quantityButtonDeactivated = const Color.fromRGBO(228, 228, 228, 1);
 
   dynamic _productRatingStreamUpdater(int flag,
       {String productID,
@@ -181,19 +181,23 @@ class _ProductDetailState extends State<ProductDetail> {
 
   @override
   Widget build(BuildContext context) {
+    final Size size = displaySize(context);
+    final double height = size.height;
+    final double width = size.width;
+
     return new Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0.0,
         centerTitle: true,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Color(0xFF545D68)),
+          icon: const Icon(Icons.arrow_back, color: Color(0xFF545D68)),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
         title: Text(widget.categoryName,
-            style: TextStyle(fontSize: 20.0, color: Color(0xFF545D68))),
+            style: const TextStyle(fontSize: 20.0, color: Color(0xFF545D68))),
       ),
       body: Padding(
         padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0),
@@ -205,7 +209,7 @@ class _ProductDetailState extends State<ProductDetail> {
               Center(
                 child: Text(
                   widget.productName,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 20.0,
                     fontWeight: FontWeight.bold,
                     color: Color(0xFFE6004C),
@@ -216,8 +220,8 @@ class _ProductDetailState extends State<ProductDetail> {
               Hero(
                 tag: widget.pictureURL,
                 child: Container(
-                  height: displayHeight(context) * 0.30,
-                  width: displayWidth(context),
+                  height: height * 0.30,
+                  width: width,
                   decoration: BoxDecoration(
                     image: DecorationImage(
                         image: setImage(widget.pictureURL),
@@ -225,11 +229,11 @@ class _ProductDetailState extends State<ProductDetail> {
                   ),
                 ),
               ),
-              SizedBox(height: 20.0),
+              const SizedBox(height: 20.0),
               Center(
                 child: Text(
                   'M.R.P' + " " + '\u20B9' + widget.unitPrice,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 21.0,
                     fontWeight: FontWeight.bold,
                     color: Color(0xFFE6004C),
@@ -237,11 +241,11 @@ class _ProductDetailState extends State<ProductDetail> {
                   ),
                 ),
               ),
-              SizedBox(height: 20.0),
+              const SizedBox(height: 20.0),
               Center(
                 child: Text(
                   'Deal of the Day:' + " " + '\u20B9' + widget.productMSRP,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 22.0,
                     color: Colors.green,
                     fontWeight: FontWeight.bold,
@@ -254,7 +258,7 @@ class _ProductDetailState extends State<ProductDetail> {
                   child: Text(
                     'Out of stock',
                     style: TextStyle(
-                      fontSize: displayWidth(context) * 0.1,
+                      fontSize: width * 0.1,
                       color: Colors.red,
                       fontWeight: FontWeight.bold,
                     ),
@@ -305,7 +309,7 @@ class _ProductDetailState extends State<ProductDetail> {
                           child: Center(
                             child: Text(
                               quantity.toString(),
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -344,14 +348,14 @@ class _ProductDetailState extends State<ProductDetail> {
                         ),
                       ],
                     ),
-                    SizedBox(height: 20.0),
+                    const SizedBox(height: 20.0),
                     Center(
                       child: Container(
-                        width: displayWidth(context) * 0.87,
+                        width: width * 0.87,
                         height: 50.0,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(25.0),
-                          color: Color(0xFFE6004C),
+                          color: const Color(0xFFE6004C),
                         ),
                         child: InkWell(
                           onTap: () async {
@@ -376,14 +380,14 @@ class _ProductDetailState extends State<ProductDetail> {
                                   fontSize: 12.0);
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
+                                const SnackBar(
                                   content: Text('Something went wrong.'),
                                 ),
                               );
                             }
                           },
                           child: Center(
-                            child: Text(
+                            child: const Text(
                               'Add to cart',
                               style: TextStyle(
                                 fontSize: 14.0,
@@ -395,14 +399,14 @@ class _ProductDetailState extends State<ProductDetail> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 21.0),
+                    const SizedBox(height: 21.0),
                     Center(
                       child: Container(
-                        width: MediaQuery.of(context).size.width - 50.0,
+                        width: width - 50.0,
                         height: 50.0,
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(25.0),
-                            color: Color(0xFFE6004C)),
+                            color: const Color(0xFFE6004C)),
                         child: InkWell(
                           onTap: () async {
                             Navigator.of(context).push(
@@ -418,7 +422,7 @@ class _ProductDetailState extends State<ProductDetail> {
                             );
                           },
                           child: Center(
-                            child: Text(
+                            child: const Text(
                               'Buy Now',
                               style: TextStyle(
                                 fontSize: 14.0,
@@ -430,13 +434,13 @@ class _ProductDetailState extends State<ProductDetail> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 20.0),
+                    const SizedBox(height: 20.0),
                   ],
                 ),
               ),
               Center(
                 child: Container(
-                  width: MediaQuery.of(context).size.width - 50.0,
+                  width: width - 50.0,
                   child: Text(
                       (widget.productDescription == null)
                           ? "No product description"
@@ -450,7 +454,7 @@ class _ProductDetailState extends State<ProductDetail> {
                 alignment: Alignment.centerLeft,
                 child: Padding(
                   padding: const EdgeInsets.all(10.0),
-                  child: Text(
+                  child: const Text(
                     "Reviews",
                     style: TextStyle(
                         color: Color(0xFFE6004C),
@@ -484,13 +488,13 @@ class _ProductDetailState extends State<ProductDetail> {
                           );
                         },
                       ),
-                      SizedBox(height: 10.0),
+                      const SizedBox(height: 10.0),
                       Center(
                         child: Column(
                           children: [
                             TextField(
                               controller: _reviewDescController,
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                 hintText: "Write a review...",
                                 labelText: "Review",
                                 labelStyle: TextStyle(
@@ -514,7 +518,7 @@ class _ProductDetailState extends State<ProductDetail> {
                                     productID: widget.productID);
                                 reviewNo = reviewID;
                               },
-                              child: Text(
+                              child: const Text(
                                 "Submit",
                               ),
                               style: ButtonStyle(
@@ -538,16 +542,16 @@ class _ProductDetailState extends State<ProductDetail> {
                   child: Column(
                     children: [
                       SizedBox(
-                        height: displayHeight(context) * 0.1,
+                        height: height * 0.1,
                       ),
-                      Text(
+                      const Text(
                         "No Reviews yet.",
                         style: TextStyle(
                           fontSize: 18.0,
                         ),
                       ),
                       SizedBox(
-                        height: displayHeight(context) * 0.1,
+                        height: height * 0.1,
                       ),
                     ],
                   ),
@@ -598,10 +602,10 @@ class _ProductDetailState extends State<ProductDetail> {
                                         );
                                       },
                                     ),
-                                    SizedBox(height: 10.0),
+                                    const SizedBox(height: 10.0),
                                     TextField(
                                       controller: _reviewDescController,
-                                      decoration: InputDecoration(
+                                      decoration: const InputDecoration(
                                         hintText: "Write a review...",
                                         labelText: "Review",
                                         labelStyle: TextStyle(
@@ -626,7 +630,7 @@ class _ProductDetailState extends State<ProductDetail> {
                                             productID: widget.productID);
                                         reviewNo = reviewID;
                                       },
-                                      child: Text("Submit"),
+                                      child: const Text("Submit"),
                                       style: ButtonStyle(
                                         backgroundColor: MaterialStateProperty
                                             .resolveWith<Color>(
@@ -645,7 +649,7 @@ class _ProductDetailState extends State<ProductDetail> {
                             ),
                           ),
                           Container(
-                            width: displayWidth(context) * 0.98,
+                            width: width * 0.98,
                             child: Material(
                               color: Colors.white,
                               elevation: 5.0,
@@ -660,7 +664,7 @@ class _ProductDetailState extends State<ProductDetail> {
                                       child: Text(
                                         d['FullName'],
                                         textAlign: TextAlign.justify,
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                           color: Color(0xFFE6004C),
                                           fontSize: 22.0,
                                           fontWeight: FontWeight.bold,
@@ -683,7 +687,7 @@ class _ProductDetailState extends State<ProductDetail> {
                                       child: Text(
                                         d['ReviewDesc'],
                                         textAlign: TextAlign.justify,
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                           color: Colors.blueGrey,
                                           fontSize: 18.0,
                                         ),
@@ -706,7 +710,7 @@ class _ProductDetailState extends State<ProductDetail> {
                                                 _productRatingStreamUpdater(0,
                                                     productID: widget.productID);
                                               },
-                                              child: Text("Delete"),
+                                              child: const Text("Delete"),
                                               style: ButtonStyle(
                                                 backgroundColor:
                                                     MaterialStateProperty

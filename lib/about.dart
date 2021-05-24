@@ -5,7 +5,7 @@ class AboutApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("About"),
+        title: const Text("About"),
       ),
       backgroundColor: Colors.white,
       body: Center(
@@ -13,21 +13,21 @@ class AboutApp extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            Text(
+            const Text(
               "SmartStore",
               style: TextStyle(fontSize: 30.0),
             ),
-            SizedBox(
+            const SizedBox(
               height: 5.0,
             ),
-            Text(
+            const Text(
               "Developed by Vishal Pednekar and Tanvi Salian",
               style: TextStyle(fontSize: 15.0),
             ),
-            SizedBox(
+            const SizedBox(
               height: 50.0,
             ),
-            Text(
+            const Text(
               "Version: 4.0.1 Release 2",
             )
           ],
