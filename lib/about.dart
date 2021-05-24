@@ -28,7 +28,7 @@ class AboutApp extends StatelessWidget {
               height: 50.0,
             ),
             const Text(
-              "Version: 4.0.1 Release 2",
+              "Version: 4.0.2 Release 2",
             )
           ],
         ),
